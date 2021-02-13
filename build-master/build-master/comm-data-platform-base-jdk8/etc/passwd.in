@@ -1,0 +1,2 @@
+ec:x:300:300:Developer(Application Owner):/:/sbin/nologin
+atom:x:500:500:Web Client(Anonymous User):/:/sbin/nologin
