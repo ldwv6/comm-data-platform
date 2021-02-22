@@ -1,0 +1,90 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<div class="leftpanel leftNew_type01">
+    <ul class="nav nav-pills nav-stacked">
+
+        <c:set var="length" value="${fn:length(menuList) }"/>
+        <c:forEach var = "data" items = "${menuList }" varStatus="status">
+            <c:if test = "${status.index eq '0' }">
+                <c:if test = "${data.MENU_DEPTH eq '1'}">
+                    <li class="parent" id="${data.PGM_ID}">
+                        <a href="${data.SRC_PATH }"><i class="fa fa-bars"></i><span>${data.PGM_NM }</span></a>
+                        <ul class="children">
+                </c:if>
+            </c:if>
+
+            <c:if test = "${data.MENU_DEPTH eq '2' and not empty data.SRC_PATH }">
+                <c:if test = "${tree eq '1' }">
+                    <c:set var="tree" value="0"/>
+    </ul>
+    </li>
+    </c:if>
+    <li id="${data.PGM_ID}"><a href="${data.SRC_PATH }" style="padding-left: 40px">${data.PGM_NM }</a></li>
+    </c:if>
+
+    <c:if test = "${data.MENU_DEPTH eq '2' and empty data.SRC_PATH }">
+        <c:if test = "${tree eq '1' }">
+            <c:set var="tree" value="0"/>
+            </ul>
+            </li>
+        </c:if>
+
+        <li class="parent02" ><a href="#" style="padding-left: 40px">${data.PGM_NM }</a>
+            <ul class="children02" >
+    </c:if>
+
+    <c:if test = "${data.MENU_DEPTH eq '3'}">
+        <li id="${data.PGM_ID}" style="padding-left: 25px;"><a href="${data.SRC_PATH }">${data.PGM_NM }</a></li>
+        <c:set var="tree" value="1"/>
+    </c:if>
+
+    <c:if test = "${status.index > 0 }">
+        <c:if test = "${data.MENU_DEPTH eq '1'}">
+            <c:if test = "${tree eq 1 }">
+                <c:set var="tree" value="0"/>
+                </ul>
+                </li>
+            </c:if>
+            </ul>
+            </li>
+            <li class="parent" id="${data.PGM_ID}">
+                <a href="${data.SRC_PATH }"><i class="fa fa-bars"></i><span>${data.PGM_NM }</span></a>
+                <ul class="children">
+        </c:if>
+    </c:if>
+
+    <c:if test="${status.count eq length}">
+        </ul>
+        </li>
+    </c:if>
+
+    </c:forEach>
+
+</div><!-- leftpanel -->
+<script type="text/javascript">
+
+    function findMenu(){
+        jQuery('.leftpanel .nav .parent .children').slideUp('fast');
+
+        var path = '${roleMap.PGM_ID }';
+        var obj = $('#'+path);
+
+        jQuery('.leftpanel .nav .parent .children02').slideUp('fast');
+
+        if(obj.parent().attr('class') == 'children'){
+            obj.addClass('active');
+            obj.parent().parent().addClass('active');
+            obj.parent().slideDown('fast');
+
+        }else if(obj.parent().attr('class') == 'children02'){
+            obj.addClass('active');
+            obj.parent().parent().addClass('active');
+            obj.parent().parent().parent().parent().addClass('active');
+            //obj.parent().parent().parent().slideDown('fast');
+            obj.parent().slideDown('fast');
+        }
+    }
+
+    findMenu();
+
+</script>

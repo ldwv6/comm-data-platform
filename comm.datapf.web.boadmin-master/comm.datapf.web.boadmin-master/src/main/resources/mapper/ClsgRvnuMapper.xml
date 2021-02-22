@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ INTERPARK INC., SEOUL, KOREA
+  ~ Copyright(c) 2020 by Interpark Inc.
+  ~
+  ~ All rights reserved. No part of this work may be reproduced, stored in a
+  ~ retrieval system, or transmitted by any means without prior written
+  ~ permission of Interpark Inc.
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="comm.datapf.web.boadmin.domain.dao.ClsgRvnuDao">
+
+    <select id="selectListClsgRvnuSum" resultType="comm.datapf.web.boadmin.domain.dto.clsgrvnu.ClsgRvnuSumDto" parameterType="java.util.HashMap">
+        SELECT
+                R.RVNU_TYPE_CD	AS RVNU_TYPE_CD	--매출유형코드
+                ,DECODE(R.RVNU_TYPE_CD, NULL,'총판매 합계',MIN(R.RVNU_TYPE_NM))  	AS RVNU_TYPE_NM 	--매출유형명
+                ,R.TAX_TYPE_CD	 AS TAX_TYPE_CD		--과면세코드
+                ,DECODE(R.TAX_TYPE_CD, NULL,'',MIN(H.COM_CD_NM))  AS TAX_TYPE_NM			--과면세명
+                ,SUM(R.ORDE_CNT	) AS 	ORDE_CNT		--주문건수
+                ,SUM(R.ORDE_PCST_AMT) AS ORDE_PCST_AMT 	--주문원가금액
+                ,SUM(R.ORDE_AMT) AS ORDE_AMT				--주문금액
+                ,SUM(R.CNCL_CNT)	 AS CNCL_CNT			--취소수량
+                ,SUM(R.CNCL_PCST_AMT) AS CNCL_PCST_AMT 	--취소원가금액
+                ,SUM(R.CNCL_AMT) AS CNCL_AMT				--취소금액
+                ,SUM(R.RVNU_CNT)	 AS RVNU_CNT			--매출수량
+                ,SUM(R.RVNU_PCST_AMT) AS RVNU_PCST_AMT  	--매출원가
+                ,SUM(R.IPNT_DSCT_AMT) AS IPNT_DSCT_AMT  	--I-Point할인액
+                ,SUM(R.RVNU_AMT) AS RVNU_AMT 				--매출금액
+                ,SUM(R.PRFT_AMT) AS PRFT_AMT				--이익액
+        FROM RVNU_ITGR_TTLZ R, COM_CD_MPPG H
+        WHERE R.CLSG_DT BETWEEN #{inRvnuBassFromDt} AND #{inRvnuBassToDt}
+        AND R.SVC_DVSN_CD = #{inSvcDvsnCd}
+        AND R.TAX_TYPE_CD = H.COM_CD --표준분류번호 대분류
+        AND R.SVC_DVSN_CD  = H.SVC_DVSN_CD
+        AND H.COM_TYPE_CD  = 'TAX_TYPE_CD'
+        GROUP BY ROLLUP(R.RVNU_TYPE_CD, R.TAX_TYPE_CD) HAVING GROUPING_ID(R.RVNU_TYPE_CD,R.TAX_TYPE_CD) IN (0,3)
+        ORDER BY NVL(R.RVNU_TYPE_CD,'00')
+    </select>
+
+    <select id="selectListClsgRvnuDept" resultType="comm.datapf.web.boadmin.domain.dto.clsgrvnu.ClsgRvnuDeptDto" parameterType="java.util.HashMap">
+        SELECT
+                R.BZNS_DPT_CD	AS BZNS_DPT_CD	--사업부서코드
+                ,DECODE(R.BZNS_DPT_CD, NULL,'총판매 합계','사업부코드')  	AS RVNU_TYPE_NM 	--매출유형명
+                ,R.TAX_TYPE_CD	 AS TAX_TYPE_CD		--과면세코드
+                ,DECODE(R.TAX_TYPE_CD, NULL,'',MIN(H.COM_CD_NM))  AS TAX_TYPE_NM			--과면세명
+                ,SUM(R.ORDE_CNT	) AS 	ORDE_CNT		--주문건수
+                ,SUM(R.ORDE_PCST_AMT) AS ORDE_PCST_AMT 	--주문원가금액
+                ,SUM(R.ORDE_AMT) AS ORDE_AMT				--주문금액
+                ,SUM(R.CNCL_CNT)	 AS CNCL_CNT			--취소수량
+                ,SUM(R.CNCL_PCST_AMT) AS CNCL_PCST_AMT 	--취소원가금액
+                ,SUM(R.CNCL_AMT) AS CNCL_AMT				--취소금액
+                ,SUM(R.RVNU_CNT)	 AS RVNU_CNT			--매출수량
+                ,SUM(R.RVNU_PCST_AMT) AS RVNU_PCST_AMT  	--매출원가
+                ,SUM(R.IPNT_DSCT_AMT) AS IPNT_DSCT_AMT  	--I-Point할인액
+                ,SUM(R.RVNU_AMT) AS RVNU_AMT 				--매출금액
+                ,SUM(R.PRFT_AMT) AS PRFT_AMT				--이익액
+        FROM RVNU_DPT_TTLZ R, COM_CD_MPPG H
+        WHERE R.CLSG_DT BETWEEN #{inRvnuBassFromDt} AND #{inRvnuBassToDt}
+        AND R.SVC_DVSN_CD = #{inSvcDvsnCd}
+        AND R.TAX_TYPE_CD = H.COM_CD --표준분류번호 대분류
+        AND R.SVC_DVSN_CD  = H.SVC_DVSN_CD
+        AND H.COM_TYPE_CD  = 'TAX_TYPE_CD'
+        GROUP BY ROLLUP(R.BZNS_DPT_CD, R.TAX_TYPE_CD) HAVING GROUPING_ID(R.BZNS_DPT_CD,R.TAX_TYPE_CD) IN (0,3)
+        ORDER BY NVL(R.BZNS_DPT_CD,'00')
+    </select>
+
+    <select id="selectListClsgRvnuGroup" resultType="comm.datapf.web.boadmin.domain.dto.clsgrvnu.ClsgRvnuGroupDto" parameterType="java.util.HashMap">
+        SELECT
+                R.PRDT_CTGR_CD AS PRDT_CTGR_CD --AS 상품 카테고리
+                ,R.PRDT_CTGR_NM AS PRDT_CTGR_NM --대표상품 카테고리명(코드-PRDT_CTGR_NM)
+                ,R.RVNU_TYPE_CD AS RVNU_TYPE_CD --매출유형
+                ,(SELECT
+                        H.COM_CD_NM
+                    FROM COM_CD_MPPG H
+                    WHERE H.COM_CD = R.RVNU_TYPE_CD  --표준분류번호 대분류
+                    AND H.SVC_DVSN_CD = R.SVC_DVSN_CD
+                    AND H.COM_TYPE_CD = 'RVNU_TYPE_CD_NM'
+                    GROUP BY H.COM_CD_NM
+                ) AS RVNU_TYPE_NM
+                ,R.TAX_TYPE_CD AS TAX_TYPE_CD --과면세유형
+                ,DECODE(R.TAX_TYPE_CD, NULL,'ERR',H.COM_CD_NM)  AS TAX_TYPE_NM			--과면세명
+                ,R.ORDE_CNT AS ORDE_CNT --주문건수
+                ,R.ORDE_PCST_AMT AS ORDE_PCST_AMT --주문원가금액
+                ,R.ORDE_AMT AS ORDE_AMT --주문금액
+                ,R.CNCL_CNT AS CNCL_CNT --취소수량
+                ,R.CNCL_PCST_AMT AS CNCL_PCST_AMT --취소원가금액
+                ,R.CNCL_AMT AS CNCL_AMT --취소금액
+                ,R.RVNU_CNT AS RVNU_CNT --매출수량
+                ,R.RVNU_PCST_AMT AS RVNU_PCST_AMT --매출원가
+                ,R.IPNT_DSCT_AMT AS IPNT_DSCT_AMT --I-Point할인액
+                ,R.RVNU_AMT AS RVNU_AMT --매출금액
+                ,R.PRFT_AMT AS PRFT_AMT --이익액
+        FROM RVNU_CLSF_TTLZ R, COM_CD_MPPG H
+        WHERE R.CLSG_DT BETWEEN #{inRvnuBassFromDt} AND #{inRvnuBassToDt}
+        AND R.SVC_DVSN_CD = #{inSvcDvsnCd}
+        AND R.TAX_TYPE_CD = H.COM_CD --표준분류번호 대분류
+        AND R.SVC_DVSN_CD  = H.SVC_DVSN_CD
+        AND H.COM_TYPE_CD  = 'TAX_TYPE_CD'
+    </select>
+
+    <select id="selectListClsgRvnuSalesCost" resultType="comm.datapf.web.boadmin.domain.dto.clsgrvnu.ClsgRvnuSalesCostDto" parameterType="java.util.HashMap">
+        SELECT
+            R.CLSG_STAT_DVSN_CD	AS CLSG_STAT_DVSN_CD
+            ,DECODE(R.CLSG_STAT_DVSN_CD,
+                                        '01', '정상주문',
+                                        '02', '정상취소',
+                                        '020', '정상총합계',
+                                        '03', '보정확정주문',
+                                        '04', '보정확정취소',
+                                        '040', '보정확정총합계',
+                                        '041', '총합계' ,
+                                        '05','오류주문',
+                                        '06', '오류취소',
+                                        '060', '오류총합계'
+            ) AS CLSG_STAT_DVSN_NM
+            ,OM_TXTN_COST AS OM_TXTN_COST --OM과세-추가비용
+            ,OM_TXEX_COST AS OM_TXEX_COST --OM면세-추가비용
+            ,MD_TXTN_COST AS MD_TXTN_COST --MD과세-추가비용
+            ,MD_TXEX_COST AS MD_TXEX_COST --MD면세-추가비용
+            ,DRCT_TXTN_COST AS DRCT_TXTN_COST --직매입과세-추가비용
+            ,DRCT_TXEX_COST AS DRCT_TXEX_COST --직매입면세-추가비용
+            ,OM_BDEN_COST AS OM_BDEN_COST --OM-고객부담비용
+            ,MD_BDEN_COST AS MD_BDEN_COST --MD-고객부담비용
+            ,DRCT_BDEN_COST AS DRCT_BDEN_COST --직매입-고객부담비
+            ,OM_RTRN_DLIV_COST AS OM_RTRN_DLIV_COST --OM-반품택배비
+            ,MD_RTRN_DLIV_COST AS MD_RTRN_DLIV_COST --MD-반품택배비
+            ,DRCT_RTRN_DLIV_COST AS DRCT_RTRN_DLIV_COST --직매입-반품택배비
+            ,ETC_IMPT_COST AS ETC_IMPT_COST --기타-수입제반비용
+        FROM RVNU_COST_TTLZ R
+        WHERE R.CLSG_DT BETWEEN #{inRvnuBassFromDt} AND #{inRvnuBassToDt}
+        AND R.SVC_DVSN_CD = #{inSvcDvsnCd}
+    </select>
+
+</mapper>

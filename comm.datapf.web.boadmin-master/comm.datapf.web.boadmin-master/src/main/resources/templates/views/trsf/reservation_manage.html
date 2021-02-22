@@ -1,0 +1,401 @@
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/th-layout-admin}">
+<head layout:fragment="th-fragment-head">
+    <th:block layout:fragment="th-head">
+        <title>Housing Admin</title>
+    </th:block>
+</head>
+<body id="backOffice">
+<!-- MAIN PANEL -->
+<div id="main" role="main" layout:fragment="th-fragment-content-main">
+    <!-- MAIN CONTENT Start-->
+    <div id="content">
+        <!-- content title Start-->
+        <div class="row col-sm-12 col-md-12 col-lg-12">
+            <h1 class="page-title txt-color-blueDark">
+                <!-- Page title start -->
+                <i class="fa fa-fw fa-search"></i> 유보 관리
+                <!-- Page title end//-->
+            </h1>
+        </div>
+        <!-- content title End //-->
+
+        <!-- content-body Start-->
+        <div class="widget-body">
+            <section id="widget-grid" class="">
+                <div class="row">
+                    <article class="col-sm-12 col-md-12 col-lg-12">
+                        <!-- Widget ID (each widget will need unique ID) -->
+                        <div class="jarviswidget" id="wid-id-1" data-widget-colorbutton="false" data-widget-editbutton="false"
+                             data-widget-deletebutton="false" data-widget-sortable="false">
+                            <header><h2></h2></header>
+
+                            <!-- widget content -->
+                            <div class="widget-body">
+                                <!-- Content Area -->
+                                <form action="">
+                                    <div class="row">
+                                        <div class="col-sm-2 col-xs-6">
+                                            <label class="w-100">
+                                                <select aria-placeholder="서비스 선택" class="form-control">
+                                                    <option>서비스 선택</option>
+                                                </select>
+                                            </label>
+                                        </div>
+                                        <div class="col-sm-2 col-xs-6">
+                                            <label class="w-100">
+                                                <select aria-placeholder="유보 유형" class="form-control">
+                                                    <option>유보 유형</option>
+                                                </select>
+                                            </label>
+                                        </div>
+                                        <div class="col-sm-2 col-xs-12">
+                                            <label class="w-100">
+                                                <select aria-placeholder="서류접수일" class="form-control">
+                                                    <option>서류접수일</option>
+                                                </select>
+                                            </label>
+                                        </div>
+                                        <div class=" col-sm-2 col-xs-6">
+                                            <div class="input-group">
+                                                <input class="form-control optDate" name="optDateFr" type="text"
+                                                       placeholder="From">
+                                                <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                            </div>
+                                        </div>
+                                        <div class=" col-sm-2 col-xs-6">
+                                            <div class="input-group">
+                                                <input class="form-control optDate" name="optDateTo" type="text"
+                                                       placeholder="To">
+                                                <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-sm-2 col-xs-6">
+                                            <label class="w-100">
+                                                <input type="number" class="form-control" placeholder="(사업자번호 입력)">
+                                            </label>
+                                        </div>
+
+                                        <div class="col-sm-3 col-xs-6">
+                                            <label class="w-100">
+                                                <input type="text" class="form-control input-s" placeholder="(거래처 입력)">
+                                                <div class="input-group-btn search-btn">
+                                                    <button class="btn btn-primary"><i class="fa fa-lg fa-search"></i></button>
+                                                </div>
+                                            </label>
+                                        </div>
+                                        <div class="col-sm-3 col-xs-6">
+                                            <label class="w-100">
+                                                <input type="text" class="form-control input-s" placeholder="(상품명 입력)">
+                                                <div class="input-group-btn search-btn">
+                                                    <button class="btn btn-primary"><i class="fa fa-lg fa-search"></i></button>
+                                                </div>
+                                            </label>
+                                        </div>
+                                        <div class="col-sm-3 col-xs-6">
+                                            <label class="w-100">
+                                                <input type="number" class="form-control" placeholder="(사건번호 입력)">
+                                            </label>
+                                        </div>
+                                        <div class="col-sm-1 col-xs-12">
+                                            <button type="button" class="btn btn-primary btn-sm">조회</button>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#registration">유보등록</button>
+                                        </div>
+                                    </div>
+                                </form>
+
+                                <!-- 유보등록 modal -->
+                                <!-- modal -->
+                                <div class="modal fade" id="registration" tabindex="-1" role="dialog"  aria-labelledby="registration">
+                                    <!-- modal-dialog -->
+                                    <div class="modal-dialog modal-lg" role="document">
+                                        <!-- modal-content -->
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                                <h4 class="modal-title">유보등록</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form action="">
+                                                    <div class="row">
+                                                        <div class="col col-sm-3 col-xs-5">
+                                                            <label>
+                                                                <select aria-placeholder="서비스 선택" class="form-control serviceOption">
+                                                                    <option value="" selected disabled>서비스 선택</option>
+                                                                    <option value="" data-value="shopping">쇼핑</option>
+                                                                    <option value="" data-value="shopping">도서</option>
+                                                                    <option value="" data-value="tour">공연</option>
+                                                                    <option value="" data-value="tour">국내숙박</option>
+                                                                    <option value="" data-value="tour">해외호텔</option>
+                                                                    <option value="" data-value="tour">국내항공</option>
+                                                                    <option value="" data-value="tour">해외항공</option>
+                                                                    <option value="" data-value="tour">여행</option>
+                                                                </select>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+
+                                                    <table class="table table-bordered">
+                                                        <colgroup>
+                                                            <col style="width:15%;">
+                                                            <col style="width:30%;">
+                                                            <col style="width:15%;">
+                                                            <col style="width:30%;">
+                                                        </colgroup>
+                                                        <tbody>
+                                                        <tr>
+                                                            <th class="active">관리번호</th>
+                                                            <td colspan="3">
+                                                                <label class="col-sm-4 col-xs-12"><input type="text" class="form-control" disabled value="123456789"></label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="active">유보유형</th>
+                                                            <td>
+                                                                <label class="col-xs-12">
+                                                                    <select aria-placeholder="유보유형" class="form-control typeSelect">
+                                                                        <option value="foreclosure" selected>가압류</option>
+                                                                        <option value="request">사업부 요청</option>
+                                                                    </select>
+                                                                </label>
+                                                            </td>
+
+                                                            <th class="active">사건번호</th>
+                                                            <td>
+                                                                <label class="col-xs-12">
+                                                                    <input type="text" class="form-control caseNumber" placeholder="(사건번호 입력)">
+                                                                </label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="active">통지서</th>
+                                                            <td colspan="3">
+                                                                <div class="col-xs-4">
+                                                                    <div class=" input-group">
+                                                                        <input class="form-control optDate" name="optDate" type="text" placeholder="(서류접수일)">
+                                                                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="col-xs-4">
+                                                                    <label class="w-100">
+                                                                        <select aria-placeholder="서류접수방법" class="form-control">
+                                                                            <option value="" selected disabled>서류접수방법</option>
+                                                                            <option value="">특별송달</option>
+                                                                            <option value="">등기</option>
+                                                                        </select>
+                                                                    </label>
+                                                                </div>
+                                                                <div class="col-xs-4">
+                                                                    <label class="w-100">
+                                                                        <input type="text" class="form-control" placeholder="(서류번호 입력)">
+                                                                    </label>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="active">적용/해제</th>
+                                                            <td colspan="3">
+                                                                <div class=" col-sm-4 col-xs-12">
+                                                                    <div class=" input-group">
+                                                                        <input class="form-control optDate" name="optDate" type="text" placeholder="(적용시작일)">
+                                                                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-sm-4 col-xs-12">
+                                                                    <div class=" input-group">
+                                                                        <input class="form-control optDate" name="optDate" type="text" placeholder="(적용해제일)">
+                                                                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="col-sm-4 col-xs-12">
+                                                                    <label class="col-xs-6">
+                                                                        <input type="radio" name="apply" value=""> 적용
+                                                                    </label>
+                                                                    <label class="col-xs-6">
+                                                                        <input type="radio" name="apply" value=""> 해제
+                                                                    </label>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="active">첨부파일</th>
+                                                            <td colspan="3">
+                                                                <div class="col-xs-12">
+                                      <span class="control-fileupload">
+                                        <label for="file">파일을 선택해주세요</label>
+                                        <input type="file" id="file_3">
+                                      </span>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="active">거래처</th>
+                                                            <td colspan="3">
+                                                                <label class="col-xs-6 col-sm-3"><input type="text" class="form-control" disabled value="(사업자번호)"></label>
+                                                                <label class="col-xs-6 col-sm-3"><input type="text" class="form-control" disabled value="(거래처번호)"></label>
+                                                                <label class="col-xs-6 col-sm-3"><input type="text" class="form-control" disabled value="(거래처seq)"></label>
+                                                                <div class="col-xs-6 col-sm-3">
+                                                                    <input type="text" class="form-control input-s" placeholder="거래처명or사업자번호 입력">
+                                                                    <div class="input-group-btn search-btn">
+                                                                        <button class="btn btn-primary"><i class="fa fa-lg fa-search"></i></button>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="active">유보 금액</th>
+                                                            <td colspan="3">
+                                                                <label class="col-xs-11 col-sm-4"><input type="text" class="form-control"></label>
+                                                                <span style="line-height: 32px;">원</span>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="active">대상 상품</th>
+                                                            <td colspan="3">
+                                                                <div class="col-xs-3">
+                                                                    <label class="w-100">
+                                                                        <select aria-placeholder="상품명" class="form-control productSelect">
+                                                                            <option selected value="product">상품명</option>
+                                                                            <option value="businessNumber">사업자번호</option>
+                                                                        </select>
+                                                                    </label>
+                                                                </div>
+                                                                <div class="col-xs-6 productWrap">
+                                                                    <div class="product">
+                                                                        <label style="display:inline;"><input type="text" class="form-control input-s" placeholder="상품명 입력"></label>
+                                                                        <div class="input-group-btn search-btn">
+                                                                            <button class="btn btn-primary"><i class="fa fa-lg fa-search"></i></button>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="businessNumber" style="display:none;">
+                                                                        <label style="display:inline;"><input type="text" class="form-control input-s" placeholder="사업자번호 입력"></label>
+                                                                        <div class="input-group-btn search-btn">
+                                                                            <button class="btn btn-primary"><i class="fa fa-lg fa-search"></i></button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-xs-2">
+                                                                    <button type="button" class="btn btn-primary">상품삭제</button>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td colspan="4">
+                                                                <div class="realgrid_box">
+                                                                    <div style="margin:auto">
+                                                                        <div style="height:200px;width:100%;background-color:#ccc;" id="dataGrid__6"></div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="active">메모</th>
+                                                            <td colspan="3">
+                                                                <div class="col-xs-12">
+                                                                    <textarea class="col-xs-12 form-control" rows="3"></textarea>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+
+                                                        </tbody>
+                                                    </table>
+                                                </form>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-primary">저장</button>
+                                                <button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+
+                                                <button type="button" class="btn btn-danger">이력확인</button>
+                                            </div>
+                                        </div>
+                                        <!-- modal-content //-->
+                                    </div>
+                                    <!-- modal-dialog //-->
+                                </div>
+                                <!-- modal //-->
+
+                                <div style="margin-top:20px;">
+                                    <div class="pull-left">
+                                        <h3 class="no-margin"><strong>|</strong> 유보 등록 내역</h3>
+                                    </div>
+                                    <div class="pull-right">
+                                        <button type="button" id="btn_Excel" class="btn btn-success">엑셀 다운로드</button>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <!-- gird 영역 -->
+                                <div class="realgrid_box mt-10">
+                                    <div style="margin:auto">
+                                        <div style="height:400px;width:100%;background-color:#ccc;"></div>
+                                    </div>
+                                </div>
+                                <!-- gird 영역// -->
+                                <!-- Content Area //-->
+                            </div>
+                            <!-- widget content //-->
+
+                        </div>
+                        <!-- Widget ID (each widget will need unique ID) //-->
+                    </article>
+                </div>
+            </section>
+        </div>
+        <!-- content-body End//-->
+    </div>
+    <!-- MAIN CONTENT End//-->
+</div>
+<!-- MAIN PANEL //-->
+
+<script>
+    $(".optDate").datepicker({
+        defaultDate: "+1w",
+        changeMonth: true,
+        changeYear: true,
+        numberOfMonths: 1,
+        prevText: '<i class="fa fa-chevron-left"></i>',
+        nextText: '<i class="fa fa-chevron-right"></i>'
+    });
+
+</script>
+<script>
+    $(document).ready(function() {
+        $("[data-toggle='tooltip']").tooltip();
+
+        //상품선택
+        $('.productSelect').change(function() {
+            var val = $(".productSelect option:selected").val();
+            $('.productWrap > div').hide();
+            $('.productWrap .' + val).show();
+        });
+
+        //유보유형
+        $('.typeSelect').change(function() {
+            var val = $(".typeSelect option:selected").val();
+            var disabled = false;
+
+            (val === 'request') ? disabled = true: disabled = false;
+            $('.caseNumber').prop('disabled', disabled);
+        });
+
+        // File Upload
+        $('input[type=file]').change(function() {
+            var t = $(this).val();
+            var labelText = t.substr(12, t.length);
+            $(this).prev('label').text(labelText);
+        });
+    });
+
+</script>
+</body>
+</html>

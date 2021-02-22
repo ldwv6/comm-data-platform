@@ -1,0 +1,121 @@
+server:
+  port: 8500
+
+spring:
+  application:
+    name: comm-datapf-sys-cloudconfig
+  profiles:
+    active: native
+
+# logback 설정에서 프로젝트명으로 사용
+application:
+  project-name: comm-datapf-sys-cloudconfig
+
+logging:
+  path:
+    root: /var/log/comm-datapf
+
+#gitlab 계정
+developer:
+  git:
+    id: shopdev
+    password: inter12#$%
+    basedir: /webapp/config/git
+
+---
+# 약속된 profile명으로서 cloud config server 가 git repository를 사용하지 않고 local File System을 사용
+# local에서 개발시 git repository를 사용하게 되면 서버 구동시 무조건 git remote repository에서 설정파일을 받아오기 때문에
+# 간단한 테스트를 하려고 해도 설정파일을 모두 git remote repository에 push해야하는 번거로움 발생
+# 이런 이유로 local 개발시에는 native profile을 사용
+# 경로가 fix인데 Run Configuration에서 Environment variables 항목을 통해서 경로 변경이 가능하다.
+# developer.git.local_git_storage=D:/interpark/comm-datapf/workspace/comm.datapf.config
+spring:
+  profiles: native
+  cloud:
+    config:
+      server:
+        native:
+          search-locations:
+            - file:${developer.git.local_git_storage}
+            - file:${developer.git.local_git_storage}/infra
+            - file:${developer.git.local_git_storage}/services
+
+developer:
+  git:
+    local_git_storage: D:\interpark\comm-datapf\workspace\comm.datapf.config
+
+logging:
+  path:
+    root: D:\interpark\comm-datapf\logs
+
+---
+spring:
+  profiles: local
+  cloud:
+    config:
+      server:
+        git:
+          uri: file:${developer.git.local_git_storage}
+          # 환경설정 파일을 root에 모아둔 것이 아니기 때문에 각 디렉토리를 조사하도록 정의 (application.yml은 모든 서비스가 공통적으로 참조한다)
+          search-paths:
+            - infra
+            - services
+
+developer:
+  git:
+    local_git_storage: D:\interpark\comm-datapf\workspace\comm.datapf.config
+
+logging:
+  path:
+    root: D:\interpark\comm-datapf\logs
+
+---
+spring:
+  profiles: dev
+  cloud:
+    config:
+      server:
+        git:
+          uri: http://gitlab.interpark.com/comm-data-platform/comm.datapf.config.git
+          username: ${developer.git.id}
+          password: ${developer.git.password}
+          basedir: ${developer.git.basedir}
+          # 환경설정 파일을 root에 모아둔 것이 아니기 때문에 각 디렉토리를 조사하도록 정의 (application.yml은 모든 서비스가 공통적으로 참조한다)
+          search-paths:
+            - infra
+            - services
+          default-label: master #comm.datapf.config.git은 master branch 만 사용중
+
+---
+spring:
+  profiles: stag
+  cloud:
+    config:
+      server:
+        git:
+          uri: http://gitlab.interpark.com/comm-data-platform/comm.datapf.config.git
+          username: ${developer.git.id}
+          password: ${developer.git.password}
+          basedir: ${developer.git.basedir}
+          # 환경설정 파일을 root에 모아둔 것이 아니기 때문에 각 디렉토리를 조사하도록 정의 (application.yml은 모든 서비스가 공통적으로 참조한다)
+          search-paths:
+            - infra
+            - services
+          default-label: master
+
+---
+spring:
+  profiles: prod
+  cloud:
+    config:
+      server:
+        git:
+          uri: http://gitprod.interparktour.com/comm-data-platform/comm.datapf.config.git
+          username: ${developer.git.id}
+          password: ${developer.git.password}
+          basedir: ${developer.git.basedir}
+          # 환경설정 파일을 root에 모아둔 것이 아니기 때문에 각 디렉토리를 조사하도록 정의 (application.yml은 모든 서비스가 공통적으로 참조한다)
+          search-paths:
+            - infra
+            - services
+          default-label: master

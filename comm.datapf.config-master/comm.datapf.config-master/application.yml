@@ -1,0 +1,363 @@
+#application.yml의 내용은 cloudconfig 로 쿼리하는 모든 서비스에게 참조되는 내용입니다.
+
+info:
+  id: ${spring.application.name}
+
+service:
+  com-tp:
+    shop: "02"
+    book: "03"
+    ticket: "04"
+    tour: "05"
+    lodge: "06"
+    hotel: "07"
+    domestic-air: "08"
+    oversea-air: "09"
+    movie: "10"
+
+port:
+  syncagent-servie:
+    shop: 9100
+    book: 9110
+    ticket: 9120
+    movie: 9130
+    oversea-air: 9140
+    domestic-air: 9150
+    hotel: 9160
+    lodge: 9170
+    tour: 9180
+  kafkaconsumer-service:
+    shop:
+      0: 9500
+      1: 9501
+      2: 9502
+    book:
+      0: 9510
+      1: 9511
+      2: 9512
+    ticket:
+      0: 9520
+      1: 9521
+      2: 9522
+    movie:
+      0: 9530
+    oversea-air:
+      0: 9540
+    domestic-air:
+      0: 9550
+    hotel:
+      0: 9560
+    lodge:
+      0: 9570
+    tour:
+      0: 9580
+  converting-service:
+    shop: 9800
+    book: 9810
+    ticket: 9820
+    movie: 9830
+    oversea-air: 9840
+    domestic-air: 9850
+    hotel: 9860
+    lodge: 9870
+    tour: 9880
+  admin-service: 9400
+  kafka-producer-service: 8080
+  kafka-mq-service: 9092
+  bootadmin-service: 10000
+  redisagent-servie:
+    shop: 10100
+    book: 10110
+    ticket: 10120
+    movie: 10130
+    oversea-air: 10140
+    domestic-air: 10150
+    hotel: 10160
+    lodge: 10170
+    tour: 10180
+  kafkacdcconsumer-service:
+    shop:
+      0: 10200
+    book:
+      0: 10210
+    ticket:
+      0: 10220
+    movie:
+      0: 10230
+    oversea-air:
+      0: 10240
+    domestic-air:
+      0: 10250
+    hotel:
+      0: 10260
+    lodge:
+      0: 10270
+    tour:
+      0: 10280
+
+url:
+  protocol: http
+  kafka-api-service: ${url.protocol}://comm-datapf-api-kafka:${port.kafka-producer-service} #TODO: 개발서버 설정 후 확인필요
+
+kafka:
+  topics:
+    shop: #쇼핑
+      topic-name: shop-topic
+      group-name: shop-group
+    book: #도서
+      topic-name: book-topic
+      group-name: book-group
+    ticket: #티켓
+      topic-name: ticket-topic
+      group-name: ticket-group
+    movie: #영화
+      topic-name: movie-topic
+      group-name: movie-group
+    domestic-air: #국내항공
+      topic-name: domestic-air-topic
+      group-name: domestic-air-group
+    oversea-air:  # 해외항공
+      topic-name: oversea-air-topic
+      group-name: oversea-air-group
+    hotel: #호텔
+      topic-name: hotel-topic
+      group-name: hotel-group
+    tour: #여행
+      topic-name: tour-topic
+      group-name: tour-group
+    lodge: #숙박
+      topic-name: lodge-topic
+      group-name: lodge-group
+  dms-topics:
+    shop: #쇼핑
+      topic-name: shop-dms-topic
+      group-name: shop-dms-group
+    book: #도서
+      topic-name: book-dms-topic
+      group-name: book-dms-group
+    ticket: #티켓
+      topic-name: ticket-dms-topic
+      group-name: ticket-dms-group
+    movie: #영화
+      topic-name: movie-dms-topic
+      group-name: movie-dms-group
+    domestic-air: #국내항공
+      topic-name: domestic-air-dms-topic
+      group-name: domestic-air-dms-group
+    oversea-air:  # 해외항공
+      topic-name: oversea-air-dms-topic
+      group-name: oversea-air-dms-group
+    hotel: #호텔
+      topic-name: hotel-dms-topic
+      group-name: hotel-dms-group
+    tour: #여행
+      topic-name: tour-dms-topic
+      group-name: tour-dms-group
+    lodge: #숙박
+      topic-name: lodge-dms-topic
+      group-name: lodge-dms-group
+
+#spring boot admin 설정
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+
+
+---
+spring:
+  profiles: local
+  boot:
+    admin: #bootadmin 설정
+      client:
+        url: http://localhost:${port.bootadmin-service}
+        instance:
+          name: Commerce Data Integration Platform :${spring.application.name}
+          service-base-url: ${application.api.url}:${server.port}
+        username: admin
+        password: test
+        enabled: true
+
+url:
+  protocol: http
+  kafka-api-service: ${url.protocol}://180.70.96.105:${port.kafka-producer-service}
+
+kafka:
+  brokers: 180.70.96.105:${port.kafka-mq-service}
+
+logging:
+  level:
+    root: DEBUG
+    org.apache: WARN
+    org.apache.cxf: WARN
+    org.thymeleaf: WARN
+    org.springframework: WARN
+    org.springframework.web.client.RestTemplate: DEBUG
+    org.springframework.aop.interceptor.PerformanceMonitorInterceptor: TRACE
+    org.springframework.aop.interceptor.CustomizableTraceInterceptor: TRACE
+    org.hibernate: WARN
+    org.mybatis: DEBUG
+    com.netflix: WARN
+    springfox: WARN
+    com.zaxxer.hikari.HikariConfig: DEBUG
+    com.zaxxer.hikari: DEBUG
+    zipkin2: WARN
+    io.lettuce: INFO
+    de.codecentric.boot.admin: WARN
+    com.ulisesbocchio: WARN
+  logstash:
+    host: 127.0.0.1
+    port: 9098
+
+application:
+  http-client-connection-pool:
+    max-total: 9000
+    default-max-per-route: 1000
+  request-config:
+    connection-request-timeout: 10000             # 서버에 소켓 연결을 맺을 때의 타임아웃
+    connect-timeout: 10000                         # ConnectionManager(커넥션풀)로부터 꺼내올 때의 타임아웃
+    socket-timeout: 600000                        # 요청/응답간의 타임아웃. 10분
+    read-timeout: 600000
+  api:
+    url: http://localhost
+    
+# 로컬 테스트시 각 컨버팅 작업자의 ip
+send:
+  convert:
+    book: http://10.20.81.178:9810
+    #air: http://10.20.81.177:9840
+    air: http://10.20.81.174:9840
+    ticket: http://10.20.81.184:9820
+    movie: http://10.20.81.184:9830
+    shop: http://10.20.81.172:9800
+    lodge: http://10.20.81.170:9870
+    hotel: http://10.20.81.183:9860
+    tour: http://10.20.81.178:9880
+    #dom: http://10.20.81.177:9850
+    dom: http://10.20.81.174:9850
+
+---
+spring:
+  profiles: dev
+
+url:
+  protocol: http
+  kafka-api-service: ${url.protocol}://180.70.96.105:${port.kafka-producer-service}
+
+kafka:
+  brokers: 180.70.96.105:${port.kafka-mq-service}
+
+logging:
+  level:
+    root: DEBUG
+    org.apache: WARN
+    org.apache.cxf: WARN
+    org.thymeleaf: WARN
+    org.springframework: WARN
+    org.springframework.web.client.RestTemplate: DEBUG
+    org.springframework.aop.interceptor.PerformanceMonitorInterceptor: TRACE
+    org.springframework.aop.interceptor.CustomizableTraceInterceptor: TRACE
+    org.hibernate: WARN
+    org.mybatis: DEBUG
+    com.netflix: WARN
+    springfox: WARN
+    com.zaxxer.hikari.HikariConfig: DEBUG
+    com.zaxxer.hikari: TRACE
+    zipkin2: WARN
+    io.lettuce: INFO
+    de.codecentric.boot.admin: WARN
+    com.ulisesbocchio: WARN
+  logstash:
+    host: 127.0.0.1
+    port: 9098
+
+application:
+  http-client-connection-pool:
+    max-total: 9000
+    default-max-per-route: 1000
+  request-config:
+    connection-request-timeout: 10000             # 서버에 소켓 연결을 맺을 때의 타임아웃
+    connect-timeout: 10000                         # ConnectionManager(커넥션풀)로부터 꺼내올 때의 타임아웃
+    socket-timeout: 600000                        # 요청/응답간의 타임아웃. 10분
+    read-timeout: 600000
+#TODO : application.api.url 경로 추가해야함
+
+send:
+  convert:
+    book: http://180.70.96.105:9810
+    air: http://180.70.96.105:9840
+    ticket: http://180.70.96.105:9820
+    movie: http://180.70.96.105:9830
+    shop: http://180.70.96.105:9800
+    lodge: http://180.70.96.105:9870
+    hotel: http://180.70.96.105:9860
+    tour: http://180.70.96.105:9880
+    dom: http://180.70.96.105:9850
+    
+---
+spring:
+  profiles: stag
+
+logging:
+  level:
+    root: DEBUG
+    org.apache: WARN
+    org.apache.cxf: WARN
+    org.thymeleaf: WARN
+    org.springframework: WARN
+    org.springframework.web.client.RestTemplate: DEBUG
+    org.springframework.aop.interceptor.PerformanceMonitorInterceptor: TRACE
+    org.springframework.aop.interceptor.CustomizableTraceInterceptor: TRACE
+    org.hibernate: WARN
+    org.mybatis: DEBUG
+    com.netflix: WARN
+    springfox: WARN
+    com.zaxxer.hikari: WARN
+    zipkin2: WARN
+    io.lettuce: INFO
+    de.codecentric.boot.admin: WARN
+    com.ulisesbocchio: WARN
+  logstash:
+    host: 127.0.0.1
+    port: 9098
+
+---
+spring:
+  profiles: prod
+
+logging:
+  level:
+    root: DEBUG
+    org.apache: WARN
+    org.apache.cxf: WARN
+    org.thymeleaf: WARN
+    org.springframework: WARN
+    org.springframework.web.client.RestTemplate: DEBUG
+    org.springframework.aop.interceptor.PerformanceMonitorInterceptor: TRACE
+    org.springframework.aop.interceptor.CustomizableTraceInterceptor: TRACE
+    org.hibernate: WARN
+    org.mybatis: DEBUG
+    com.netflix: WARN
+    springfox: WARN
+    com.zaxxer.hikari: WARN
+    zipkin2: WARN
+    io.lettuce: INFO
+    de.codecentric.boot.admin: WARN
+    com.ulisesbocchio: WARN
+  logstash:
+    host: 127.0.0.1
+    port: 9098
+    
+send:
+  convert:
+    book: http://211.233.74.136:9810
+    air: http://211.233.74.136:9840
+    ticket: http://211.233.74.136:9820
+    movie: http://211.233.74.136:9830
+    shop: http://211.233.74.136:9800
+    lodge: http://211.233.74.136:9870
+    hotel: http://211.233.74.136:9860
+    tour: http://211.233.74.136:9880
+    dom: http://211.233.74.136:9850

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<style>
+    /* .header-left {background-color: #344955 !important;} */
+    /* .header-right {background-color: #344955 !important;} */
+    /* .header-right .dropdown-toggle{background-color: #344955 !important; } */
+    .bo2gbn .dropdown-toggle{color: #777 !important; }
+    .header-left {background-color: #F1F1F1 !important;}
+    .header-right {background-color: #F1F1F1 !important;}
+    .bo2gbn .dropdown-toggle{color: #777 !important; }
+    .header-right .dropdown-toggle{background-color: #F1F1F1 !important; }
+</style>
+<head>
+<script type="text/javascript">
+
+</script>
+</head>
+<body style="width: 100%;">
+<header>
+    <div class="headerwrapper bo2gbn">
+        <div class="header-left">
+            <!-- 로고이미지 -->
+            <a href="main" class="logo">
+                <img src="/static/images/member_left_logo.png" alt="" style="width: 62%; margin-top: -7px; margin-left: 11px;"/>
+            </a>
+            <div class="msg-header">
+                <div class="pull-right">
+                    <!--                         <a href="#" class="menu-collapse"> -->
+                    <!--                             <i class="fa fa-angle-double-left bo2gbn" ></i> -->
+                    <!--                         </a> -->
+
+                    <a href="#" class="menu-collapse btn btn-navi btn-navi-left ml5">
+                        <i class="fa fa-chevron-left"></i>
+                    </a>
+                    <!-- 						<button class="btn btn-white btn-navi btn-navi-left ml5" type="button"><i class="fa fa-chevron-left"></i></button> -->
+                    <!-- 						<i class="fa fa-chevron-left"></i> -->
+                </div>
+            </div>
+        </div><!-- header-left -->
+        <div id="time_left"></div>
+        <div class="header-right">
+            <div class="pull-left" style="cursor: pointer;" th:if="${DB_SVC_MODE != 'PRD'}">
+                <span style="color: #bc615f; cursor: pointer; " th:if="${findYn == true }"><i class="glyphicon  glyphicon-search"></i><span style="margin-left: 5px; font-weight: bold;" onclick="topMembFind();">회원검색</span></span>
+                <font style="color: black; font-weight: bold; margin-left: 20px;" size="3">[[${DB_SVC_MODE }]]</font>
+            </div>
+            <div class="pull-left" th:if="${DB_SVC_MODE == 'PRD'}">
+                <span style="color: #bc615f; cursor: pointer;" th:if="${findYn == true }"><i class="glyphicon  glyphicon-search"></i><span style="margin-left: 5px; font-weight: bold;" onclick="topMembFind();">회원검색</span></span>
+            </div>
+            <div class="pull-right">
+                <div class="btn-group btn-group-option">
+                    <button type="button" class="bo2gbn dropdown-toggle" data-toggle="dropdown" style="border: 0px; color: white;">
+                        <i class="glyphicon glyphicon-user"></i><span class="top_user_info"> [[${ADMR_NM }]] | [[${ROLE_NM}]] | [[${IP}]]</span>&nbsp; <i class="fa fa-caret-down"></i>
+                    </button>
+                    <ul class="dropdown-menu pull-right" role="menu">
+                        <li><a href="/adminInfo"><i class="glyphicon glyphicon-cog"></i>내정보</a></li>
+                        <!-- <li><a href="#"><i class="glyphicon glyphicon-star"></i> Activity Log</a></li>
+                        <li><a href="#"><i class="glyphicon glyphicon-cog"></i> Account Settings</a></li>
+                        <li><a href="#"><i class="glyphicon glyphicon-question-sign"></i> Help</a></li> -->
+                        <li class="divider"></li>
+                        <li><a href="/logout"><i class="glyphicon glyphicon-log-out"></i>로그아웃</a></li>
+                    </ul>
+                </div><!-- btn-group -->
+            </div><!-- pull-right -->
+        </div><!-- header-right -->
+
+    </div>
+</header>
+</body>

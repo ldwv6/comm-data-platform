@@ -1,0 +1,338 @@
+@charset "UTF-8";
+/*!
+ _ _  _
+| | || | HSCM
+| | || | INTERPARK UI Development Team
+`___'|_| v0.1.1
+
+*/
+@font-face {
+  font-family: "Noto Sans KR";
+  font-style: normal;
+  font-weight: 300;
+  src: url("//openimage.interpark.com/.fonts/NotoSansKR/2350.abv2/hinted/NotoSansKR-Light.eot");
+  src: local(※), url("//openimage.interpark.com/.fonts/NotoSansKR/2350.abv2/hinted/NotoSansKR-Light.woff2") format("woff2"), url("//openimage.interpark.com/.fonts/NotoSansKR/2350.abv2/hinted/NotoSansKR-Light.woff") format("woff"), url("//openimage.interpark.com/.fonts/NotoSansKR/2350.abv2/hinted/NotoSansKR-Light.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "Noto Sans KR";
+  font-style: normal;
+  font-weight: 400;
+  src: url("//openimage.interpark.com/.fonts/NotoSansKR/2350.abv2/hinted/NotoSansKR-Regular.eot");
+  src: local(※), url("//openimage.interpark.com/.fonts/NotoSansKR/2350.abv2/hinted/NotoSansKR-Regular.woff2") format("woff2"), url("//openimage.interpark.com/.fonts/NotoSansKR/2350.abv2/hinted/NotoSansKR-Regular.woff") format("woff"), url("//openimage.interpark.com/.fonts/NotoSansKR/2350.abv2/hinted/NotoSansKR-Regular.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "Noto Sans KR";
+  font-style: normal;
+  font-weight: 500;
+  src: url("//openimage.interpark.com/.fonts/NotoSansKR/2350.abv2/hinted/NotoSansKR-Medium.eot");
+  src: local(※), url("//openimage.interpark.com/.fonts/NotoSansKR/2350.abv2/hinted/NotoSansKR-Medium.woff2") format("woff2"), url("//openimage.interpark.com/.fonts/NotoSansKR/2350.abv2/hinted/NotoSansKR-Medium.woff") format("woff"), url("//openimage.interpark.com/.fonts/NotoSansKR/2350.abv2/hinted/NotoSansKR-Medium.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "Noto Sans KR";
+  font-style: normal;
+  font-weight: 600;
+  src: url("//openimage.interpark.com/.fonts/NotoSansKR/2350.abv2/hinted/NotoSansKR-Bold.eot");
+  src: local(※), url("//openimage.interpark.com/.fonts/NotoSansKR/2350.abv2/hinted/NotoSansKR-Bold.woff2") format("woff2"), url("//openimage.interpark.com/.fonts/NotoSansKR/2350.abv2/hinted/NotoSansKR-Bold.woff") format("woff"), url("//openimage.interpark.com/.fonts/NotoSansKR/2350.abv2/hinted/NotoSansKR-Bold.otf") format("opentype");
+}
+
+.smart-form input[disabled] {
+  background-color: #eee;
+  opacity: 1;
+}
+
+.mrm-lf-15 {
+  margin-left: -15px !important;
+}
+
+.mr-rt-10 {
+  margin-right: 10px !important;
+}
+
+.mr-rt-0 {
+  margin-right: 0 !important;
+}
+
+.pd-rt-0 {
+  padding-right: 0 !important;
+}
+
+.pd-lf-0 {
+  padding-left: 0 !important;
+}
+
+.pd-lf-15 {
+  padding-left: 15px !important;
+}
+
+.pd-rt-15 {
+  padding-right: 15px !important;
+}
+
+.pd-lf-4 {
+  padding-left: 4px !important;
+}
+
+.pd-lf-40 {
+  padding-left: 40px !important;
+}
+
+.pd-0 {
+  padding: 0 !important;
+}
+
+.mr-0 {
+  margin: 0 !important;
+}
+
+.pd-top-10 {
+  padding-top: 10px !important;
+}
+
+.white-nowrap {
+  white-space: nowrap;
+}
+
+.inline-block {
+  display: inline-block !important;
+}
+
+.txt-rt {
+  text-align: right;
+}
+
+.btn-pd-top {
+  padding-top: 18px !important;
+}
+
+.fc-day {
+  cursor: pointer;
+}
+
+.main_title {
+  font-size: 24px !important;
+  font-weight: 500;
+  font-family: "'Noto Sans KR", sans-serif;
+}
+
+.text_box {
+  margin-left: 30px;
+  padding-top: 20px;
+  font-family: "'Noto Sans KR", sans-serif;
+}
+
+.text_box .hello {
+  font-size: 24px;
+  font-weight: 300;
+}
+
+.text_box .report {
+  font-size: 18px;
+  font-weight: 300;
+  margin-top: 18px;
+}
+
+.text_box .fighting {
+  font-size: 18px;
+  font-weight: 300;
+  color: #6f6f6f;
+}
+
+.name_box {
+  font-family: "'Noto Sans KR", sans-serif;
+}
+
+.name_box .name {
+  font-size: 15px;
+  font-weight: 400;
+  text-align: center;
+  margin-top: 5px;
+  color: #363636;
+}
+
+.name_box .team {
+  font-size: 14px;
+  font-weight: 300;
+  color: #363636;
+  text-align: center;
+  margin-top: -10px;
+}
+
+.name_box .item_btn {
+  display: block;
+  width: 149px;
+  height: 33px;
+  background: url("/images/pages/smartAdmin/item_btn.jpg") no-repeat;
+  overflow: hidden;
+  line-height: 9999px;
+}
+
+.section_title {
+  font-size: 18px;
+  font-weight: 400;
+  font-family: "'Noto Sans KR", sans-serif;
+}
+
+.main_list {
+  border: 1px solid #ddd;
+}
+
+.main_list ul {
+  display: table;
+  overflow: hidden;
+  padding-left: 0;
+  margin-bottom: 0;
+  width: 100%;
+}
+
+.main_list ul li {
+  position: relative;
+  display: table-cell;
+  list-style: none;
+}
+
+.main_list ul li a {
+  display: block;
+  height: 55px;
+  line-height: 55px;
+  font-size: 14px;
+  font-weight: 300;
+  color: #222;
+  text-align: center;
+}
+
+.main_list ul li a:hover {
+  text-decoration: underline;
+}
+
+.main_list ul li + li:before {
+  content: "";
+  display: block;
+  width: 1px;
+  height: 25px;
+  background: #dfe5ed;
+  position: absolute;
+  left: 0;
+  top: 15px;
+}
+
+.footer_area {
+  margin-top: 25px;
+  font-family: "'Noto Sans KR", sans-serif;
+}
+
+.footer_area .center {
+  display: block;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.footer_area .address {
+  display: block;
+  font-size: 13px;
+  font-weight: 300;
+  color: #666;
+  margin-top: 3px;
+}
+
+.footer_area .text {
+  display: block;
+  font-size: 13px;
+  font-weight: 300;
+  color: #666;
+  margin-top: 15px;
+}
+
+.footer_area .copy {
+  display: block;
+  font-size: 13px;
+  font-weight: 300;
+  color: #666;
+  margin-top: 3px;
+}
+
+.footer_area .info {
+  display: inline-block;
+  width: 86px;
+  height: 17px;
+  background: url("/images/pages/smartAdmin/footer_btn.jpg") no-repeat;
+  overflow: hidden;
+  line-height: 9999px;
+  vertical-align: top;
+  margin: 3px 0 0 5px;
+}
+
+.refresh_btn {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  background: url("/images/pages/smartAdmin/refresh_btn.png") no-repeat;
+  overflow: hidden;
+  line-height: 9999px;
+  vertical-align: top;
+  margin: 8px 0 0 2px;
+}
+
+.refresh_btn.on {
+  background: url("/images/pages/smartAdmin/refresh_btn2.png") no-repeat;
+}
+
+@media screen and (max-width: 600px) {
+  .mq-pd-0 {
+    padding: 0 !important;
+  }
+  .mq-pd-lf-0 {
+    padding-left: 0 !important;
+  }
+  .mq-pd-rt-15 {
+    padding-right: 15px !important;
+  }
+  .mq-mrm-lf-15 {
+    margin-left: -15px !important;
+  }
+  .mq-mr-rt-30 {
+    margin-right: 30px !important;
+  }
+  .mq-block {
+    display: block !important;
+  }
+  .btn-pd-top {
+    padding-top: 0 !important;
+  }
+}
+
+.ui-datepicker {
+  z-index: 2000 !important;
+}
+
+.ui-datepicker select.ui-datepicker-year {
+  width: 41%;
+  vertical-align: top;
+}
+
+.ui-datepicker select.ui-datepicker-month {
+  width: 35%;
+  margin-left: 6%;
+  vertical-align: top;
+}
+
+#ribbon.ribbon_other {
+  margin-left: 220px;
+}
+
+@media screen and (max-width: 979px) {
+  #ribbon.ribbon_other {
+    margin-left: 0;
+  }
+}
+
+label input[type="checkbox"][disabled] + span {
+  color: #a7a7a7;
+  cursor: not-allowed;
+}
+
+.sbscrb-cntrct-manage #tabCntrctDscss a {
+  text-decoration: underline;
+}

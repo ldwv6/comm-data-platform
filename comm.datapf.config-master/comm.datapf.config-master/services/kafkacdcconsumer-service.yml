@@ -1,0 +1,55 @@
+kafka:
+  properties:
+    producer:
+      acks: all
+      retries: 300
+      batch-size: 16384
+      linger-ms: 1
+      buffer-memory: 33554432
+      enable-idempotence: true
+      transactional-id: uniqueProducerId
+      max-in-flight-requests-per-connection: 5
+    consumer:
+      enable-auto-commit-config: false
+      auto-offset-reset-config: earliest
+      max-poll-records-config: 100
+      max_partition_fetch_bytes_config: 20971520      #Consumer에서 한번에 가져올 수 있는 Message Size 20MB
+
+spring:
+  datasource:
+    hikari:
+      connection-timeout: 30000 #default=30000
+      validation-timeout: 5000 #defalut=5000
+      idle-timeout: 600000 #defalut=600000
+      maximum-pool-size: 800 #defalut=10
+      minimum-idle: 40
+  batch:
+    job:
+      enabled: false # Batch Application 구동 시 실행하지 않고 설정된 Schedule에 실행하도록 설정
+
+---
+spring:
+  profiles: local
+  datasource:
+    url: "jdbc:log4jdbc:oracle:thin:@172.25.9.32:1570:CDITEST"
+    driver-class-name: "net.sf.log4jdbc.sql.jdbcapi.DriverSpy"
+    username: "CDI"
+    password: "CDI12#$"
+
+---
+spring:
+  profiles: dev
+  datasource:
+    url: "jdbc:log4jdbc:oracle:thin:@172.25.9.32:1570:CDITEST"
+    driver-class-name: "net.sf.log4jdbc.sql.jdbcapi.DriverSpy"
+    username: "CDI"
+    password: "CDI12#$"
+
+---
+spring:
+  profiles: stag
+
+---
+# 운영 DB 정보는 다른 GitLab 에서 관리
+spring:
+  profiles: prod

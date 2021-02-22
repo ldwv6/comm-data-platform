@@ -1,0 +1,1263 @@
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/th-layout-admin}">
+<head layout:fragment="th-fragment-head">
+    <th:block layout:fragment="th-head">
+        <title>Housing Admin</title>
+    </th:block>
+</head>
+<body id="backOffice">
+<!-- MAIN PANEL -->
+<div id="main" role="main" layout:fragment="th-fragment-content-main">
+    <!-- MAIN CONTENT Start-->
+    <div id="content">
+        <!-- content title Start-->
+        <div class="row col-sm-12 col-md-12 col-lg-12">
+            <h1 class="page-title txt-color-blueDark">
+                <!-- Page title start -->
+                <i class="fa fa-fw fa-search"></i> 채권 양도양수
+                <!-- Page title end//-->
+            </h1>
+        </div>
+        <!-- content title End //-->
+        <!-- content-body Start-->
+        <div class="widget-body">
+            <section id="widget-grid" class="">
+                <div class="row">
+                    <article class="col-sm-12 col-md-12 col-lg-12">
+                        <!-- Widget ID (each widget will need unique ID) -->
+                        <div class="jarviswidget" id="wid-id-1" data-widget-colorbutton="false"
+                             data-widget-editbutton="false" data-widget-deletebutton="false"
+                             data-widget-sortable="false">
+                            <header>
+                                <h2></h2>
+                            </header>
+                            <!-- widget content -->
+                            <div class="widget-body">
+                                <!-- Content Area -->
+                                <form action="">
+                                    <div class="row">
+                                        <div class="col-sm-2 col-xs-6">
+                                            <label class="w-100">
+                                                <select aria-placeholder="서비스 선택" class="form-control" id="sSvcDvsnCd">
+                                                </select>
+                                            </label>
+                                        </div>
+                                        <div class="col-sm-2 col-xs-6">
+                                            <label class="w-100">
+                                                <select aria-placeholder="서류접수일" class="form-control" id="sDateType">
+                                                    <option value="cvycRcitDt" selected>서류접수일</option>
+                                                    <option value="trsfStrtDt">적용시작일</option>
+                                                    <option value="trsfEndDt">적용해제일</option>
+                                                </select>
+                                            </label>
+                                        </div>
+                                        <div class=" col-sm-2 col-xs-6">
+                                            <div class="input-group">
+                                                <input class="form-control optDate" id="sDateFr" type="text" placeholder="From">
+                                                <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                            </div>
+                                        </div>
+                                        <div class=" col-sm-2 col-xs-6">
+                                            <div class="input-group">
+                                                <input class="form-control optDate" id="sDateTo" type="text" placeholder="To">
+                                                <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-2 col-xs-6">
+                                            <label class="w-100">
+                                                <input type="number" class="form-control" placeholder="(양도 사업자번호 입력)" id="sCvycBzno">
+                                            </label>
+                                        </div>
+                                        <div class="col-sm-2 col-xs-6">
+                                            <label class="w-100">
+                                                <input type="text" class="form-control" placeholder="(양도 거래처 입력)" id="sCvycBzepNm">
+                                            </label>
+                                        </div>
+                                        <div class="col-sm-2 col-xs-6">
+                                            <label class="w-100">
+                                                <input type="text" class="form-control" style="margin:0" placeholder="(양도 상품명 입력)" id="sCvycPrdtNm" disabled>
+                                            </label>
+                                        </div>
+                                        <div class="col-sm-2 col-xs-6">
+                                            <label class="w-100">
+                                                <input type="text" class="form-control" placeholder="(양수자 입력)" id="sAcqnNm">
+                                            </label>
+                                        </div>
+                                        <div class="col-sm-2 col-xs-6">
+                                            <label class="w-100">
+                                                <input type="text" class="form-control" placeholder="(양도양수번호 입력)" id="sTrsfSeq">
+                                            </label>
+                                        </div>
+                                        <div class="col-sm-2 col-xs-6">
+                                            <button type="button" class="btn btn-primary btn-sm" id="btnSearch">조회</button>
+                                            <button type="button" class="btn btn-primary btn-sm" id="btnReg">등록</button>
+                                            <button type="button" class="btn btn-primary btn-sm" id="btnExcel">Excel</button>
+                                        </div>
+                                    </div>
+                                </form>
+                                <!-- 채권 양수양도 등록 modal -->
+                                <!-- modal -->
+                                <div class="modal fade" id="registration" tabindex="-1" role="dialog"
+                                     aria-labelledby="registration">
+                                    <!-- modal-dialog -->
+                                    <div class="modal-dialog modal-lg" role="document">
+                                        <!-- modal-content -->
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                                <h4 class="modal-title">채권 양도양수 등록</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form action="" id="frmReg">
+                                                    <div class="row">
+                                                        <div class="col col-sm-3 col-xs-5">
+                                                            <label class="w-100">
+                                                                <select aria-placeholder="서비스 선택"
+                                                                        class="form-control serviceOption" id="rSvcDvsnCd">
+<!--                                                                    <option value="" selected disabled>서비스 선택</option>-->
+<!--                                                                    <option value="" data-value="shopping">쇼핑</option>-->
+<!--                                                                    <option value="" data-value="shopping">도서</option>-->
+<!--                                                                    <option value="" data-value="tour">공연</option>-->
+<!--                                                                    <option value="" data-value="tour">국내숙박</option>-->
+<!--                                                                    <option value="" data-value="tour">해외호텔</option>-->
+<!--                                                                    <option value="" data-value="tour">국내항공</option>-->
+<!--                                                                    <option value="" data-value="tour">해외항공</option>-->
+<!--                                                                    <option value="" data-value="tour">여행</option>-->
+                                                                </select>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    <table class="table table-bordered">
+                                                        <colgroup>
+                                                            <col style="width:15%;">
+                                                            <col style="width:30%;">
+                                                            <col style="width:15%;">
+                                                            <col style="width:30%;">
+                                                        </colgroup>
+                                                        <tbody>
+                                                        <tr>
+                                                            <th class="active">채권 양수도번호</th>
+                                                            <td colspan="3">
+                                                                <label class="col-sm-4 col-xs-12"><input type="text"
+                                                                                                         class="form-control" disabled value="" id="rTrsfSeq"></label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="active">양도 통지서 접수일자/방법</th>
+                                                            <td colspan="3">
+                                                                <div class="col-xs-4">
+                                                                    <div class=" input-group">
+                                                                        <input class="form-control optDate" id="rCvycRcitDt"
+                                                                               type="text" placeholder="(서류접수일)">
+                                                                        <span class="input-group-addon"><i
+                                                                                class="fa fa-calendar"></i></span>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-xs-4">
+                                                                    <label class="w-100">
+                                                                        <select aria-placeholder="서류접수방법" class="form-control" id="rCvycRcitMthdCd">
+                                                                        </select>
+                                                                    </label>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="active">양도 적용 시작일/해제일</th>
+                                                            <td colspan="3">
+                                                                <div class="col-xs-4">
+                                                                    <div class=" input-group">
+                                                                        <input class="form-control optDate" id="rTrsfStrtDt"
+                                                                               type="text" placeholder="(적용시작일)">
+                                                                        <span class="input-group-addon"><i
+                                                                                class="fa fa-calendar"></i></span>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-xs-4">
+                                                                    <div class=" input-group">
+                                                                        <input class="form-control optDate" id="rTrsfEndDt"
+                                                                               type="text" placeholder="(적용해제일)">
+                                                                        <span class="input-group-addon"><i
+                                                                                class="fa fa-calendar"></i></span>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-xs-4">
+                                                                    <label class="col-xs-6 col-sm-4">
+                                                                        <input type="radio" name="rTrsfStatCd" value="1" checked> 적용
+                                                                    </label>
+                                                                    <label class="col-xs-6 col-sm-4">
+                                                                        <input type="radio" name="rTrsfStatCd" value="2"> 해제
+                                                                    </label>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="active">첨부파일</th>
+                                                            <td colspan="3">
+                                                                <div class="col-xs-8">
+                                                                    <span class="control-fileupload">
+<!--                                                                        <label for="file_3">파일을 선택해주세요</label>-->
+                                                                        <input type="file" clas="btn btn-default" id="file_3">
+<!--                                                                        <div class="note" id="bsnmCeregrtNote"><strong style="color:red">파일을 선택해주세요</strong></div>-->
+                                                                    </span>
+                                                                </div>
+                                                                <div class="col-xs-4" style="line-height: 34px;">(&#8251 PDF만
+                                                                    가능)</div>
+                                                                <div class="col-xs-8">
+                                                                    2 | <a>http://tims20.interpark22222.</a> <a>[X] : sample</a>
+                                                                </div>
+                                                                <div class="col-xs-8">
+                                                                    1 | <a>http://tims20.interpark11111.</a> <a>[X] : sample</a>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="active">양도 거래처</th>
+                                                            <td colspan="3">
+                                                                <label class="col-xs-6 col-sm-3"><input type="text" id="rCvycBzno"
+                                                                                                        class="form-control" disabled placeholder="(사업자번호)"></label>
+                                                                <label class="col-xs-6 col-sm-2"><input type="text" id="rCvycBzepNo"
+                                                                                                        class="form-control" disabled placeholder="(거래처번호)"></label>
+                                                                <label class="col-xs-6 col-sm-2"><input type="text" id="rCvycCtrtSno"
+                                                                                                        class="form-control" disabled placeholder="(거래처seq)"></label>
+                                                                <label class="col-xs-4 col-sm-3"><input type="text" id="rCvycBzepNm"
+                                                                                                        class="form-control" disabled placeholder="(거래처명)"></label>
+<!--                                                                <div class="col-xs-6 col-sm-3">-->
+<!--                                                                    <input type="text" class="form-control input-s" id="rCvycBzepNm"-->
+<!--                                                                           placeholder="거래처명or사업자번호 입력">-->
+<!--                                                                    <div class="input-group-btn search-btn">-->
+<!--                                                                        <button class="btn btn-primary"><i-->
+<!--                                                                                class="fa fa-lg fa-search"></i></button>-->
+<!--                                                                    </div>-->
+<!--                                                                </div>-->
+                                                                <div class="col-sm-2">
+                                                                    <button type="button" class="btn btn-primary" id="btnCvycBzSearch">거래처 검색</button>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="active">채권 한도액</th>
+                                                            <td colspan="3">
+                                                                <label class="col-xs-11 col-sm-4"><input type="text" id="rCvycLmtAmt"
+                                                                                                         class="form-control"></label>
+                                                                <span style="line-height: 32px;">원</span>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="active">양도 대상 상품</th>
+                                                            <td colspan="3">
+                                                                <div class="col-xs-2">
+                                                                    <button type="button" class="btn btn-primary" id="btnCvycGoodsSearch">상품 검색</button>
+                                                                </div>
+                                                                <div class="col-xs-2">
+                                                                    <button type="button" class="btn btn-primary" id="btnCvycGoodsDel">상품삭제</button>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td colspan="4">
+                                                                <div class="realgrid_box">
+                                                                    <div style="margin:auto">
+                                                                        <div style="height:200px;width:100%;background-color:#ccc;" id="cvycGoodsGrid"></div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td colspan="4">
+                                                                <button type="button" class="btn btn-primary" id="btnAddReceiver">양수자 추가</button>
+                                                            </td>
+                                                        </tr>
+                                                        <!--region 양수자 추가 영역 -->
+                                                        <tr name="trAddReceiver_1">
+                                                            <th class="active" rowspan="2">
+                                                                <div class="col-xs-7" style="padding:0; line-height: 32px;">양수 순위</div>
+                                                                <div class="col-xs-5" style="padding:0;">
+                                                                    <label class="w-100">
+                                                                        <input type="hidden" id="rTrsfAcqnSeq_1">
+                                                                        <select aria-placeholder="양수자 순위 선택" class="form-control" id="rAcqnRankCd_1"
+                                                                                style="padding:5px;">
+                                                                            <option value="1" selected> 1 </option>
+                                                                            <option value="2"> 2 </option>
+                                                                            <option value="3"> 3 </option>
+                                                                            <option value="4"> 4 </option>
+                                                                            <option value="5"> 5 </option>
+                                                                            <option value="6"> 6 </option>
+                                                                            <option value="7"> 7 </option>
+                                                                            <option value="8"> 8 </option>
+                                                                            <option value="9"> 9 </option>
+                                                                            <option value="10"> 10 </option>
+                                                                        </select>
+                                                                    </label>
+                                                                </div>
+                                                            </th>
+                                                            <td colspan="3">
+                                                                <label class="col-xs-6 col-sm-3"><input type="text" id="rBzno_1"
+                                                                                                        class="form-control" disabled placeholder="(사업자번호)"></label>
+                                                                <label class="col-xs-6 col-sm-2"><input type="text" id="rAcqnBzepNo_1"
+                                                                                                        class="form-control" disabled placeholder="(거래처번호)"></label>
+                                                                <label class="col-xs-6 col-sm-2"><input type="text" id="rAcqnCtrtSno_1"
+                                                                                                        class="form-control" disabled placeholder="(거래처seq)"></label>
+                                                                <label class="col-xs-6 col-sm-3"><input type="text" id="rBzepNm_1"
+                                                                                                        class="form-control" disabled placeholder="(거래처명)"></label>
+                                                                <div class="col-sm-2">
+                                                                    <button type="button" class="btn btn-primary" id="btnReceiverBzSearch_1" onclick="searchReceiverBz(this);">거래처 검색</button>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr name="trAddReceiver_1">
+                                                            <td colspan="3">
+                                                                <label class="col-xs-4"><input type="text" id="rAcqnNm_1"
+                                                                                                        class="form-control" placeholder="(양수자 입력)"></label>
+                                                                <div class="col-xs-5">
+                                                                    <input type="text" class="form-control input-s" id="rAcqnBzno_1"
+                                                                           placeholder="양수 사업자번호 or 주민번호 입력">
+                                                                </div>
+                                                                <a href="#" data-toggle="tooltip"
+                                                                   data-original-title="등록되지 않은 거래처 또는 개인인 경우 직접 입력해주세요.">
+                                                                    <i class="fa fa-question-circle"></i>
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                        <tr name="trAddReceiver_1">
+                                                            <th class="active">지급 기준</th>
+                                                            <td colspan="3">
+                                                                <label class="col-xs-6 col-sm-2">
+                                                                    <input type="radio" name="vDfrmBassCd_1" value="E" checked> 정산금
+                                                                </label>
+                                                                <label class="col-xs-6 col-sm-2">
+                                                                    <input type="radio" name="vDfrmBassCd_1" value="S"> 판매금
+                                                                </label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr name="trAddReceiver_1">
+                                                            <th class="active" rowspan="2">지급 방식</th>
+                                                            <td colspan="3">
+                                                                <label class="col-xs-2 col-sm-2">
+                                                                    <input type="radio" name="rDfrmMthdCd_1" value="A" checked> 정액
+                                                                </label>
+                                                                <label class="col-xs-2 col-sm-2">
+                                                                    <input type="checkbox" id="rDfrmAllYn_1" class="checkbox style-1" onclick="toggleDfrmAllYn(this);">
+                                                                    <span>전체</span>
+                                                                </label>
+                                                                <label class="col-xs-5 col-sm-6"><input type="text" name="rDfrmReqAmt_1" id="rDfrmReqAmt_Amt_1"
+                                                                                                        class="form-control" placeholder="(입력)"></label>
+                                                                <span style="line-height: 32px;">원</span>
+                                                            </td>
+                                                        </tr>
+                                                        <tr name="trAddReceiver_1">
+                                                            <td colspan="3">
+                                                                <label class="col-xs-2 col-sm-4">
+                                                                    <input type="radio" name="rDfrmMthdCd_1" value="R"> 정율
+                                                                </label>
+                                                                <label class="col-xs-3 col-sm-2"><input type="text" name="rDfrmReqAmt_1" id="rDfrmReqAmt_Ratio_1"
+                                                                                                        class="form-control" placeholder="(입력)"></label>
+                                                                <div class="col-xs-1" style="line-height: 32px;">
+                                                                    <span>%</span></div>
+                                                                <div class="col-xs-3 col-sm-3">
+                                                                    <select aria-placeholder="계산방식 선택" class="form-control" id="rDfrmCalcMthdCd_1"
+                                                                            disabled>
+                                                                        <option selected value="">계산방식 선택</option>
+                                                                        <option value="1">초기정산금 차감</option>
+                                                                        <option value="2">잔여정산금 차감</option>
+                                                                    </select>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr name="trAddReceiver_1">
+                                                            <th class="active">지급 계좌 정보</th>
+                                                            <td colspan="3">
+                                                                <div class="col-xs-3">
+                                                                    <select aria-placeholder="지급계좌 은행선택" class="form-control" id="rAcqnBankCd_1">
+                                                                        <option selected disabled value="">은행 선택</option>
+                                                                    </select>
+                                                                </div>
+                                                                <label class="col-xs-3"><input type="text" id="rAcqnAcntNo_1"
+                                                                                               class="form-control" placeholder="(계좌번호 입력)" valid="false"></label>
+                                                                <label class="col-xs-3"><input type="text" id="rAcqnDpowNm_1"
+                                                                                               class="form-control" placeholder="(예금주 입력)"></label>
+                                                                <input type="hidden" id="rAcntCtfcDtime_1" value="">
+                                                                <button type="button"
+                                                                        class="btn btn-primary btn-sm" id="btnAccnValid_1" onclick="validAcntNo(this);">계좌인증</button>
+                                                            </td>
+                                                        </tr>
+                                                        <!--endregion //양수자 추가 영역 -->
+
+                                                        <!-- // 양수자 추가를 위해 메모영역 id 지정 -->
+                                                        <tr id="trMemo">
+                                                            <th class="active">메모</th>
+                                                            <td colspan="3">
+                                                                <div class="col-xs-12">
+                                                                    <textarea class="col-xs-12 form-control" id="rCvycRson" rows="3"></textarea>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr id="trErlm" style="display: none;">
+                                                            <th class="active">등록자</th>
+                                                            <td>
+                                                                <label class="col-xs-8"><input type="text" id="rErlmNm"
+                                                                                                        class="form-control" disabled></label>
+                                                            </td>
+                                                            <th class="active">등록일시</th>
+                                                            <td>
+                                                                <label class="col-xs-8"><input type="text" id="rErlmDtime"
+                                                                                                        class="form-control" disabled></label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr id="trChng" style="display: none;">
+                                                            <th class="active">수정자</th>
+                                                            <td>
+                                                                <label class="col-xs-8"><input type="text" id="rChngNm"
+                                                                                                        class="form-control" disabled></label>
+                                                            </td>
+                                                            <th class="active">수정일시</th>
+                                                            <td>
+                                                                <label class="col-xs-8"><input type="text" id="rChngDtime"
+                                                                                                        class="form-control" disabled></label>
+                                                            </td>
+                                                        </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </form>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-primary" id="btnRegTrsf">저장</button>
+                                                <button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+                                                <button type="button" class="btn btn-danger" id="btnHist">이력확인</button>
+                                            </div>
+                                        </div>
+                                        <!-- modal-content //-->
+                                    </div>
+                                    <!-- modal-dialog //-->
+                                </div>
+                                <!-- modal //-->
+
+                                <!-- 채권 양수양도 이력 확인 modal -->
+                                <!-- modal -->
+                                <div class="modal fade" id="trsfHistory" tabindex="-1" role="dialog"
+                                     aria-labelledby="trsfHistory">
+                                    <!-- modal-dialog -->
+                                    <div class="modal-dialog modal-lg" role="document">
+                                        <!-- modal-content -->
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                                <h4 class="modal-title">채권 양도양수 이력 확인</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div style="margin-top:20px;">
+                                                    <div class="pull-left">
+                                                        <h3 class="no-margin"><strong>|</strong> 채권 양도자</h3>
+                                                    </div>
+                                                    <div class="clearfix"></div>
+                                                </div>
+                                                <!-- gird 영역 -->
+                                                <div class="realgrid_box mt-10">
+                                                    <div style="margin:auto">
+                                                        <div style="height:130px;width:100%;background-color:#ccc;" id="histGranterGrid"></div>
+                                                    </div>
+                                                </div>
+                                                <!-- gird 영역// -->
+
+                                                <div style="margin-top:20px;">
+                                                    <div class="pull-left">
+                                                        <h3 class="no-margin"><strong>|</strong> 양도 대상 상품</h3>
+                                                    </div>
+                                                    <div class="clearfix"></div>
+                                                </div>
+                                                <!-- gird 영역 -->
+                                                <div class="realgrid_box mt-10">
+                                                    <div style="margin:auto">
+                                                        <div style="height:130px;width:100%;background-color:#ccc;" id="histGoodsGrid"></div>
+                                                    </div>
+                                                </div>
+                                                <!-- gird 영역// -->
+
+                                                <div style="margin-top:20px;">
+                                                    <div class="pull-left">
+                                                        <h3 class="no-margin"><strong>|</strong> 채권 양수자</h3>
+                                                    </div>
+                                                    <div class="clearfix"></div>
+                                                </div>
+                                                <!-- gird 영역 -->
+                                                <div class="realgrid_box mt-10">
+                                                    <div style="margin:auto">
+                                                        <div style="height:130px;width:100%;background-color:#ccc;" id="histReceiverGrid"></div>
+                                                    </div>
+                                                </div>
+                                                <!-- gird 영역// -->
+                                            </div>
+                                        </div>
+                                        <!-- modal-content //-->
+                                    </div>
+                                    <!-- modal-dialog //-->
+                                </div>
+                                <!-- modal //-->
+
+                                <div style="margin-top:20px;">
+                                    <div class="pull-left">
+                                        <h3 class="no-margin"><strong>|</strong> 채권 양도자</h3>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <!-- gird 영역 -->
+                                <div class="realgrid_box mt-10">
+                                    <div style="margin:auto">
+                                        <div style="height:130px;width:100%;background-color:#ccc;" id="granterGrid"></div>
+                                    </div>
+                                </div>
+                                <!-- gird 영역// -->
+
+                                <div style="margin-top:20px;">
+                                    <div class="pull-left">
+                                        <h3 class="no-margin"><strong>|</strong> 채권 양수자</h3>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <!-- gird 영역 -->
+                                <div class="realgrid_box mt-10">
+                                    <div style="margin:auto">
+                                        <div style="height:130px;width:100%;background-color:#ccc;" id="receiverGrid"></div>
+                                    </div>
+                                </div>
+                                <!-- gird 영역// -->
+
+                                <div style="margin-top:20px;">
+                                    <div class="pull-left">
+                                        <h3 class="no-margin"><strong>|</strong> 채권 양수자별 지급내역</h3>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <!-- gird 영역 -->
+                                <div class="realgrid_box mt-10">
+                                    <div style="margin:auto">
+                                        <div style="height:130px;width:100%;background-color:#ccc;" id="pymntGrid"></div>
+                                    </div>
+                                </div>
+                                <!-- gird 영역// -->
+                                <!-- Content Area //-->
+                            </div>
+                            <!-- widget content //-->
+                        </div>
+                        <!-- Widget ID (each widget will need unique ID) //-->
+                    </article>
+                </div>
+            </section>
+        </div>
+        <!-- content-body End//-->
+    </div>
+    <!-- MAIN CONTENT End//-->
+</div>
+<!-- MAIN PANEL //-->
+
+<th:block layout:fragment="th-fragment-javascript">
+
+<script type="text/javascript">
+    //region grid init function
+    // 채권 양도자 그리드 세팅
+    function granterGridInit() {
+        console.log("granterGridInit start");
+        granterGridView = new RealGridJS.GridView("granterGrid");
+        granterDataProvider = new RealGridJS.LocalDataProvider();
+        granterGridView.setDataSource(granterDataProvider);
+
+        var granterFields = [
+            {fieldName:"trsfSeq"}, {fieldName:"cvycRcitDt"}, {fieldName:"trsfStrtDt"}, {fieldName:"trsfEndDt"}, {fieldName:"cvycBzepNo"},
+            {fieldName:"cvycCtrtSno"}, {fieldName:"cvycBzno"}, {fieldName:"cvycBzepNm"}, {fieldName:"cvycPrdtNm"},
+            {fieldName:"cvycPrdtCnt", dataType: "number"}, {fieldName: "cvycLmtAmt", dataType: "number"}, {fieldName: "erlmNo"}
+        ];
+
+        granterDataProvider.setFields(granterFields);
+
+        var granterColumns = [
+            {name: "trsfSeq",			fieldName: "trsfSeq",			header: {text: "양도양수번호"}, readOnly: true, editable: false, styles: {background: "#FFF", textAlignment: "center"}}
+            ,{name: "cvycRcitDt",		fieldName: "cvycRcitDt",		header: {text: "서류접수일"}, readOnly: true, editable: false, styles: {background: "#FFF", textAlignment: "center"}}
+            ,{name: "trsfStrtDt",		fieldName: "trsfStrtDt",		header: {text: "적용시작일"}, readOnly: true, editable: false, styles: {background: "#FFF", textAlignment: "center"}}
+            ,{name: "trsfEndDt",		fieldName: "trsfEndDt",			header: {text: "적용해제일"}, readOnly: true, editable: false, styles: {background: "#FFF", textAlignment: "center"}}
+            ,{name: "cvycBzepNo",		fieldName: "cvycBzepNo",		header: {text: "양도 거래처번호"}, readOnly: true, editable: false, styles: {background: "#FFF", textAlignment: "center"}}
+            ,{name: "cvycCtrtSno",		fieldName: "cvycCtrtSno",		header: {text: "양도 거래처Seq"}, readOnly: true, editable: false, styles: {background: "#FFF", textAlignment: "center"}}
+            ,{name: "cvycBzno",			fieldName: "cvycBzno",			header: {text: "양도 사업자번호"}, readOnly: true, editable: false, styles: {background: "#FFF", textAlignment: "center"}}
+            ,{name: "cvycBzepNm",		fieldName: "cvycBzepNm",		header: {text: "양도 거래처명"}, readOnly: true, editable: false, styles: {background: "#FFF", textAlignment: "center"}}
+            ,{name: "cvycPrdtNm",		fieldName: "cvycPrdtNm",		header: {text: "양도 대상 상품명"}, readOnly: true, editable: false, styles: {background: "#FFF", textAlignment: "center"}}
+            ,{name: "cvycPrdtCnt",		fieldName: "cvycPrdtCnt",		header: {text: "양도 대상 상품수"}, readOnly: true, editable: false, styles: {background: "#FFF", textAlignment: "far", numberFormat: "#,##0"}}
+            ,{name: "cvycLmtAmt",		fieldName: "cvycLmtAmt",		header: {text: "채권 한도액"}, readOnly: true, editable: false, styles: {background: "#FFF", textAlignment: "far", numberFormat: "#,##0"}}
+            ,{name: "erlmNo",			fieldName: "erlmNo",			header: {text: "등록자"}, readOnly: true, editable: false, styles: {background: "#FFF", textAlignment: "center"}}
+        ];
+
+        granterGridView.setHeader({summary: {visible: false,	styles: {	background: "#11ff0000"}}});
+        granterGridView.setColumns(granterColumns);
+        granterGridView.setOptions({indicator: {visible: true}, checkBar: {visible: false}, panel: {visible: false}, stateBar: {visible: false}, footer: {visible: false}, header: {height: "45"}});
+
+
+        granterGridView.onDataCellDblClicked = function (grid, index) {
+            var current = granterGridView.getCurrent();
+            var jsonData = granterDataProvider.getJsonRow(current.dataRow);
+            if (index.fieldName === 'trsfSeq') {
+                console.log('양도양수번호 클릭 - 보기/수정 모드');
+                regTrsf(jsonData.trsfSeq);
+            }
+            else {
+                console.log('양수자 조회');
+                getTrsfReceiverList(jsonData.trsfSeq);
+            }
+        };
+    }
+
+    // 채권 양수자 그리드 세팅
+    function receiverGridInit() {
+        console.log("receiverGridInit start");
+        receiverGridView = new RealGridJS.GridView("receiverGrid");
+        receiverDataProvider = new RealGridJS.LocalDataProvider();
+        receiverGridView.setDataSource(receiverDataProvider);
+
+        var receiverFields = [
+            {fieldName:"dfrmStatNm"}, {fieldName:"trsfSeq"}, {fieldName:"trsfAcqnSeq"}, {fieldName:"acqnRankCd", dataType: "number"}, {fieldName:"acqnBzno"},
+            {fieldName:"acqnNm"}, {fieldName:"dfrmBassNm"}, {fieldName:"dfrmMthdNm"},
+            {fieldName:"dfrmReqAmt", dataType: "number"}, {fieldName: "acmlDfrmAmt", dataType: "number"}, {fieldName: "rmndDfrmAmt", dataType: "number"}
+        ];
+
+        receiverDataProvider.setFields(receiverFields);
+
+        var receiverColumns = [
+            {name: "dfrmStatNm",		fieldName: "dfrmStatNm",		header: {text: "구분"}, readOnly: true, editable: false, styles: {background: "#FFF", textAlignment: "center"}}
+            ,{name: "trsfSeq",			fieldName: "trsfSeq",			header: {text: "양도양수번호"}, readOnly: true, editable: false, styles: {background: "#FFF", textAlignment: "center"}}
+            ,{name: "trsfAcqnSeq",		fieldName: "trsfAcqnSeq",		header: {text: "양수도상세SEQ"}, visible: false, readOnly: true, editable: false, styles: {background: "#FFF", textAlignment: "center"}}
+            ,{name: "acqnRankCd",		fieldName: "acqnRankCd",		header: {text: "양수 순위"}, readOnly: true, editable: false, styles: {background: "#FFF", textAlignment: "far", numberFormat: "#,##0"}}
+            ,{name: "acqnBzno",			fieldName: "acqnBzno",			header: {text: "양수 사업자번호"}, readOnly: true, editable: false, styles: {background: "#FFF", textAlignment: "center"}}
+            ,{name: "acqnNm",			fieldName: "acqnNm",			header: {text: "양수 거래처명"}, readOnly: true, editable: false, styles: {background: "#FFF", textAlignment: "center"}}
+            ,{name: "dfrmBassNm",		fieldName: "dfrmBassNm",		header: {text: "지급기준"}, readOnly: true, editable: false, styles: {background: "#FFF", textAlignment: "center"}}
+            ,{name: "dfrmMthdNm",		fieldName: "dfrmMthdNm",		header: {text: "지급방식"}, readOnly: true, editable: false, styles: {background: "#FFF", textAlignment: "center"}}
+            ,{name: "dfrmReqAmt",		fieldName: "dfrmReqAmt",		header: {text: "양수 설정액", summary:{expression:"sum", styles:{"numberFormat": "#,##0"}}}, readOnly: true, editable: false, styles: {background: "#FFF", textAlignment: "far", numberFormat: "#,##0"}}
+            ,{name: "acmlDfrmAmt",		fieldName: "acmlDfrmAmt",		header: {text: "총지급액", summary:{expression:"sum", styles:{"numberFormat": "#,##0"}}}, readOnly: true, editable: false, styles: {background: "#FFF", textAlignment: "far", numberFormat: "#,##0"}}
+            ,{name: "rmndDfrmAmt",		fieldName: "rmndDfrmAmt",		header: {text: "지급잔액", summary:{expression:"sum", styles:{"numberFormat": "#,##0"}}}, readOnly: true, editable: false, styles: {background: "#FFF", textAlignment: "far", numberFormat: "#,##0"}}
+        ];
+
+        receiverGridView.setHeader({summary: {visible: true,	styles: {	background: "#11ff0000"}}});
+        receiverGridView.setColumns(receiverColumns);
+        receiverGridView.setOptions({indicator: {visible: true}, checkBar: {visible: false}, panel: {visible: false}, stateBar: {visible: false}, footer: {visible: false}, header: {height: "45"}});
+
+
+        receiverGridView.onDataCellDblClicked = function (grid, index) {
+            var current = receiverGridView.getCurrent();
+            var jsonData = receiverDataProvider.getJsonRow(current.dataRow);
+            getTrsfPymntList(jsonData.trsfSeq, jsonData.trsfAcqnSeq);
+        };
+    }
+
+    // 채권 양수자별 지급내역 세팅
+    function pymntGridInit() {
+        console.log("pymntGridInit start");
+        pymntGridView = new RealGridJS.GridView("pymntGrid");
+        pymntDataProvider = new RealGridJS.LocalDataProvider();
+        pymntGridView.setDataSource(pymntDataProvider);
+
+        var pymntFields = [
+            {fieldName:"dfrmStatNm"}, {fieldName:"trsfSeq"}, {fieldName:"acqnRankCd", dataType: "number"}, {fieldName:"acqnBzno"}, {fieldName:"acqnNm"},
+            {fieldName:"dfrmReqAmt", dataType: "number"}, {fieldName: "dfrmAmt", dataType: "number"}, {fieldName: "dfrmRemainAmt", dataType: "number"},
+            {fieldName:"cvycPrdtCd"}, {fieldName:"cvycPrdtNm"}, {fieldName:"exccNo"}
+        ];
+
+        pymntDataProvider.setFields(pymntFields);
+
+        var pymntColumns = [
+            {name: "dfrmStatNm",		fieldName: "dfrmStatNm",		header: {text: "구분"}, readOnly: true, editable: false, styles: {background: "#FFF", textAlignment: "center"}}
+            ,{name: "trsfSeq",			fieldName: "trsfSeq",			header: {text: "양도양수번호"}, readOnly: true, editable: false, styles: {background: "#FFF", textAlignment: "center"}}
+            ,{name: "acqnRankCd",		fieldName: "acqnRankCd",		header: {text: "양수 순위"}, readOnly: true, editable: false, styles: {background: "#FFF", textAlignment: "far", numberFormat: "#,##0"}}
+            ,{name: "acqnBzno",			fieldName: "acqnBzno",			header: {text: "양수 사업자번호"}, readOnly: true, editable: false, styles: {background: "#FFF", textAlignment: "center"}}
+            ,{name: "acqnNm",			fieldName: "acqnNm",			header: {text: "양수 거래처명"}, readOnly: true, editable: false, styles: {background: "#FFF", textAlignment: "center"}}
+            ,{name: "dfrmReqAmt",		fieldName: "dfrmReqAmt",		header: {text: "양수 설정액", summary:{expression:"sum", styles:{"numberFormat": "#,##0"}}}, readOnly: true, editable: false, styles: {background: "#FFF", textAlignment: "far", numberFormat: "#,##0"}}
+            ,{name: "dfrmAmt",			fieldName: "dfrmAmt",			header: {text: "정산별 지급액", summary:{expression:"sum", styles:{"numberFormat": "#,##0"}}}, readOnly: true, editable: false, styles: {background: "#FFF", textAlignment: "far", numberFormat: "#,##0"}}
+            ,{name: "dfrmRemainAmt",	fieldName: "dfrmRemainAmt",		header: {text: "지급잔액", summary:{expression:"sum", styles:{"numberFormat": "#,##0"}}}, readOnly: true, editable: false, styles: {background: "#FFF", textAlignment: "far", numberFormat: "#,##0"}}
+            ,{name: "cvycPrdtCd",		fieldName: "cvycPrdtCd",		header: {text: "상품코드"}, readOnly: true, editable: false, styles: {background: "#FFF", textAlignment: "center"}}
+            ,{name: "cvycPrdtNm",		fieldName: "cvycPrdtNm",		header: {text: "상품명"}, readOnly: true, editable: false, styles: {background: "#FFF", textAlignment: "center"}}
+            ,{name: "exccNo",			fieldName: "exccNo",			header: {text: "정산관리번호"}, readOnly: true, editable: false, styles: {background: "#FFF", textAlignment: "center"}}
+        ];
+
+        pymntGridView.setHeader({summary: {visible: true,	styles: {	background: "#11ff0000"}}});
+        pymntGridView.setColumns(pymntColumns);
+        pymntGridView.setOptions({indicator: {visible: true}, checkBar: {visible: false}, panel: {visible: false}, stateBar: {visible: false}, footer: {visible: false}, header: {height: "45"}});
+    }
+
+    // 채권 양도양수 등록 > 양도 대상 상품
+    function cvycGoodsGridInit() {
+        console.log("cvycGoodsGridInit start");
+        cvycGoodsGridView = new RealGridJS.GridView("cvycGoodsGrid");
+        cvycGoodsDataProvider = new RealGridJS.LocalDataProvider();
+        cvycGoodsGridView.setDataSource(cvycGoodsDataProvider);
+
+        var cvycGoodsFields = [
+            {fieldName: "trsfSeq"}, {fieldName: "trsfPrdtSeq"}, {fieldName:"cvycRankCd"}, {fieldName:"cvycPrdtCd"}, {fieldName:"cvycPrdtNm"},
+            {fieldName:"cvycPlacCd"}, {fieldName:"bzepNm"},
+            {fieldName:"bzno"}, {fieldName: "startDate"}, {fieldName: "endDate"}, {fieldName:"cvycPlacCd"}
+        ];
+
+        cvycGoodsDataProvider.setFields(cvycGoodsFields);
+
+        var cvycGoodsColumns = [
+            {name: "trsfSeq",		fieldName: "trsfSeq",	header: {text: "양수도SEQ"}, readOnly: false, editable: true, styles: {background: "#FFF", textAlignment: "center"}}
+            ,{name: "trsfPrdtSeq",		fieldName: "trsfPrdtSeq",	header: {text: "양수도상품SEQ"}, readOnly: false, editable: true, styles: {background: "#FFF", textAlignment: "center"}}
+            ,{name: "cvycRankCd",		fieldName: "cvycRankCd",	header: {text: "차감\n순위"}, readOnly: false, editable: true, styles: {background: "#FFF", textAlignment: "center"}}
+            ,{name: "cvycPrdtCd",		fieldName: "cvycPrdtCd",	header: {text: "상품코드"}, readOnly: true, editable: false, styles: {background: "#FFF", textAlignment: "center"}}
+            ,{name: "cvycPrdtNm",		fieldName: "cvycPrdtNm",	header: {text: "상품명"}, readOnly: true, editable: false, styles: {background: "#FFF", textAlignment: "center"}}
+            ,{name: "cvycPlacCd",	    fieldName: "cvycPlacCd",	header: {text: "거래처번호"}, readOnly: true, editable: false, styles: {background: "#FFF", textAlignment: "center"}}
+            ,{name: "cvycPlacNm",		fieldName: "cvycPlacNm",	header: {text: "거래처명"}, readOnly: true, editable: false, styles: {background: "#FFF", textAlignment: "center"}}
+            ,{name: "bzno",		        fieldName: "bzno",		    header: {text: "사업자번호"}, readOnly: true, editable: false, styles: {background: "#FFF", textAlignment: "center"}}
+            ,{name: "startDate",		fieldName: "startDate",		header: {text: "공연시작일"}, readOnly: true, editable: false, styles: {background: "#FFF", textAlignment: "center"}}
+            ,{name: "endDate",		    fieldName: "endDate",		header: {text: "공연종료일"}, readOnly: true, editable: false, styles: {background: "#FFF", textAlignment: "center"}}
+            ,{name: "cvycPlacCd",		fieldName: "cvycPlacCd",	header: {text: "공연장코드"}, readOnly: true, editable: false, styles: {background: "#FFF", textAlignment: "center"}}
+        ];
+
+        cvycGoodsGridView.setHeader({summary: {visible: false,	styles: {	background: "#11ff0000"}}});
+        cvycGoodsGridView.setColumns(cvycGoodsColumns);
+        cvycGoodsGridView.setOptions({indicator: {visible: true}, checkBar: {visible: true}, panel: {visible: false}, stateBar: {visible: false}, footer: {visible: false}, header: {height: "45"}});
+
+        //비고 모달 창 변환시 사이즈 재변경
+        $('#registration').on('shown.bs.modal', function() {
+            cvycGoodsGridView.resetSize();
+        });
+
+        //비고 모달 창 숨김시
+        $('#registration').on('hidden.bs.modal', function() {
+            cvycGoodsDataProvider.setRows(null);
+        });
+    }
+    //endregion
+</script>
+
+<script type="text/javascript">
+    // 채권 양도자 그리드
+    var granterGridView, granterDataProvider;
+    // 채권 양수자 그리드
+    var receiverGridView, receiverDataProvider;
+    // 채권 양수자별 지급내역
+    var pymntGridView, pymntDataProvider;
+    // 채권 양도양수 등록 > 양도 대상 상품
+    var cvycGoodsGridView, cvycGoodsDataProvider;
+
+    // 등록 팝업의 양수자 추가 영역 변수.
+    var addReceiverHtml = ''; // html 초기 저장용
+    var addReceiverCnt = 1; // 양수자 cnt
+
+    $(document).ready(function() {
+        $('.modal').css('overflow-y', 'auto');
+
+        granterGridInit(); // 채권 양도자 그리드 세팅
+        receiverGridInit(); // 채권 양수자 그리드 세팅
+        pymntGridInit(); // 채권 양수자별 지급내역 세팅
+        cvycGoodsGridInit(); // 채권 양도양수 등록 > 양도 대상 상품
+
+        // html 저장
+        $('#registration [name="trAddReceiver_1"]').each(function() {
+            addReceiverHtml += this.outerHTML;
+        });
+
+        // 검색영역
+        drawCommonCodeFilter('SVC_DVSN_CD', 'sSvcDvsnCd', 'ONE' , '', ['00','01'], 'D', 'ASC', null); 		//서비스 구분
+        // 채권 양도양수 등록
+        drawCommonCodeFilter('SVC_DVSN_CD', 'rSvcDvsnCd', 'ONE' , '', ['00','01'], 'D', 'ASC', null); 		//서비스 구분 (등록)
+        drawCommonCodeFilter('CVYC_RCIT_MTHD_CD', 'rCvycRcitMthdCd', 'ONE' , '', null, '', 'ASC', null); 	//서류접수방법 (등록)
+        drawCommonCodeFilter('DFRM_CALC_MTHD_CD', 'rDfrmCalcMthdCd', 'ONE' , '', null, '', 'ASC', null); 	//지급 계산 방식 (등록)
+        drawCommonCodeFilter('BANK_CD', 'rAcqnBankCd', 'ONE' , '', null, '', 'ASC', null); 	//양수자 지급계좌 은행 (등록)
+
+        datepickerInit();
+
+        // //상품선택
+        // $('.productSelect').change(function() {
+        //     var val = $(".productSelect option:selected").val();
+        //     $('.productWrap > div').hide();
+        //     $('.productWrap .' + val).show();
+        // });
+        //
+        // // File Upload
+        // $('input[type=file]').change(function() {
+        //     var t = $(this).val();
+        //     var labelText = t.substr(12, t.length);
+        //     $(this).prev('label').text(labelText);
+        // });
+    });
+
+    $("#btnSearch").click(function() {
+        console.log("btnSearch click start");
+
+        //region form validation
+        if ($("#sSvcDvsnCd").val() == "") {
+            alert("서비스를 선택해 주세요.");
+            $("#sSvcDvsnCd").select();
+            return;
+        }
+        else if ($("#sDateFr").val() == "" || $("#sDateTo").val() == "") {
+            alert("일자 또는 기간을 지정해 주세요.");
+            ($("#sDateFr").val() == "") ? $("#sDateFr").select() : $("#sDateTo").select();
+            return;
+        }
+        //endregion
+
+        var searchCondition = {
+            svcDvsnCd: $("#sSvcDvsnCd").val(),
+            dateType: $("#sDateType").val(),
+            dateFr: $("#sDateFr").val().replace(/-/g,""),
+            dateTo: $("#sDateTo").val().replace(/-/g,""),
+            cvycBzno: $("#sCvycBzno").val(),
+            cvycBzepNm: $("#sCvycBzepNm").val(),
+            cvycPrdtNm: $("#sCvycPrdtNm").prop("disabled") ? "" : $("#sCvycPrdtNm").val(),
+            acqnNm: $("#sAcqnNm").val(),
+            trsfSeq: $("#sTrsfSeq").val()
+        };
+        console.log("searchCondition:" + searchCondition);
+
+        var baseUrl = "/trsf/doSelectGranter";
+        $.callRestApi(baseUrl, "get", searchCondition, getSearchCallBack, null);
+    });
+
+    function getSearchCallBack(data, textStatus, XMLHttpRequest) {
+        console.log("getSearchCallBack start");
+        granterDataProvider.setRows(null);
+        receiverDataProvider.setRows(null);
+        pymntDataProvider.setRows(null);
+
+        if(data.data.length == 0){
+            alert("검색 결과가 없습니다.");
+        }
+        else {
+            granterDataProvider.setRows(data.data);
+        }
+    }
+
+    function getTrsfReceiverList(trsfSeq) {
+        console.log('getTrsfReceiverList start');
+
+        var searchCondition = {
+            trsfSeq: trsfSeq
+        };
+        console.log("searchCondition:" + searchCondition);
+
+        var baseUrl = "/trsf/doSelectReceiver";
+        $.callRestApi(baseUrl, "get", searchCondition, getTrsfReceiverListCallBack, null);
+    }
+
+    function getTrsfReceiverListCallBack(data, textStatus, XMLHttpRequest) {
+        console.log("getTrsfReceiverListCallBack start");
+        receiverDataProvider.setRows(data.data);
+    }
+
+    function getTrsfPymntList(trsfSeq, trsfAcqnSeq) {
+        console.log('getTrsfPymntList start');
+
+        var searchCondition = {
+            trsfSeq: trsfSeq,
+            trsfAcqnSeq: trsfAcqnSeq
+        };
+        console.log("searchCondition:" + searchCondition);
+
+        var baseUrl = "/trsf/doSelectPymnt";
+        $.callRestApi(baseUrl, "get", searchCondition, getTrsfPymntListCallBack, null);
+    }
+
+    function getTrsfPymntListCallBack(data, textStatus, XMLHttpRequest) {
+        console.log("getTrsfPymntListCallBack start");
+        pymntDataProvider.setRows(data.data);
+    }
+
+    $("#sSvcDvsnCd").change(function() {
+        var disabled = true;
+        if ($(this).val() == "04" || $(this).val() == "06") disabled = false;
+        $("#sCvycPrdtNm").attr("disabled", disabled);
+    });
+
+    $("#btnReg").click(function() {
+        regTrsf();
+    })
+
+    $("#btnExcel").click(function() {
+        if (granterDataProvider.getRowCount() == 0) {
+            alert("데이터가 없습니다.");
+            return;
+        }
+
+        var eGrid = [{
+            grid: granterGridView, //그리드 변수명
+            sheetName: "채권 양도자" // 다른 그리드와 중복되어서는 안된다.
+        }];
+        if (receiverDataProvider.getRowCount() > 0) eGrid.push({
+            grid: receiverGridView, //그리드 변수명
+            sheetName: "채권 양수자" // 다른 그리드와 중복되어서는 안된다.
+        });
+        if (pymntDataProvider.getRowCount() > 0) eGrid.push({
+            grid: pymntGridView, //그리드 변수명
+            sheetName: "채권 양수자별 지급내역" // 다른 그리드와 중복되어서는 안된다.
+        });
+
+        RealGridJS.exportGrid({
+            type: "excel"
+            ,target: "local"
+            ,fileName: "채권 양도양수.xlsx"
+            ,showProgress: false
+            ,applyDynamicStyles: true
+            ,progressMessage: "엑셀 Export중입니다."
+            ,indicator: "default"
+            ,header: "visible"
+            ,footer: "hidden"
+            ,compatibility: false
+            ,done: function() {
+                alert("엑셀 다운로드가 완료되었습니다.");
+            }
+            ,exportGrids:eGrid
+        });
+    });
+
+    function regTrsf(trsfSeq) {
+        console.log('regTrsf start');
+
+        // 초기화
+        registrationInit();
+
+        // 조회
+        if (!isNull(trsfSeq)) {
+            console.log("regTrsf - 조회")
+
+            $("#trErlm").css("display", "");
+            $("#trChng").css("display", "");
+            $("#btnCvycBzSearch").css("display", "none");
+        }
+
+        $("#registration").modal();
+    }
+
+    //
+    function registrationInit() {
+        $("#frmReg")[0].reset();
+        $('#registration [name^="trAddReceiver_"]').each(function() {
+            if($(this).attr('name') != 'trAddReceiver_1') $(this).remove();
+        });
+    }
+
+    $("#btnHist").click(function() {
+        console.log("btnHist start");
+        $("#trsfHistory").modal();
+    });
+
+    function datepickerInit() {
+        $("#sDateFr").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            numberOfMonths: 2,
+            prevText: '<i class="fa fa-chevron-left"></i>',
+            nextText: '<i class="fa fa-chevron-right"></i>'
+        }).datepicker("setDate", "0d");
+
+        $("#sDateTo").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            numberOfMonths: 2,
+            prevText: '<i class="fa fa-chevron-left"></i>',
+            nextText: '<i class="fa fa-chevron-right"></i>'
+        }).datepicker("setDate", "0d");
+
+        $("#rCvycRcitDt").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            numberOfMonths: 2,
+            prevText: '<i class="fa fa-chevron-left"></i>',
+            nextText: '<i class="fa fa-chevron-right"></i>'
+        });
+
+        $("#rTrsfStrtDt").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            numberOfMonths: 2,
+            prevText: '<i class="fa fa-chevron-left"></i>',
+            nextText: '<i class="fa fa-chevron-right"></i>'
+        });
+
+        $("#rTrsfEndDt").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            numberOfMonths: 2,
+            prevText: '<i class="fa fa-chevron-left"></i>',
+            nextText: '<i class="fa fa-chevron-right"></i>'
+        });
+    }
+
+    $("#btnAddReceiver").click(function() {
+        addReceiverCnt++;
+        var addReceiverHtml_new = addReceiverHtml.replaceAll('trAddReceiver_1', 'trAddReceiver_' + addReceiverCnt)
+            .replaceAll('rTrsfAcqnSeq_1', 'rTrsfAcqnSeq_' + addReceiverCnt)
+            .replaceAll('rAcqnRankCd_1', 'rAcqnRankCd_' + addReceiverCnt)
+            .replaceAll('rBzno_1', 'rBzno_' + addReceiverCnt)
+            .replaceAll('rAcqnBzepNo_1', 'rAcqnBzepNo_' + addReceiverCnt)
+            .replaceAll('rAcqnCtrtSno_1', 'rAcqnCtrtSno_' + addReceiverCnt)
+            .replaceAll('rBzepNm_1', 'rBzepNm_' + addReceiverCnt)
+            .replaceAll('btnReceiverBzSearch_1', 'btnReceiverBzSearch_' + addReceiverCnt)
+            .replaceAll('rAcqnNm_1', 'rAcqnNm_' + addReceiverCnt)
+            .replaceAll('rAcqnBzno_1', 'rAcqnBzno_' + addReceiverCnt)
+            .replaceAll('vDfrmBassCd_1', 'vDfrmBassCd_' + addReceiverCnt)
+            .replaceAll('rDfrmAllYn_1', 'rDfrmAllYn_' + addReceiverCnt)
+            .replaceAll('rDfrmReqAmt_1', 'rDfrmReqAmt_' + addReceiverCnt)
+            .replaceAll('rDfrmReqAmt_Amt_1', 'rDfrmReqAmt_Amt_' + addReceiverCnt)
+            .replaceAll('rDfrmReqAmt_Ratio_1', 'rDfrmReqAmt_Ratio_' + addReceiverCnt)
+            .replaceAll('rDfrmMthdCd_1', 'rDfrmMthdCd_' + addReceiverCnt)
+            .replaceAll('rDfrmCalcMthdCd_1', 'rDfrmCalcMthdCd_' + addReceiverCnt)
+            .replaceAll('rAcqnAcntNo_1', 'rAcqnAcntNo_' + addReceiverCnt)
+            .replaceAll('rAcqnDpowNm_1', 'rAcqnDpowNm_' + addReceiverCnt)
+            .replaceAll('rAcntCtfcDtime_1', 'rAcntCtfcDtime_' + addReceiverCnt)
+            .replaceAll('btnAccnValid_1', 'btnAccnValid_' + addReceiverCnt);
+
+        // console.log(addReceiverHtml_new);
+        $(addReceiverHtml_new).insertBefore('#trMemo');
+    });
+
+    $('#btnCvycBzSearch').click(function() {
+        console.log('btnCvycBzSearch start');
+        //TODO: test 용 코드. 거래처 검색 팝업 연결로 변경
+        $('#rCvycBzno').val('1110111');
+        $('#rCvycBzepNo').val('1110222');
+        $('#rCvycCtrtSno').val('1110333');
+        $('#rCvycBzepNm').val('111거래처명');
+    });
+
+    $('#rCvycLmtAmt').focusout(function() {
+        this.value = numberWithCommas(this.value);
+    });
+
+    $('#btnCvycGoodsSearch').click(function() {
+        console.log('btnCvycGoodsSearch start');
+        //TODO: 상품검색 팝업 연결로 변경필요.
+        var num = cvycGoodsDataProvider.getRowCount() + 1;
+        var goods = ['', '', num, 'G0000'+num, '김연우콘서트'+num, '12279', '(주)월드'+num, '605-81-98481', '20191221', '20191221', '19001443'];
+
+        cvycGoodsDataProvider.addRow(goods);
+    });
+
+    $('#btnCvycGoodsDel').click(function() {
+        var checkedItems = cvycGoodsGridView.getCheckedRows(true);
+        var params = new Array();
+
+        if (checkedItems.length == 0) {
+            alert('선택된 항목이 없습니다.');
+            return;
+        }
+
+        for (var i = 0; i < checkedItems.length; i++) {
+            // 등록안된 추가 row 는
+            var item = new Object();
+            item.trsfSeq = cvycGoodsDataProvider.getValue(checkedItems[i], "trsfSeq");
+            item.trsfPrdtSeq = cvycGoodsDataProvider.getValue(checkedItems[i], "trsfPrdtSeq");
+
+            params.push(item);
+        }
+
+        var url = '';
+        console.log(url+"########################## "+params);
+        $.callRestApi(url, "put", params, $.cvycGoodsDelCallBack, null);
+    });
+
+    $.cvycGoodsDelCallBack = function(data, textStatus, XMLHttpRequest) {
+        alert(data.data.msg);
+        if(data.data.code = "00") {
+            $('#myModal3').modal('hide');
+            $('#myModal4').modal('hide');
+            $('#myModal5').modal('hide');
+            $('#btnSearch').trigger('click');
+        }
+    }
+
+    function searchReceiverBz(obj) {
+        var receiverIdx = getReceiverIdx(obj.id);
+        console.log('receiverIdx:' + receiverIdx);
+        //TODO: test 용 코드. 거래처 검색 팝업 연결로 변경
+        $('#rBzno_' + receiverIdx).val('22'+receiverIdx+'0111');
+        $('#rAcqnBzepNo_' + receiverIdx).val('22'+receiverIdx+'0222');
+        $('#rAcqnCtrtSno_' + receiverIdx).val('22'+receiverIdx+'0333');
+        $('#rBzepNm_' + receiverIdx).val('22'+receiverIdx+'거래처명');
+    }
+
+    function toggleDfrmAllYn(obj) {
+        var receiverIdx = getReceiverIdx(obj.id);
+        console.log('receiverIdx:' + receiverIdx);
+        var disabled = $(obj).prop("checked");
+        $('#rDfrmReqAmt_Amt_' + receiverIdx).prop("disabled", disabled);
+    }
+
+    function getReceiverIdx(id) {
+        return receiverIdx = id.substr(id.lastIndexOf('_') + 1);
+    }
+
+    function validAcntNo(obj) {
+        var receiverIdx = getReceiverIdx(obj.id);
+        console.log('receiverIdx:' + receiverIdx);
+        //TODO: 실제 계좌인증 하도록 변경
+        $("#rAcqnAcntNo_" + receiverIdx).attr("valid", true);
+        $("#rAcntCtfcDtime_" + receiverIdx).val((new Date()).format("yyyyMMddHHmmss"));
+    }
+
+    $("#btnRegTrsf").click(function() {
+        console.log('btnRegTrsf start');
+
+        //region validation
+        if($("#rSvcDvsnCd").val() == "") {
+            alert('서비스를 선택해 주세요.');
+            $("#rSvcDvsnCd").select();
+            return;
+        }
+        else if ($("#rCvycRcitDt").val() == "") {
+            alert('서류접수일을 입력하세요.');
+            return;
+        }
+        else if ($("#rCvycRcitMthdCd").val() == "") {
+            alert('서류접수방법을 선택하세요.');
+            $("#rCvycRcitMthdCd").select();
+            return;
+        }
+        else if ($("#rTrsfStrtDt").val() == "") {
+            alert('적용시작일을 입력하세요.');
+            return;
+        }
+        else if ($("#rCvycBzepNo").val() == "") {
+            alert('양도 거래처를 선택하세요.');
+            $("#rCvycBzepNo").focus();
+            return;
+        }
+        //endregion
+
+        var cvycGoodsList = [];
+        var cvycGoodsCnt = cvycGoodsGridView.getItemCount();
+        for (var idx = 0; idx < cvycGoodsCnt; idx++) {
+            var cvycGoods = {
+                trsfSeq: $("#rTrsfSeq").val(),
+                trsfPrdtSeq: cvycGoodsGridView.getValue(idx, "trsfPrdtSeq"),
+                cvycPrdtCd: cvycGoodsGridView.getValue(idx, "cvycPrdtCd"),
+                cvycPlacCd: cvycGoodsGridView.getValue(idx, "cvycPlacCd"),
+                cvycRankCd: cvycGoodsGridView.getValue(idx, "cvycRankCd")
+            };
+
+            cvycGoodsList.push(cvycGoods);
+        }
+
+        var receiverList = [];
+        for (var idx = 1; idx <= addReceiverCnt; idx++) {
+            //region validation
+            // 첫번째 항목의 거래처는 필수
+            if (idx == 1 && $("#rBzno_1").val() == "" && ($("#rAcqnNm_1").val() == "" || $("#rAcqnBzno_1").val() == "")) {
+                alert("양수자 정보를 입력하세요.");
+                return;
+            }
+
+            // 양수자 정보가 있을 경우 등록정보 생성
+            if ($("#rBzno_" + idx).val() != "" || ($("#rAcqnNm_" + idx).val() != "" && $("#rAcqnBzno_" + idx).val() != "")) {
+                //region 양수자 정보 validation 시작
+                var rDfrmMthdCd = $('[name="rDfrmMthdCd_' + idx + '"]:checked').val();
+                if (rDfrmMthdCd = 'A' && !$("#rDfrmAllYn_"+ idx).prop("checked") && $("#rDfrmReqAmt_Amt_" + idx).val() == "") {
+                    alert("금액을 입력하세요.");
+                    $("#rDfrmReqAmt_Amt_" + idx).focus();
+                    return;
+                }
+                else if (rDfrmMthdCd = 'R' && $("#rDfrmReqAmt_Ratio_" + idx).val() == "") {
+                    alert("정율을 입력하세요.");
+                    $("#rDfrmReqAmt_Ratio_" + idx).focus();
+                    return;
+                }
+                else if (rDfrmMthdCd = 'R' && $("#rDfrmCalcMthdCd_" + idx).val() == "") {
+                    alert("계산방식을 선택하세요.");
+                    $("#rDfrmCalcMthdCd_" + idx).select();
+                    return;
+                }
+                else if ($("#rAcqnBankCd_" + idx).val() == "") {
+                    alert("지급은행을 선택하세요.");
+                    $("#rAcqnBankCd_" + idx).select();
+                    return;
+                }
+                else if ($("#rAcqnAcntNo_" + idx).attr("valid") != true) {
+                    alert("계좌인증을 하세요.");
+                    $("#btnAccnValid_" + idx).focus();
+                    return;
+                }
+                else if ($("#rAcqnAcntNo_" + idx).val() == "") {
+                    alert("계좌번호를 입력하세요.");
+                    $("#rAcqnAcntNo_" + idx).focus();
+                    return;
+                }
+                else if ($("#rAcqnDpowNm_" + idx).val() == "") {
+                    alert("예금주를 입력하세요.");
+                    $("#rAcqnDpowNm_" + idx).focus();
+                    return;
+                }
+                //endregion
+
+                var dfrmReqAmt;
+                if ($("[name='rDfrmMthdCd_" + idx + "']:checked").val() == 'A') {
+                    dfrmReqAmt = $("#rDfrmReqAmt_Amt_" + idx).val();
+                }
+                else if ($("[name='rDfrmMthdCd_" + idx + "']:checked").val() == 'R') {
+                    dfrmReqAmt = $("#rDfrmReqAmt_Ratio_" + idx).val();
+                }
+
+                var receiverInfo = {
+                    trsfSeq: $("#rTrsfSeq").val(),
+                    acqnRankCd: $("#rAcqnRankCd_" + idx).val(),
+                    trsfAcqnSeq: $("#rTrsfAcqnSeq_" + idx).val(),
+                    acqnBzepNo: $("#rAcqnBzepNo_" + idx).val(),
+                    acqnCtrtSno: $("#rAcqnCtrtSno_" + idx).val(),
+                    acqnBzno: $("#rAcqnBzno_" + idx).val(),
+                    acqnNm: $("#rAcqnNm_" + idx).val(),
+                    dfrmBassCd: $("[name='vDfrmBassCd_" + idx + "']:checked").val(),
+                    dfrmMthdCd: $("[name='rDfrmMthdCd_" + idx + "']:checked").val(),
+                    dfrmAllYn: ($("#rDfrmAllYn_" + idx).prop("checked")) ? 'Y' : 'N',
+                    dfrmReqAmt: dfrmReqAmt,
+                    dfrmCalcMthdCd: $("#rDfrmCalcMthdCd_" + idx).val(),
+                    acqnBankCd: $("#rAcqnBankCd_" + idx).val(),
+                    acqnAcntNo: $("#rAcqnAcntNo_" + idx).val(),
+                    acqnDpowNm: $("#rAcqnDpowNm_" + idx).val(),
+                    acntCtfcDtime: $("#rAcntCtfcDtime_" + idx).val()
+                };
+
+                receiverList.push(receiverInfo);
+            }
+            //endregion
+        }
+
+        var regParam = {
+            trsfSeq: $("#rTrsfSeq").val(),
+            svcDvsnCd: $("#rSvcDvsnCd").val(),
+            cvycRcitDt: $("#rCvycRcitDt").val().replace(/-/g,""),
+            cvycRcitMthdCd: $("#rCvycRcitMthdCd").val(),
+            trsfStrtDt: $("#rTrsfStrtDt").val().replace(/-/g,""),
+            trsfEndDt: $("#rTrsfEndDt").val().replace(/-/g,""),
+            trsfStatCd: $("[name=rTrsfStatCd]:checked").val(),
+            //TODO: 첨부파일 항목 추가 필요.
+            // cvycBzno: $("#rCvycBzno").val(),
+            cvycBzepNo: $("#rCvycBzepNo").val(),
+            cvycCtrtSno: $("#rCvycCtrtSno").val(),
+            // cvycBzepNm: $("#rCvycBzepNm").val(),
+            cvycLmtAmt: $("#rCvycLmtAmt").val().replaceAll(",", ""),
+            cvycGoodsList: cvycGoodsList,
+            receiverList : receiverList,
+            cvycRson: $("#rCvycRson").val()
+        };
+        console.log("regParam:" + regParam);
+
+        return;
+
+        var url = "/trsf/doRegTrsf";
+        $.callRestApi(url, "put", regParam, putRegTrsfCallBack, null);
+    });
+
+    function putRegTrsfCallBack(data, textStatus, XMLHttpRequest) {
+        console.log("putRegTrsfCallBack start");
+        // granterDataProvider.setRows(null);
+        // receiverDataProvider.setRows(null);
+        // pymntDataProvider.setRows(null);
+        //
+        // if(data.data.length == 0){
+        //     alert("검색 결과가 없습니다.");
+        // }
+        // else {
+        //     granterDataProvider.setRows(data.data);
+        // }
+    }
+</script>
+</th:block>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ INTERPARK INC., SEOUL, KOREA
+  ~ Copyright(c) 2020 by Interpark Inc.
+  ~
+  ~ All rights reserved. No part of this work may be reproduced, stored in a
+  ~ retrieval system, or transmitted by any means without prior written
+  ~ permission of Interpark Inc.
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="comm.datapf.web.boadmin.domain.dao.CommonDao">
+
+    <select id="selectSrcInfo" resultType="comm.datapf.web.boadmin.domain.dto.role.MenuPgmDtlDto" parameterType="String">
+        /*commonMapper.selectSrcInfo*/
+        SELECT A.*
+        FROM ADMR_PGM_DTL A, ADMR_PGM_BASE B
+        WHERE A.SRC_PATH = #{srcPath}
+        AND A.PGM_ID = B.PGM_ID
+        AND A.USE_YN = 'Y'
+        AND B.USE_YN = 'Y'
+    </select>
+
+    <insert id="insertBoLog" parameterType="comm.datapf.web.boadmin.domain.dto.login.LoginAuthDto" >
+        /* commonMapper.insertBoLog */
+        INSERT INTO ADMR_USE_HIST(
+            SCRN_INQR_SNO
+            , ADMR_ID
+            , PGM_ID
+            , PGM_TYPE_CD
+            <if test="pgmDtlId != null and pgmDtlId != ''">
+                , PGM_DTL_ID
+            </if>
+            <if test="searchItem != null and searchItem != ''">
+                , SEARCH_ITEM
+            </if>
+            <if test="searchText != null and searchText != ''">
+                , SEARCH_TEXT
+            </if>
+            , ADMR_IP
+            , HIST_DVSN_CD
+        )VALUES(
+            <!-- 			TO_CHAR(SYSTIMESTAMP, 'YYYYMMDDHH24MISSFF6')  || LPAD(IPOINT.SEQ_MENU_ACCESS_LOG.NEXTVAL, 8, '0') -->
+            CDI.FN_TRX_GET_AFT_PRCS_SEQ_NO()
+            , #{admrId}
+            , #{pgmId}
+            , #{pgmTypeCd}
+            <if test="pgmDtlId != null and pgmDtlId != ''">
+                , #{pgmDtlId}
+            </if>
+            <if test="searchItem != null and searchItem != ''">
+                , #{searchItem}
+            </if>
+            <if test="searchText != null and searchText != ''">
+                , #{searchText}
+            </if>
+            , #{admrIp}
+            , #{histDvsnCd}
+        )
+    </insert>
+
+    <select id="doCodeListSelect" parameterType="java.util.HashMap" resultType="comm.datapf.web.boadmin.domain.dto.common.ComCdAdmnDto">
+        SELECT
+            CTA.COM_TYPE_CD
+            , CTA.COM_TYPE_CD_NM
+            , CCA.COM_CD
+            , CCA.COM_CD_NM
+            , CCA.COM_CD_NM_1
+            , CCA.COM_CD_NM_2
+            , CCA.HGRK_COM_CD
+            , CCA.COM_CD_DSCR
+            , CCA.COM_CD_SORT_SQN
+            , CCA.USE_YN
+            , CCA.ERLM_NO
+            , CCA.CHNG_NO
+        FROM COM_TYPE_ADMN CTA
+            INNER JOIN COM_CD_ADMN CCA
+            ON CTA.COM_TYPE_CD = CCA.COM_TYPE_CD
+        WHERE CTA.USE_YN = 'Y'
+            AND CCA.USE_YN = 'Y'
+            AND CCA.COM_TYPE_CD = #{comTypeCd}
+        <choose>
+            <when test="sortType != null and sortType == 'DESC'">
+                ORDER BY CCA.COM_CD_SORT_SQN DESC
+            </when>
+            <otherwise>
+                ORDER BY CCA.COM_CD_SORT_SQN ASC
+            </otherwise>
+        </choose>
+    </select>
+
+</mapper>

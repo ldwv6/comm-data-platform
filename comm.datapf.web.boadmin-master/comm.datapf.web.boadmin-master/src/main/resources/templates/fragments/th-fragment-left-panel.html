@@ -1,0 +1,58 @@
+<!-- #NAVIGATION -->
+<!-- Left panel : Navigation area -->
+<!-- Note: This width of the aside area can be adjusted through LESS variables -->
+<aside id="left-panel" th:fragment="th-fragment-left-panel" xmlns:th="http://www.w3.org/1999/xhtml"> <!-- leftpanel start -->
+    <!-- (_leftPanel_userInfo start) -->
+    <div class="login-info" th:replace="fragments/th-fragment-userInfo :: th-fragment-userInfo"></div>
+    <!-- (_leftPanel_userInfo end) -->
+    <nav>
+        <ul>
+
+            <th:block th:each="menu, index : ${session.menuList}">
+                <th:block th:if="${menu != null}">
+                    <li>
+                        <a th:href="${menu.srcPath}" th:title="${menu.pgmNm}"><i class="fa fa-lg fa-fw fa-search"></i> <span class="menu-item-parent">[[${menu.pgmNm}]]</span></a>
+
+                    <th:block th:if="${menu.subMenus != null && menu.subMenus.size >0 }">
+                        <!-- 2뎁스 메뉴 START -->
+                        <ul class="left-menu">
+                            <th:block th:each="twoDepthMenu, twoIndex : ${menu.subMenus}">
+                                <li>
+                                    <a th:href="${twoDepthMenu.srcPath}" th:title="${twoDepthMenu.pgmNm}">[[${twoDepthMenu.pgmNm}]]</a>
+
+                                    <th:block th:if="${twoDepthMenu.subMenus != null && twoDepthMenu.subMenus.size >0 }">
+                                        <!-- 3뎁스 메뉴 START -->
+                                        <ul class="left-menu">
+                                            <th:block th:each="threeDepthMenu, threeIndex : ${twoDepthMenu.subMenus}">
+                                                <li>
+                                                    <a th:href="${threeDepthMenu.srcPath}" th:title="${threeDepthMenu.pgmNm}">[[${threeDepthMenu.pgmNm}]]</a>
+                                                </li>
+                                            </th:block>
+                                        </ul>
+                                        <!-- 3뎁스 메뉴 END -->
+                                    </th:block>
+
+                                </li>
+                            </th:block>
+                        </ul>
+                        <!-- 2뎁스 메뉴 END -->
+                    </th:block>
+                    </li>
+                </th:block>
+            </th:block>
+
+            <li>
+                <a href="login.html" title="로그아웃" data-action="userLogout" data-logout-msg="You can improve your security further after logging out by closing this opened browser">
+                    <i class="fa fa-lg fa-fw fa-power-off"></i> <span class="menu-item-parent">로그아웃</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- nav close/open (_open-close start)-->
+    <span class="minifyme" data-action="minifyMenu">
+      <i class="fa fa-arrow-circle-left hit"></i>
+    </span>
+    <!-- nav close/open (_open-close end)-->
+
+</aside> <!-- leftpanel end -->

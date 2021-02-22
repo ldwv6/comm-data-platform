@@ -1,0 +1,90 @@
+@charset "UTF-8";
+/*!
+ _ _  _
+| | || | HSCM
+| | || | INTERPARK UI Development Team
+`___'|_| v0.1.1
+
+*/
+@font-face {
+  font-family: "Noto Sans KR";
+  font-style: normal;
+  font-weight: 300;
+  src: url("//openimage.interpark.com/.fonts/NotoSansKR/2350.abv2/hinted/NotoSansKR-Light.eot");
+  src: local(※), url("//openimage.interpark.com/.fonts/NotoSansKR/2350.abv2/hinted/NotoSansKR-Light.woff2") format("woff2"), url("//openimage.interpark.com/.fonts/NotoSansKR/2350.abv2/hinted/NotoSansKR-Light.woff") format("woff"), url("//openimage.interpark.com/.fonts/NotoSansKR/2350.abv2/hinted/NotoSansKR-Light.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "Noto Sans KR";
+  font-style: normal;
+  font-weight: 400;
+  src: url("//openimage.interpark.com/.fonts/NotoSansKR/2350.abv2/hinted/NotoSansKR-Regular.eot");
+  src: local(※), url("//openimage.interpark.com/.fonts/NotoSansKR/2350.abv2/hinted/NotoSansKR-Regular.woff2") format("woff2"), url("//openimage.interpark.com/.fonts/NotoSansKR/2350.abv2/hinted/NotoSansKR-Regular.woff") format("woff"), url("//openimage.interpark.com/.fonts/NotoSansKR/2350.abv2/hinted/NotoSansKR-Regular.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "Noto Sans KR";
+  font-style: normal;
+  font-weight: 500;
+  src: url("//openimage.interpark.com/.fonts/NotoSansKR/2350.abv2/hinted/NotoSansKR-Medium.eot");
+  src: local(※), url("//openimage.interpark.com/.fonts/NotoSansKR/2350.abv2/hinted/NotoSansKR-Medium.woff2") format("woff2"), url("//openimage.interpark.com/.fonts/NotoSansKR/2350.abv2/hinted/NotoSansKR-Medium.woff") format("woff"), url("//openimage.interpark.com/.fonts/NotoSansKR/2350.abv2/hinted/NotoSansKR-Medium.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "Noto Sans KR";
+  font-style: normal;
+  font-weight: 600;
+  src: url("//openimage.interpark.com/.fonts/NotoSansKR/2350.abv2/hinted/NotoSansKR-Bold.eot");
+  src: local(※), url("//openimage.interpark.com/.fonts/NotoSansKR/2350.abv2/hinted/NotoSansKR-Bold.woff2") format("woff2"), url("//openimage.interpark.com/.fonts/NotoSansKR/2350.abv2/hinted/NotoSansKR-Bold.woff") format("woff"), url("//openimage.interpark.com/.fonts/NotoSansKR/2350.abv2/hinted/NotoSansKR-Bold.otf") format("opentype");
+}
+
+.modal.modal-center {
+  text-align: center;
+}
+
+@media screen and (min-width: 768px) {
+  .modal.modal-center:before {
+    display: inline-block;
+    vertical-align: middle;
+    content: " ";
+    height: 100%;
+  }
+}
+
+.modal-dialog.modal-center {
+  display: inline-block;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.modal-dialog.modal-45size {
+  width: 45%;
+  height: 45%;
+  margin: 0;
+  padding: 0;
+}
+
+.modal-content.modal-45size {
+  height: auto;
+  min-height: 45%;
+}
+
+.modal-dialog.modal-80size {
+  width: 80%;
+  height: 80%;
+  margin: 0;
+  padding: 0;
+}
+
+.modal-content.modal-80size {
+  height: auto;
+  min-height: 80%;
+}
+
+.active-menu {
+  border: 2px solid #faa937 !important;
+}
+
+.btn-active-admin {
+  background: #faa937;
+}

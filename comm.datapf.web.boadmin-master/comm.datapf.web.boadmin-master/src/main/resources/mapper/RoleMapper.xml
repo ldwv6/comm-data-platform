@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ INTERPARK INC., SEOUL, KOREA
+  ~ Copyright(c) 2020 by Interpark Inc.
+  ~
+  ~ All rights reserved. No part of this work may be reproduced, stored in a
+  ~ retrieval system, or transmitted by any means without prior written
+  ~ permission of Interpark Inc.
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="comm.datapf.web.boadmin.domain.dao.RoleDao">
+
+    <sql id="pagingHeader">
+        SELECT
+            *
+        FROM
+        (
+            SELECT
+                A.*, ROWNUM RNUM
+            FROM
+            (
+    </sql>
+
+    <sql id="pagingFooter">
+        <![CDATA[
+				)
+				A
+			WHERE
+				ROWNUM <= (#{pageNo} + 1) * #{pageSize}
+			)
+		WHERE
+			RNUM > (#{pageNo} * #{pageSize})
+		]]>
+    </sql>
+
+
+    <select id="selectSearchRoleList" parameterType="java.util.HashMap" resultType="comm.datapf.web.boadmin.domain.dto.role.RoleAuthorDto" >
+        /*RoleMapper.selectSearchRoleList*/
+        SELECT
+            ROLE_ID
+            , ROLE_NM
+            , USE_YN
+        FROM CDI.ADMR_ATHR_BASE
+    </select>
+
+    <select id="selectRoleList" parameterType="comm.datapf.web.boadmin.domain.dto.role.RoleParamDto" resultType="comm.datapf.web.boadmin.domain.dto.role.RoleAuthorDto">
+        /*RoleMapper.selectRoleList*/
+        <!-- <include refid="pagingHeader"/> -->
+        SELECT
+            A.*
+            , CDI.FN_COM_GET_ADMR_NM(A.CHNG_ADMR_ID) AS CHNG_ADMR_NM
+        FROM CDI.ADMR_ATHR_BASE A
+        WHERE 1 = 1
+        <if test="searchRoleId != null and searchRoleId != ''">
+            AND ROLE_ID = #{searchRoleId}
+        </if>
+        <if test="searchUseYn != null and searchUseYn != ''">
+            AND USE_YN = #{searchUseYn}
+        </if>
+        ORDER BY CHNG_DTIME DESC
+        <!-- <include refid="pagingFooter"/> -->
+    </select>
+
+    <select id="getRoleAdmrList" resultType="comm.datapf.web.boadmin.domain.dto.role.RoleAdmrAuthDto" parameterType="java.util.HashMap">
+        /*roleSqlMap.getRoleAdmrList*/
+        SELECT
+            B.ADMR_NM
+            , A.USE_YN
+            , CDI.FN_COM_GET_ADMR_NM(A.CHNG_ADMR_ID) AS CHNG_ADMR_ID
+            , A.CHNG_DTIME
+            , ADMR_EMAL
+            , B.ADMR_ID
+            , B.EMPY_NO
+        FROM CDI.ADMR_ATHR_MPPG A
+            ,  CDI.ADMR_BASE_INFO B
+        WHERE A.ADMR_ID = B.ADMR_ID
+            AND A.ROLE_ID = #{roleId}
+            <if test="@com.interpark.member.bo.utils.StringUtils@isEmpty(roleUpate)">
+                <if test="useYn != null and (useYn != 'ALL'.toString())">
+                    AND A.USE_YN =#{useYn}
+                </if>
+            </if>
+            <if test="@com.interpark.member.bo.utils.StringUtils@isNotEmpty(roleUpate)">
+                AND A.USE_YN = 'Y'
+            </if>
+        ORDER BY CHNG_DTIME DESC
+    </select>
+
+    <insert id="insertRoleAuth" parameterType="java.util.HashMap">
+        /*RoleMapper.insertRoleAuth*/
+        INSERT INTO CDI.ADMR_ATHR_BASE
+        (
+            ROLE_ID
+            , ROLE_NM
+            , USE_YN
+            , ERLM_ADMR_ID
+            , ERLM_ADMR_IP
+            , ERLM_DTIME
+            , CHNG_ADMR_ID
+            , CHNG_ADMR_IP
+            , CHNG_DTIME
+        )VALUES(
+            #{roleId}
+            , #{roleNm}
+            , #{useYn}
+            , #{userId}
+            , #{ip}
+            , #{today}
+            , #{userId}
+            , #{ip}
+            , #{today}
+        )
+    </insert>
+
+    <update id="updateRoleAuth" parameterType="java.util.HashMap">
+        /*RoleMapper.updateRoleAuth*/
+        UPDATE CDI.ADMR_ATHR_BASE
+            SET	ROLE_NM = #{roleNm}
+            , USE_YN = #{useYn}
+            , CHNG_ADMR_ID = #{userId}
+            , CHNG_ADMR_IP = #{ip}
+            , CHNG_DTIME = #{today}
+        WHERE ROLE_ID = #{roleId}
+    </update>
+</mapper>

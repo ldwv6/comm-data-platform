@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<body style="width: 100%;" class="" th:fragment="th-fragment-body">
+
+<header id="header" th:replace="fragments/th-fragment-header :: th-fragment-header"></header>
+
+<aside id="left-panel" th:replace="fragments/th-fragment-left-panel :: th-fragment-left-panel"></aside>
+
+<!-- RIBBON -->
+<div id="ribbon" class="ribbon_other">
+
+
+</div>
+<!-- END RIBBON -->
+
+
+<div id="main" role="main" layout:fragment="th-fragment-content-main" style="height: 800px">th-frament-body 확인</div>
+<!--<div class="widget-body">
+    <section id="widget-grid" class="">
+        <div class="row">
+        </div>
+    </section>
+    asdasdasdas
+</div>-->
+
+</body>
+</html>

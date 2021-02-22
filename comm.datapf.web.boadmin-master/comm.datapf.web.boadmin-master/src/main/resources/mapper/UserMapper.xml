@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ INTERPARK INC., SEOUL, KOREA
+  ~ Copyright(c) 2020 by Interpark Inc.
+  ~
+  ~ All rights reserved. No part of this work may be reproduced, stored in a
+  ~ retrieval system, or transmitted by any means without prior written
+  ~ permission of Interpark Inc.
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="comm.datapf.web.boadmin.domain.dao.UserDao">
+
+    <select id="readUser" parameterType="String" resultType="comm.datapf.web.boadmin.domain.dto.UserDto">
+        /*UserMapper.readUser */
+        SELECT ADMR_ID AS username,
+            PWD AS password
+        FROM ADMR_BASE_INFO
+        WHERE EMPY_NO = #{username}
+            AND USE_YN = 'Y'
+            AND PWD_ERR_RCNT != '5'
+    </select>
+
+    <select id="readAuthority" parameterType="String" resultType="String">
+        /*UserMapper.readAuthority */
+        SELECT  B.ROLE_ID AS authorities
+        FROM ADMR_BASE_INFO A,
+            ADMR_ATHR_MPPG B
+        WHERE A.ADMR_ID = B.ADMR_ID
+            AND A.ADMR_ID = #{username}
+            AND A.USE_YN = 'Y'
+            AND B.USE_YN = 'Y'
+    </select>
+
+</mapper>

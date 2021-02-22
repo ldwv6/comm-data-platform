@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration scan="true" scanPeriod="30 seconds">
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender"> 
+		<encoder> 
+			<Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread %contextName] %X{empyNo} %-5logger{36} [%file : %line] - %msg%n</Pattern>
+		</encoder> 
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>debug</level>
+		</filter>
+	</appender>
+
+    <!-- define log pattern -->
+    <property name="LOG_FILE" value="/var/log/boadmin/boadmin.log"/>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_FILE}</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_FILE}.%d{yyyy-MM-dd}-%i.log.gz</fileNamePattern>
+			<maxFileSize>100MB</maxFileSize>
+			<maxHistory>30</maxHistory>
+			<totalSizeCap>5GB</totalSizeCap>		 
+		</rollingPolicy>
+		<encoder> 
+			<Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread %contextName] %X{empyNo} %-5logger{15} [%file : %line] - %msg%n</Pattern>
+            <immediateFlush>true</immediateFlush> <!--  default : true -->
+		</encoder>
+	</appender>
+	
+	<logger name="org.mybatis" level="info" />
+	<logger name="java.sql" level="debug" />
+	<logger name="org.springframework" level="info" />
+	<logger name="io.lettuce" level="info" />
+
+	<springProfile name="local">
+        <root level="DEBUG">
+            <appender-ref ref="STDOUT" />
+        </root>
+    </springProfile>
+    <springProfile name="dev,stg">
+        <root level="DEBUG">
+        	<appender-ref ref="STDOUT" />
+            <appender-ref ref="FILE" />
+        </root>
+    </springProfile>
+    <springProfile name="svc">
+        <root level="INFO">
+			<appender-ref ref="STDOUT" />
+            <appender-ref ref="FILE" />
+        </root>
+    </springProfile>
+</configuration>

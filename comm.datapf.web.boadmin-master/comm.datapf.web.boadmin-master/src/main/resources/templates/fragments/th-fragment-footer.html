@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<footer th:fragment="th-fragment-footer">
+    <!-- JARVIS WIDGETS -->
+    <script type="text/javascript" th:src="@{/static/js/smartAdmin/smartwidgets/jarvis.widget.min.js}"></script>
+    <script type="text/javascript">
+        // DO NOT REMOVE : GLOBAL FUNCTIONS!
+        $(document).ready(function () {
+            pageSetUp();
+            // PAGE RELATED SCRIPTS
+            // class switcher for radio and checkbox
+            $('input[name="demo-switcher-1"]').change(function () {
+                //alert($(this).val())
+                $this = $(this);
+                myNewClass = $this.attr('id');
+                $('.demo-switcher-1 input[type="checkbox"]').removeClass();
+                $('.demo-switcher-1 input[type="checkbox"]').addClass("checkbox " + myNewClass);
+
+                $('.demo-switcher-1 input[type="radio"]').removeClass();
+                $('.demo-switcher-1 input[type="radio"]').addClass("radiobox " + myNewClass);
+            })
+        })
+
+        // Left Menu
+        const url = window.location;
+        const element = $('.left-menu a').filter(function () {
+            return this.href == url || url.href.indexOf(this.href) == 0;
+        });
+        $(element).parentsUntil('.left-menu', 'li').addClass('active').siblings().removeClass();
+
+    </script>
+</footer>
+</html>

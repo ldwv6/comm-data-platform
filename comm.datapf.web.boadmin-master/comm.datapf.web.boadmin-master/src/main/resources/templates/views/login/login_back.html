@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<!--<head layout:fragment="th-fragment-head">-->
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta http-equiv="Content-Script-Type" content="text/javascript" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0"/>
+    <meta name="description" content=""/>
+
+    <!--<link rel="stylesheet" type="text/css" media="screen" th:href="@{/static/css/style.default.css}" />
+    <link rel="stylesheet" type="text/css" media="screen" th:href="@{/static/css/restyle.css}" />-->
+    <script type="text/javascript" th:src="@{/static/js/jquery-2.1.1.min.js}"></script>
+</head>
+
+    <script th:inline="javascript">
+
+        $(document).ready(function() {
+            var test = [[${wasType}]];
+            var _br_ver = function () {
+                var word;
+                var version = "N/A";
+                var agent = navigator.userAgent.toLowerCase();
+                var name = navigator.appName;
+
+                // IE old version ( IE 10 or Lower )
+                if ( name == "Microsoft Internet Explorer" ){
+                    word = "msie ";
+                }
+                else {
+                    // IE 11
+                    if ( agent.search("trident") > -1 ) word = "trident/.*rv:";
+                    // IE 12  ( Microsoft Edge )
+                    else if ( agent.search("edge/") > -1 ) word = "edge/";
+                }
+
+                var reg = new RegExp( word + "([0-9]{1,})(\\.{0,}[0-9]{0,1})" );
+                if (  reg.exec( agent ) != null  ){
+                    version = RegExp.$1 + RegExp.$2;
+                }
+                return version;
+            }
+
+            var _ie_ver = _br_ver();
+
+            if(_br_ver() != 'N/A'){
+                if(Number(_ie_ver) < 10){
+                    alert("이 브라우저 버전은 지원되지 않습니다. </br> Google Chrome, Microsoft Edge 및 IE 10 버전 이상의 </br>브라우저를 사용해주세요.");
+                }
+            }
+
+            $(".panel-signin").hide();
+            var admrId = [[${session.admrId}]];
+            if(admrId != "null" && admrId != null){
+                var pwdRemainDt = "[[${session.pwdRemainDt}]]";
+
+                if(0 < pwdRemainDt && pwdRemainDt <=7 ){
+                    alert("패스워드 변경 "+pwdRemainDt+"일 전입니다.", function(){
+                        location.href = "main";
+                    });
+                }else{
+                    location.href = "main";
+                }
+            }else{
+                $(".panel-signin").show();
+            }
+
+            getLogin();
+
+            if(document.frm.username.value == ""){
+                $("#username").focus();
+            }else{
+                $("#password").focus();
+            }
+
+            var _back_color;
+            var _back_color_LOCAL = '#ffc067';
+            var _back_color_DEV = '#c3de94';
+            var _back_color_STG = '#bab6ff';
+            var _type = [[${wasType}]];
+            if(_type  == 'local'){
+                _back_color = _back_color_LOCAL;
+                $('.reqAdminPopup').show();
+            }else if(_type  == 'dev'){
+                _back_color = _back_color_DEV;
+            }else if(_type  == 'stg'){
+                _back_color = _back_color_STG;
+            }else if(_type  == 'svc'){
+                $('.reqAdminPopup').show();
+
+            }
+
+            $('.server_nm_color').css('background-color', _back_color);
+            if(_type != 'SVC'){
+                $('.server_nm_span').text(_type);
+            }
+
+        });
+
+
+        function do_login(){
+            var id = $("#username").val();
+            var pwd = $("#password").val();
+            if(id.length == 0){
+                alert("아이디를 입력해 주세요.");
+                document.frm.username.value = "";
+                document.frm.password.value = "";
+                document.frm.username.focus();
+                return;
+            }
+            if(pwd.length == 0){
+                alert("비밀번호를 입력해 주세요.");
+                document.frm.password.value = "";
+                document.frm.password.focus();
+                return;
+            }
+
+            var check = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/;
+            if((check.test(pwd))){
+                alert("한글이 포함되어있습니다. 다시입력해주세요.");
+                document.frm.password.value = "";
+                document.frm.password.focus();
+            }
+            if(document.frm.idcheck.checked){
+                saveLogin(document.frm.username.value);
+            }else{
+                saveLogin("");
+            }
+            document.frm.action = "/login";
+            document.frm.submit();
+        }
+
+        function setsave(name,value,exporedays) {
+            var today = new Date();
+            today.setDate(today.getDate() + exporedays);
+            document.cookie = name+"="+escape(value)+";path=/; expires="+today.toGMTString()+";";
+        }
+
+        function saveLogin(id){
+            if(id!=""){
+                setsave("memberAdminId",id,30);
+            }else{
+                setsave("memberAdminId",id,-1);
+            }
+        }
+
+        function getLogin() {
+            var cook=document.cookie + ";";
+            var idx = cook.indexOf("memberAdminId",0);
+            var val="";
+
+            if(idx!=-1){
+                cook=cook.substring(idx,cook.length);
+                begin = cook.indexOf("=",0)+1;
+                end = cook.indexOf(";",begin);
+                val = unescape(cook.substring(begin,end));
+            }
+
+            if(val!=""){
+                document.frm.username.value = val;
+                document.frm.idcheck.checked = true;
+            }
+        }
+
+        function goFindPwd(id, value) {
+            bootbox.dialog({
+                title: "패스워드 찾기",
+                onEscape: function () {
+                },
+                animate: false,
+                message: "<label>사번과 이메일을 입력해주세요.<br/>"
+                    + "확인되면 등록된 이메일로 패스워드를 보내드립니다.</label><br/>"
+                    + "<br/><input type='text' class='form-control' placeholder='사번' name='empy_no' id='empy_no' style='width:100%;' value='" + id + "'/><br/>"
+                    + "<input type='text' class='form-control' placeholder='E-MAIL' name='email' id='email' style='width:100%;' />"
+                ,
+                buttons: {
+                    success: {
+                        label: "확인",
+                        className: "btn-info",
+                        callback: function () {
+
+                            $.ajax({
+                                url: "findPwd",
+                                type: "POST",
+                                data: {
+                                    no: $('input[name=empy_no]').val()
+                                    , email: $('input[name=email]').val()
+                                },
+                                success: function (data) {
+                                    var resultCode = data.trim().split("|");
+                                    if (resultCode[0] == "0000") {
+                                        alert("등록된 " + resultCode[2] + " 이메일로 패스워드를 보냈습니다.", function () {
+                                            location.href = "login";
+                                        });
+                                    } else if (resultCode[0] == "1111") {
+                                        alert(resultCode[1], function () {
+                                            goFindPwd(resultCode[2], resultCode[3]);
+                                        });
+                                    } else {
+                                        alert(resultCode[1], function () {
+                                            location.href = "login";
+                                        }, '', 'login');
+                                    }
+                                }
+                            });
+                        }
+                    },
+                    cancel: {
+                        label: "닫기",
+                        callback: function () {
+
+                        }
+                    }
+                }
+            });
+        }
+
+    </script>
+
+<body class="signin bo2gbn" onload='document.frmLogin.username.focus();'>
+<div class="panel panel-signin"  style="box-shadow: 0px 0px 20px -5px rgba(0, 0, 0, 0.8); margin-top: 282px;">
+    <div class="panel-body" style="padding: 41px 38px 20px;">
+        <div class="logo center">
+            <img src="/static/images/logo-login.png" alt="Onepay Logo" style="width: 70%; margin-left: -11px; margin-top: -15px; margin-bottom: 10px;"/>
+        </div>
+        <!--                     <div class="mb5"></div> -->
+        <br/>
+        <form name="frm" method="post" onsubmit="return false;">
+            <table>
+                <colgroup>
+                    <col width="90%" />
+                    <col width="10%" />
+                </colgroup>
+                <tr>
+                    <td>
+                        <div class="input-group mb5" style="width: 100%;">
+                            <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                            <input type="text" class="form-control" placeholder="사번" id="username" name="username" style="height: 30px;" autocomplete="current-password"/>
+                            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+                        </div><!-- input-group -->
+                    </td>
+                    <td rowspan="2">
+                        <button type="button" onclick="do_login();" class="btn btn-success ml10" style="height: 67px; margin-top: -16px;" tabindex="2">Sign In <i class="fa fa-angle-right"></i></button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="input-group mb15" style="width: 100%;">
+                            <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                            <input type="password" class="form-control" placeholder="password" id="password" name="password" autocomplete="current-password" style="height: 30px;" onkeydown="if(event.keyCode == 13) { do_login(); }" tabindex="0"/>
+                        </div><!-- input-group -->
+                    </td>
+                </tr>
+            </table>
+            <div class="clearfix">
+                <div class="pull-left">
+                    <div class="ckbox ckbox-primary">
+                        <input type="checkbox" name="idcheck" id="rememberMe" />
+                        <label for="rememberMe" style="color: #587373;">아이디 저장</label>
+                    </div>
+                </div>
+                <!--                             <div class="pull-right mt15 reqAdminPopup"> -->
+                <!--                                 <button type="button" onclick="reqAdmin()" class="btn btn-info" style="margin-left: 5px;">계정신청</button> -->
+                <!--                             </div> -->
+                <div class="pull-right mt15">
+                    <button type="button" onclick="goFindPwd('','')" class="btn btn-info">패스워드 찾기</button>
+                </div>
+            </div>
+            <div class="mb20"></div>
+        </form>
+        <!--                     <div id="wasType" style="font-size: 100px;"> LOCAL </div> -->
+    </div><!-- panel-body -->
+</div><!-- panel -->
+</body>
+<div class="col-md-12 server_nm_div" style="margin-top: 50px; position:relative;">
+    <div class="server_nm_color" style="background-color: none; height: 340px; width: 100%; text-align: center; position:fixed; left:0; z-index:10; top: 70%;">
+        <span class="server_nm_span" style="font-size:-webkit-xxx-large; margin-top: 104px; font-weight: bolder;"></span>
+    </div>
+</div>
+
+</html>

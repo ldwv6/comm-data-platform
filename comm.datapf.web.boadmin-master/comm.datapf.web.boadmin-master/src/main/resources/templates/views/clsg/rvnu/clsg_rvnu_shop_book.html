@@ -1,0 +1,220 @@
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/th-layout-admin}">
+<head layout:fragment="th-fragment-head">
+    <th:block layout:fragment="th-head">
+        <title>Housing Admin</title>
+    </th:block>
+</head>
+<body id="backOffice">
+<!-- MAIN PANEL -->
+<div id="main" role="main" layout:fragment="th-fragment-content-main">
+    <!-- MAIN CONTENT Start-->
+    <div id="content">
+        <!-- content title Start-->
+        <div class="row col-sm-12 col-md-12 col-lg-12">
+            <h1 class="page-title txt-color-blueDark">
+                <!-- Page title start -->
+                <i class="fa fa-fw fa-desktop"></i> 매출집계표 쇼핑/도서
+                <!-- Page title end//-->
+            </h1>
+        </div>
+        <!-- content title End //-->
+        <!-- content-body Start-->
+        <div class="widget-body">
+            <section id="widget-grid" class="">
+                <div class="row">
+                    <article class="col-sm-12 col-md-12 col-lg-12">
+                        <!-- Widget ID (each widget will need unique ID) -->
+                        <div class="jarviswidget" id="wid-id-1" data-widget-colorbutton="false"
+                             data-widget-editbutton="false" data-widget-deletebutton="false"
+                             data-widget-sortable="false">
+                            <header>
+                                <h2></h2>
+                            </header>
+                            <!-- widget content -->
+                            <div class="widget-body">
+                                <!-- Content Area -->
+                                <div class="table-responsive">
+                                    <table class="table table-borderless custom_table-04 margin-bottom-0">
+                                        <colgroup>
+                                            <col>
+                                            <col>
+                                        </colgroup>
+                                        <tbody>
+                                        <tr>
+                                            <td>
+                                                <div class="col">
+                                                    <div class="col-xs-8" style="padding: 0">
+                                                        <table class="table table-bordered">
+                                                            <colgroup>
+                                                                <col style="width:25%;">
+                                                                <col style="width:15%;">
+                                                                <col>
+                                                            </colgroup>
+                                                            <tbody>
+                                                            <tr>
+                                                                <td>
+                                                                    <select name="" id="" class="form-control">
+                                                                        <option value="">서비스 선택</option>
+                                                                        <option value="shop">쇼핑</option>
+                                                                        <option value="book">도서</option>
+                                                                    </select>
+                                                                </td>
+                                                                <th class="active v-cetner text-nowrap">마감확정일</th>
+                                                                <td>
+                                                                    <div class="row">
+                                                                        <div class="col-md-5">
+                                                                            <div class="input-group">
+                                                                                <input class="form-control" id="fromDe" type="text" placeholder="From">
+                                                                                <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-md-1 col-lg-1 text-center form-control-static">
+                                                                            <span class="inline-block"> ~ </span>
+                                                                        </div>
+                                                                        <div class="col-md-5">
+                                                                            <div class="input-group">
+                                                                                <input class="form-control" id="toDe" type="text" placeholder="To">
+                                                                                <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                    <div class="col-xs-2 form-control-static">
+                                                        <button type="button" class="btn btn-primary btn-sm" id="btnSearch">조회</button>
+                                                        <button type="button" class="btn btn-danger btn-sm" id="btnExecSlip">전표발행</button>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <!-- Title Text -->
+                                                <div class="pull-left">
+                                                    <h3 class="no-margin"><strong>|</strong> 매출유형별 매출집계표</h3>
+                                                </div>
+                                                <div class="pull-right">
+                                                    <button type="button" id="btn_Excel" class="btn btn-success">엑셀 다운로드</button>
+                                                </div>
+                                                <div class="clearfix"></div>
+                                                <!-- Title Text //-->
+                                                <!-- grid -->
+                                                <div class="realgrid_box mt-10">
+                                                    <div style="margin:auto">
+                                                        <div style="height:400px;width:100%;background-color:#ccc;" id="dataGridMain"></div>
+                                                    </div>
+                                                </div>
+                                                <!-- grid //-->
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!-- Content Area //-->
+                            </div>
+                            <!-- widget content //-->
+                        </div>
+                        <!-- Widget ID (each widget will need unique ID) //-->
+                    </article>
+                </div>
+            </section>
+        </div>
+        <!-- content-body End//-->
+    </div>
+    <!-- MAIN CONTENT End//-->
+</div>
+<!-- MAIN PANEL //-->
+
+<script type="text/javascript">
+
+    //dataGrid
+    var gridViewMain, dataProviderMain;     //매출집계
+    var gridViewSub1, dataProviderSub1;     //대표분류별 매출집계
+    var gridViewSub2, dataProviderSub2;     //판매비용별 매출집계
+    var gridViewSub3, dataProviderSub3;     //대표부서별 매출집계
+
+    $(document).ready(function() {
+
+        //날짜 구하기
+        var lastMonthDate = new Date();
+        lastMonthDate.setMonth(lastMonthDate.getMonth()-1);
+
+        $.datepicker.setDefaults({
+            dateFormat: 'yy-mm-dd',
+            prevText: '이전 달',
+            nextText: '다음 달',
+            monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+            monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+            dayNames: ['일', '월', '화', '수', '목', '금', '토'],
+            dayNamesShort: ['일', '월', '화', '수', '목', '금', '토'],
+            dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
+            showMonthAfterYear: true,
+            yearSuffix: '년'
+        });
+
+        // Date Range Picker
+        $("#fromDe").datepicker({
+            defaultDate: "+1w",
+            changeMonth: true,
+            changeYear: true,
+            numberOfMonths: 1,
+            prevText: '<i class="fa fa-chevron-left"></i>',
+            nextText: '<i class="fa fa-chevron-right"></i>',
+            onClose: function (selectedDate) {
+                $("#to").datepicker("option", "minDate", selectedDate);
+            },
+            "autoclose": true
+        }).datepicker("setDate", lastMonthDate.getFullYear() + "-" + eval(lastMonthDate.getMonth()+1) + "-" + lastMonthDate.getDate());
+
+        $("#toDe").datepicker({
+            defaultDate: "+1w",
+            changeMonth: true,
+            changeYear: true,
+            numberOfMonths: 1,
+            prevText: '<i class="fa fa-chevron-left"></i>',
+            nextText: '<i class="fa fa-chevron-right"></i>',
+            onClose: function (selectedDate) {
+                $("#from").datepicker("option", "maxDate", selectedDate);
+            },
+            "autoclose": true
+        }).datepicker("setDate", new Date());
+
+        /************************************************************************************************************************
+         *													GRID START															*
+         *************************************************************************************************************************/
+        //그리드1
+        gridViewMain = new RealGridJS.GridView("dataGridMain");
+        dataProviderMain = new RealGridJS.LocalDataProvider();
+        gridViewMain.setDataSource(dataProviderMain);
+
+        var dataFieldMain = [
+            {fieldName: "ppayRegSttus"}, 	{fieldName: "itemTy"}, 	{fieldName: "bcncId"}, 		{fieldName: "payReason"}
+            , {fieldName: "ppayTyNm"}, {fieldName: "itemTyNm"}, 	{fieldName: "ppayRegSttusNm"}, 	{fieldName: "ppayDdctSttusNm"}
+        ];
+
+        dataProviderMain.setFields(dataFieldMain);
+
+        var gridColumnsMain = [
+            {name: "itemTyNm",		fieldName: "itemTyNm",		header: {text: "구분"},		width: "80",	readOnly: true, editable: false, styles: {background: "#FFF", textAlignment: "center"}}
+            ,{name: "ppayTyNm",		fieldName: "ppayTyNm",		header: {text: "유형"},		width: "80",	readOnly: true, editable: false, styles: {background: "#FFF", textAlignment: "center"}}
+        ];
+
+        gridViewMain.setColumns(gridColumnsMain);
+        gridViewMain.setOptions({checkBar: {visible: true}, panel: {visible: false}, stateBar: {visible: false}, footer: {visible: false}});
+        //endregion
+
+        /************************************************************************************************************************
+         *													JQUERY START														*
+         *************************************************************************************************************************/
+
+
+
+    });
+
+</script>
+</body>
+</html>

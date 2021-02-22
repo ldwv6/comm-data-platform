@@ -1,0 +1,69 @@
+#scpdb_agent.ini
+
+#path:D:\dbms_api\
+
+[KEYINFO]
+KEY1=CMN_IDN_DEV_AES_256
+KEY20=CMN_ACCT_DEV_AES_256
+KEY21=CMN_CARD_DEV_AES_256
+KEY_TEST=CMN_MANUAL_TEST-_DEV_AES_256
+#KEY2=ServiceID,SCP_FILEPATH
+
+[SERVER]
+ServerIP=180.70.96.167
+ServerPort=2525
+
+[SERVER2]
+ServerIP=180.70.96.168
+ServerPort=2525
+
+[TIMEOUT]
+ConnectTimeout=2
+SendTimeout=10
+RecvTimeout=10
+
+[AGENT]
+AgentID=CMN_INTEGRATED_MODULE_DEV
+LicenseFilePath=D:\dbms_api\scpdb_license.cer
+LogDir=D:\dbms_api\log
+
+#LogLevel=0.NO / 2.LEVEL2_ALERT / 4.LEVEL4_ERROR / 6.LEVEL6_NOTICE / 8.LEVEL8_DEBUG
+LogLevel=8
+CacheMax=50
+LogCount=10000
+LogCountType=1
+LogCountTime=0
+SiteCertFilePath=D:\dbms_api\key\damo_site.cer
+CertFilePath=D:\dbms_api\key\damo_agt.cer
+KeyFilePath=D:\dbms_api\key\damo_agt.key
+SPIN=+gNNnEgpraTDKD9/1A==
+
+#Partial Encryption CharSet=0.NO / 1.EUC-KR / 2.UTF-8
+CharSet=0
+#Partial Encryption Type=0.OLD / 1.NEW
+PartialEncType=0
+#KMS Communication Version=100 / 202
+PKP=100
+AclPKP=100
+#KMS Communication Data Version=102 / 103 / 104 / 105 / 106 / 107 / 109
+#102: ~ SG-KMS 3.0.1.4
+#103: ~ SG-KMS 3.0.2.0
+#104: ~ SG-KMS 3.0.2.4
+#105: ~ SG-KMS 3.0.4.0
+#106: ~ SG-KMS 3.0.7.1
+#107: ~ SG-KMS 3.0.16.1
+#109: ~
+PKD=109
+#FileKeyInfo=0.NO / 1.YES
+FileKeyInfo=0
+#DiscernMode=0.NO / 1.YES
+DiscernMode=0
+DiscernChar=@^
+#DiscernAfter=0.NO / 1.YES
+DiscernAfter=0
+ZeroLengthMode=0
+#GroupKeyBackupMode=0.NO / 1.YES
+GroupKeyBackupMode=0
+GroupKeyBackupDir=
+
+#scpdb_agent.ini

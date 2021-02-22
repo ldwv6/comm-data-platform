@@ -1,0 +1,144 @@
+#hikari 설정 추가시 CommDataSourceConfig.java 에도 추가 필요
+spring:
+  datasource:
+    hikari:
+      connection-timeout: 20000 #default=30000
+      validation-timeout: 5000 #defalut=5000
+      idle-timeout: 600000 #defalut=600000
+      maximum-pool-size: 10 #defalut=10
+      minimum-idle: 10
+---
+spring:
+  profiles: local
+  datasource:
+    shop:
+      url: "jdbc:log4jdbc:oracle:thin:@172.25.9.21:1549:COMTEST"
+      driver-class-name: "net.sf.log4jdbc.sql.jdbcapi.DriverSpy"
+      username: "iwb"
+      password: "iwb123456"
+    book:
+      url: "jdbc:log4jdbc:oracle:thin:@172.25.9.24:1547:BOOKTEST"
+      driver-class-name: "net.sf.log4jdbc.sql.jdbcapi.DriverSpy"
+      username: "ibo"
+      password: "ibo1235"
+    tiket2000: #국내숙박
+      url: "jdbc:log4jdbc:sqlserver://172.25.9.203:2433;database=TICKET2000"
+      driver-class-name: "net.sf.log4jdbc.sql.jdbcapi.DriverSpy"
+      username: "devteam2"
+      password: "DusqhdDlstkd200%"
+    tour: #여행
+      url: "jdbc:log4jdbc:sqlserver://172.25.9.203:2433;database=TOUR"
+      driver-class-name: "net.sf.log4jdbc.sql.jdbcapi.DriverSpy"
+      username: "devteam2"
+      password: "DusqhdDlstkd200%"
+    hotel: #해외호텔
+      url: "jdbc:log4jdbc:sqlserver://172.25.9.203:2433;database=HOTEL"
+      driver-class-name: "net.sf.log4jdbc.sql.jdbcapi.DriverSpy"
+      username: "devteam2"
+      password: "DusqhdDlstkd200%"
+    oversea-air:
+      url: "jdbc:log4jdbc:oracle:thin:@172.25.9.22:1596:AIRTEST"
+      driver-class-name: "net.sf.log4jdbc.sql.jdbcapi.DriverSpy"
+      username: "etour"
+      password: "aireto!423"
+    domestic-air:
+      #url: "jdbc:log4jdbc:oracle:thin:@172.25.9.22:1596:AIRTEST"
+      url: "jdbc:log4jdbc:oracle:thin:@172.25.5.21:1579:STGAIR"
+      driver-class-name: "net.sf.log4jdbc.sql.jdbcapi.DriverSpy"
+      username: "etour"
+      #password: "aireto!423"
+      password: "%#!6240ruotevkscnf"
+    ticket:
+      url: "jdbc:log4jdbc:sqlserver://172.25.9.205:1433;databaseName=TICKET2000;sendStringParametersAsUnicode=false"
+      driver-class-name: "net.sf.log4jdbc.sql.jdbcapi.DriverSpy"
+      username: "ENT_DI_Service"
+      password: "inter_play!@30"
+    movie:
+      url: "jdbc:log4jdbc:sqlserver://172.25.9.205:1347;databaseName=TICKET2000"
+      driver-class-name: "net.sf.log4jdbc.sql.jdbcapi.DriverSpy"
+      username: "ENT_DI_Service"
+      password: "inter_movie_!@34"
+    bi:
+      url: "jdbc:log4jdbc:oracle:thin:@172.25.9.32:1570:CDITEST"
+      driver-class-name: "net.sf.log4jdbc.sql.jdbcapi.DriverSpy"
+      username: "CDI"
+      password: "CDI12#$"
+    lodge: #뉴플 스테이징
+      url: "jdbc:log4jdbc:oracle:thin:@172.25.5.23:1565:STOURE"
+      driver-class-name: "net.sf.log4jdbc.sql.jdbcapi.DriverSpy"
+      username: "DEV_RESERVE"
+      password: "devresv12#$"
+
+---
+spring:
+  profiles: dev
+  datasource:
+    shop:
+      url: "jdbc:log4jdbc:oracle:thin:@172.25.9.21:1549:COMTEST"
+      driver-class-name: "net.sf.log4jdbc.sql.jdbcapi.DriverSpy"
+      username: "iwb"
+      password: "iwb123456"
+    book:
+      url: "jdbc:log4jdbc:oracle:thin:@172.25.9.24:1547:BOOKTEST"
+      driver-class-name: "net.sf.log4jdbc.sql.jdbcapi.DriverSpy"
+      username: "ibo"
+      password: "ibo1235"
+    tiket2000: #국내숙박
+      url: "jdbc:log4jdbc:sqlserver://172.25.9.203:2433;database=TIKET2000"
+      driver-class-name: "net.sf.log4jdbc.sql.jdbcapi.DriverSpy"
+      username: "devteam"
+      password: "DusqhdDlstkd200%"
+    tour: #여행
+      url: "jdbc:log4jdbc:sqlserver://172.25.9.203:2433;database=TOUR"
+      driver-class-name: "net.sf.log4jdbc.sql.jdbcapi.DriverSpy"
+      username: "devteam"
+      password: "DusqhdDlstkd200%"
+    hotel: #해외호텔
+      url: "jdbc:log4jdbc:sqlserver://172.25.9.203:2433;database=HOTEL"
+      driver-class-name: "net.sf.log4jdbc.sql.jdbcapi.DriverSpy"
+      username: "devteam"
+      password: "DusqhdDlstkd200%"
+    oversea-air:
+      url: "jdbc:log4jdbc:oracle:thin:@172.25.9.22:1596:AIRTEST"
+      driver-class-name: "net.sf.log4jdbc.sql.jdbcapi.DriverSpy"
+      username: "etour"
+      password: "aireto!423"
+    domestic-air:
+      url: "jdbc:log4jdbc:oracle:thin:@172.25.9.22:1596:AIRTEST"
+      driver-class-name: "net.sf.log4jdbc.sql.jdbcapi.DriverSpy"
+      username: "etour"
+      password: "aireto!423"
+    ticket:
+      url: "jdbc:log4jdbc:sqlserver://172.25.9.205:1433;databaseName=TICKET2000;sendStringParametersAsUnicode=false"
+      driver-class-name: "net.sf.log4jdbc.sql.jdbcapi.DriverSpy"
+      username: "ENT_DI_Service"
+      password: "inter_play!@30"
+    bi:
+      url: "jdbc:log4jdbc:oracle:thin:@172.25.9.32:1570:CDITEST"
+      driver-class-name: "net.sf.log4jdbc.sql.jdbcapi.DriverSpy"
+      username: "CDI"
+      password: "CDI12#$"
+    dtourp:
+      url: "jdbc:log4jdbc:oracle:thin:@172.25.9.31:1561:DTOURP"
+      driver-class-name: "net.sf.log4jdbc.sql.jdbcapi.DriverSpy"
+      username: "product"
+      password: "product12#$"
+    dtoure-settle:
+      url: "jdbc:log4jdbc:oracle:thin:@172.25.9.31:1563:DTOURE"
+      driver-class-name: "net.sf.log4jdbc.sql.jdbcapi.DriverSpy"
+      username: "settle"
+      password: "settle12#$"
+    dtoure-reserve:
+      url: "jdbc:log4jdbc:oracle:thin:@172.25.9.31:1563:DTOURE"
+      driver-class-name: "net.sf.log4jdbc.sql.jdbcapi.DriverSpy"
+      username: "reserve"
+      password: "reserve12#$"
+
+---
+spring:
+  profiles: stag
+
+---
+# 운영 DB 정보는 다른 GitLab 에서 관리
+spring:
+  profiles: prod

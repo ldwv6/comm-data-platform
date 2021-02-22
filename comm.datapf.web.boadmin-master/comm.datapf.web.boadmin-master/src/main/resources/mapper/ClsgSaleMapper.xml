@@ -1,0 +1,557 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ INTERPARK INC., SEOUL, KOREA
+  ~ Copyright(c) 2020 by Interpark Inc.
+  ~
+  ~ All rights reserved. No part of this work may be reproduced, stored in a
+  ~ retrieval system, or transmitted by any means without prior written
+  ~ permission of Interpark Inc.
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="comm.datapf.web.boadmin.domain.dao.ClsgSaleDao">
+
+    <select id="doSelectTtlz" parameterType="comm.datapf.web.boadmin.domain.dto.clsgSale.ClsgSaleParamDto" resultType="comm.datapf.web.boadmin.domain.dto.clsgSale.ClsgSaleTtlzMstrDto">
+        /* clsgSaleMapper.doSelectTtlz */
+        SELECT
+            (RANK() OVER(ORDER BY TT.SVC_DVSN_CD, TT.BZEP_DVSN_CD, TT.BZEP_EXCC_TYPE_CD, TT.MNAL_CTRL_YN))      AS NO
+            , #{searchStartDate}                             AS SEARCH_START_DATE
+            , #{searchEndDate}                               AS SEARCH_END_DATE
+            , TT.SVC_DVSN_CD                             AS SVC_DVSN_CD       --서비스구분코드
+            , C1.COM_CD_NM                               AS SVC_DVSN_NM       --서비스구분명
+            , TT.BZEP_DVSN_CD                            AS BZEP_DVSN_CD      --매출유형코드(업체구분)
+            , C2.COM_CD_NM                               AS BZEP_DVSN_NM      --매출유형명(업체구분)
+            , TT.BZEP_EXCC_TYPE_CD                       AS BZEP_EXCC_TYPE_CD --매출유형코드(업체정산유형)
+            , C3.COM_CD_NM                               AS BZEP_EXCC_TYPE_NM --매출유형명(업체정산유형)
+            , TT.MNAL_CTRL_YN                            AS MNAL_CTRL_YN      --수동통제여부
+            , C4.COM_CD_NM                               AS MNAL_CTRL_NM      --수동통제여부명
+            , ( (TT.ORDE_SALE_AMT    - TT.CNCL_SALE_AMT)
+                +(TT.ORDE_RSV_FEE_AMT - TT.CNCL_RSV_FEE_AMT)
+                +(TT.ORDE_SHPG_AMT    - TT.CNCL_SHPG_AMT)
+                +(TT.CNCL_FEE_AMT)
+            )                      AS STTL_AMT                                --결제금액합계
+            , TT.ORDE_SALE_CNT                           AS ORDE_SALE_CNT     --수량(주문)
+            , TT.CNCL_SALE_CNT                           AS CNCL_SALE_CNT     --수량(취소)
+            , TT.ORDE_SALE_CNT    - TT.CNCL_SALE_CNT     AS SALE_CNT          --수량(판매)
+            , TT.ORDE_SALE_AMT                           AS ORDE_SALE_AMT     --금액(주문)
+            , TT.CNCL_SALE_AMT                           AS CNCL_SALE_AMT     --금액(취소)
+            , TT.ORDE_SALE_AMT    - TT.CNCL_SALE_AMT     AS SALE_AMT          --금액(판매)
+            , TT.ORDE_RSV_FEE_AMT                        AS ORDE_RSV_FEE_AMT  --예매수수료(주문)
+            , TT.CNCL_RSV_FEE_AMT                        AS CNCL_RSV_FEE_AMT  --예매수수료(취소)
+            , TT.ORDE_RSV_FEE_AMT - TT.CNCL_RSV_FEE_AMT  AS RSV_FEE_AMT       --예매수수료(판매)
+            , TT.ORDE_SHPG_AMT                           AS ORDE_SHPG_AMT     --배송료(주문)
+            , TT.CNCL_SHPG_AMT                           AS CNCL_SHPG_AMT     --배송료(취소)
+            , TT.ORDE_SHPG_AMT    - TT.CNCL_SHPG_AMT     AS SHPG_AMT          --배송료(판매)
+            , TT.CNCL_FEE_AMT                            AS CNCL_FEE_AMT      --취소수수료
+            , TT.ORDE_SHPG_AMT_10 - TT.CNCL_SHPG_AMT_10  AS SHPG_AMT_10       --배송료>추가비용1
+            , TT.ORDE_SHPG_AMT_20 - TT.CNCL_SHPG_AMT_20  AS SHPG_AMT_20       --배송료>추가비용2
+            , TT.ORDE_SHPG_AMT_30 - TT.CNCL_SHPG_AMT_30  AS SHPG_AMT_30       --배송료>고객부담비
+            , TT.ORDE_SHPG_AMT_40 - TT.CNCL_SHPG_AMT_40  AS SHPG_AMT_40       --배송료>고객부담비-잡손실
+            , TT.ORDE_SHPG_AMT_50 - TT.CNCL_SHPG_AMT_50  AS SHPG_AMT_50       --배송료>반품택배비
+            , TT.ORDE_SHPG_AMT_60 - TT.CNCL_SHPG_AMT_60  AS SHPG_AMT_60       --배송료>수입제반비용
+            <choose>
+                <when test="searchStartDate != null and searchEndDate != null and searchStartDate==searchEndDate">
+                    , NVL(LNKG.LNKG_DT,'')               AS LNKG_DT           -- 전표연동일자
+                    , NVL(LNKG.LNKG_NO,'')               AS LNKG_NO           -- 전표연동번호
+                </when>
+                <otherwise>
+                    , LNKG.LNKG_DT                       AS LNKG_DT           -- 전표연동일자
+                    , LNKG.LNKG_NO                       AS LNKG_NO           -- 전표연동번호
+                </otherwise>
+            </choose>
+            FROM (
+                SELECT A.SVC_DVSN_CD                                      AS SVC_DVSN_CD        --서비스구분코드
+                <choose>
+                    <when test="@comm.datapf.web.boadmin.utils.StringUtils@equals('Y', dtlYn) ">
+                        , A.BZEP_DVSN_CD                                  AS BZEP_DVSN_CD       /*매출유형(업체구분)*/
+                        , A.BZEP_EXCC_TYPE_CD                             AS BZEP_EXCC_TYPE_CD  /*매출유형(업체정산유형)*/
+                    </when>
+                    <otherwise>
+                        , ''                                              AS BZEP_DVSN_CD       /*매출유형(업체구분)*/
+                        , ''                                              AS BZEP_EXCC_TYPE_CD  /*매출유형(업체정산유형)*/
+                    </otherwise>
+                </choose>
+                <!--, DECODE('N', 'Y', A.BZEP_DVSN_CD     , NULL)      AS BZEP_DVSN_CD       매출유형(업체구분)
+                , DECODE('N', 'Y', A.BZEP_EXCC_TYPE_CD, NULL)      AS BZEP_EXCC_TYPE_CD  매출유형(업체정산유형)-->
+                , A.MNAL_CTRL_YN                                          AS MNAL_CTRL_YN       --수동통제여부
+                --(NNNNNNNN)결제금액합계
+                , NVL(SUM(DECODE(A.ORDE_TYPE_CD, 'A', A.SALE_CNT   )),0)  AS ORDE_SALE_CNT      --수량(주문)
+                , NVL(SUM(DECODE(A.ORDE_TYPE_CD, 'C', A.SALE_CNT   )),0)  AS CNCL_SALE_CNT      --수량(취소)
+                , NVL(SUM(DECODE(A.ORDE_TYPE_CD, 'A', A.SALE_AMT   )),0)  AS ORDE_SALE_AMT      --금액(주문)
+                , NVL(SUM(DECODE(A.ORDE_TYPE_CD, 'C', A.SALE_AMT   )),0)  AS CNCL_SALE_AMT      --금액(취소)
+                , NVL(SUM(DECODE(A.ORDE_TYPE_CD, 'A', A.RSV_FEE_AMT)),0)  AS ORDE_RSV_FEE_AMT   --예매수수료(주문)
+                , NVL(SUM(DECODE(A.ORDE_TYPE_CD, 'C', A.RSV_FEE_AMT)),0)  AS CNCL_RSV_FEE_AMT   --예매수수료(취소)
+                , NVL(SUM(DECODE(A.ORDE_TYPE_CD, 'A', A.SHPG_AMT   )),0)  AS ORDE_SHPG_AMT      --배송료(주문)
+                , NVL(SUM(DECODE(A.ORDE_TYPE_CD, 'C', A.SHPG_AMT   )),0)  AS CNCL_SHPG_AMT      --배송료(취소)
+                , NVL(SUM(A.CNCL_FEE_AMT),0)                              AS CNCL_FEE_AMT       --취소수수료
+                , NVL(SUM(DECODE(A.ORDE_TYPE_CD, 'A', A.SHPG_AMT_10)),0)  AS ORDE_SHPG_AMT_10   --배송료>추가비용1(주문)
+                , NVL(SUM(DECODE(A.ORDE_TYPE_CD, 'C', A.SHPG_AMT_10)),0)  AS CNCL_SHPG_AMT_10   --배송료>추가비용1(취소)
+                , NVL(SUM(DECODE(A.ORDE_TYPE_CD, 'A', A.SHPG_AMT_20)),0)  AS ORDE_SHPG_AMT_20   --배송료>추가비용2(주문)
+                , NVL(SUM(DECODE(A.ORDE_TYPE_CD, 'C', A.SHPG_AMT_20)),0)  AS CNCL_SHPG_AMT_20   --배송료>추가비용2(취소)
+                , NVL(SUM(DECODE(A.ORDE_TYPE_CD, 'A', A.SHPG_AMT_30)),0)  AS ORDE_SHPG_AMT_30   --배송료>고객부담비(주문)
+                , NVL(SUM(DECODE(A.ORDE_TYPE_CD, 'C', A.SHPG_AMT_30)),0)  AS CNCL_SHPG_AMT_30   --배송료>고객부담비(취소)
+                , NVL(SUM(DECODE(A.ORDE_TYPE_CD, 'A', A.SHPG_AMT_40)),0)  AS ORDE_SHPG_AMT_40   --배송료>고객부담비-잡손실(주문)
+                , NVL(SUM(DECODE(A.ORDE_TYPE_CD, 'C', A.SHPG_AMT_40)),0)  AS CNCL_SHPG_AMT_40   --배송료>고객부담비-잡손실(취소)
+                , NVL(SUM(DECODE(A.ORDE_TYPE_CD, 'A', A.SHPG_AMT_50)),0)  AS ORDE_SHPG_AMT_50   --배송료>반품택배비(주문)
+                , NVL(SUM(DECODE(A.ORDE_TYPE_CD, 'C', A.SHPG_AMT_50)),0)  AS CNCL_SHPG_AMT_50   --배송료>반품택배비(취소)
+                , NVL(SUM(DECODE(A.ORDE_TYPE_CD, 'A', A.SHPG_AMT_60)),0)  AS ORDE_SHPG_AMT_60   --배송료>수입제반비용(주문)
+                , NVL(SUM(DECODE(A.ORDE_TYPE_CD, 'C', A.SHPG_AMT_60)),0)  AS CNCL_SHPG_AMT_60   --배송료>수입제반비용(취소)
+                , MAX(CLSG_DT) CLSG_DT -- 전표일자 조인 조건으로만 사용 (조회일이 하루가 아닌경우 NULL 노출 , 다른 곳 사용지 MAX 조건 확인필요)
+                FROM CLSG_SALE_TTLZ_MSTR A
+                WHERE A.CLSG_DT  BETWEEN #{searchStartDate} AND #{searchEndDate}
+                <choose>
+                    <when test="svcDvsnCd != null and svcDvsnCd != '' and svcDvsnCd !='00'">
+                        AND A.SVC_DVSN_CD = #{svcDvsnCd}
+                    </when>
+                    <otherwise>
+                        AND A.SVC_DVSN_CD IN ('02','03','04','10','06','07')                    -- 1차 오픈 서비스 부문
+                    </otherwise>
+                </choose>
+                GROUP BY A.SVC_DVSN_CD
+                <!-- decode문 my batis오류 -->
+                <!--, DECODE('N', 'Y', A.BZEP_DVSN_CD     , NULL)
+                , DECODE('N', 'Y', A.BZEP_EXCC_TYPE_CD, NULL)-->
+                <if test="@comm.datapf.web.boadmin.utils.StringUtils@equals('Y', dtlYn)">
+                    , A.BZEP_DVSN_CD
+                    , A.BZEP_EXCC_TYPE_CD
+                </if>
+                , A.MNAL_CTRL_YN
+            ) TT
+            , COM_CD_ADMN  C1  --서비스명
+            , COM_CD_ADMN  C2  --업체구분명
+            , COM_CD_ADMN  C3  --업체정산유형명
+            , COM_CD_ADMN  C4  --수동통제여부명
+            , (
+                SELECT
+                    CLSG_DT
+                    , SVC_DVSN_CD
+                    , MAX(LNKG_DT) AS LNKG_DT
+                    , MAX(LNKG_NO) AS LNKG_NO
+                FROM CLSG_SALE_PRDT
+                WHERE CLSG_DT  BETWEEN #{searchStartDate} AND #{searchEndDate}
+                <choose>
+                    <when test="svcDvsnCd != null and svcDvsnCd != '' and svcDvsnCd !='00' ">
+                        AND SVC_DVSN_CD = #{svcDvsnCd}
+                    </when>
+                    <otherwise>
+                        AND SVC_DVSN_CD IN ('02','03','04','10','06','07')           -- 1차 오픈 서비스 부문
+                    </otherwise>
+                </choose>
+                GROUP BY CLSG_DT, SVC_DVSN_CD
+                ) LNKG
+        WHERE C1.COM_TYPE_CD(+)   = 'SVC_DVSN_CD'
+            AND C1.COM_CD(+)        = TT.SVC_DVSN_CD
+            AND C2.COM_TYPE_CD(+)   = 'BZEP_DVSN_CD'
+            AND C2.COM_CD(+)        = TT.BZEP_DVSN_CD
+            AND C3.COM_TYPE_CD(+)   = 'BZEP_EXCC_TYPE_CD'
+            AND C3.COM_CD(+)        = DECODE(TT.BZEP_EXCC_TYPE_CD,'NONE','3')       /*매출유형(업체정산유형) 숙박,호텔,여행 이슈로 수수료 디코딩*/
+            AND C4.COM_TYPE_CD(+)   = 'MNAL_CTRL_YN'
+            AND C4.COM_CD(+)        = TT.MNAL_CTRL_YN
+            AND LNKG.CLSG_DT(+)     = TT.CLSG_DT
+            AND LNKG.SVC_DVSN_CD(+) = TT.SVC_DVSN_CD
+        ORDER BY TT.SVC_DVSN_CD
+            , TT.BZEP_DVSN_CD
+            , TT.BZEP_EXCC_TYPE_CD
+            , TT.MNAL_CTRL_YN
+    </select>
+
+    <select id="doSelectTtlzSttl" parameterType="comm.datapf.web.boadmin.domain.dto.clsgSale.ClsgSaleParamDto" resultType="comm.datapf.web.boadmin.domain.dto.clsgSale.ClsgSaleTtlzSttlDto">
+        /* clsgSaleMapper.doSelectTtlzSttl */
+        SELECT
+            (RANK() OVER(ORDER BY TT.STTL_MTHD_CD))                                                         AS NO
+            , #{searchStartDate}                                                                            AS SEARCH_START_DATE
+            , #{searchEndDate}                                                                              AS SEARCH_END_DATE
+            , TT.STTL_MTHD_CD                                                                               AS STTL_MTHD_CD     -- 결제수단코드
+            , MIN(C1.COM_CD_NM)                                                                             AS STTL_MTHD_NM     -- 결제수단명
+            , NVL(SUM(TT.STTL_AMT * DECODE(TT.ORDE_TYPE_CD, 'C',-1,1)), 0)                                  AS STTL_AMT         -- 결제금액합계(집계 시 STTL_TYPE_CD에 대한 +,-처리는 되어 있음)
+            , NVL(SUM(DECODE(TT.SVC_DVSN_CD, '02', TT.STTL_AMT * DECODE(TT.ORDE_TYPE_CD,'C',-1,1))), 0)     AS SHOP_STTL_AMT    -- 쇼핑
+            , NVL(SUM(DECODE(TT.SVC_DVSN_CD, '03', TT.STTL_AMT * DECODE(TT.ORDE_TYPE_CD,'C',-1,1))), 0)     AS BOOK_STTL_AMT    -- 도서
+            , NVL(SUM(DECODE(TT.SVC_DVSN_CD, '04', TT.STTL_AMT * DECODE(TT.ORDE_TYPE_CD,'C',-1,1))), 0)     AS TICKET_STTL_AMT  -- 공연
+            , NVL(SUM(DECODE(TT.SVC_DVSN_CD, '10', TT.STTL_AMT * DECODE(TT.ORDE_TYPE_CD,'C',-1,1))), 0)     AS MOVIE_STTL_AMT   -- 영화
+            --, NVL(SUM(DECODE(TT.SVC_DVSN_CD, 'XX', TT.STTL_AMT * DECODE(TT.ORDE_TYPE_CD,'C',-1,1))), 0)   AS POS_STTL_AMT     -- POS
+            , NVL(SUM(DECODE(TT.SVC_DVSN_CD, '06', TT.STTL_AMT * DECODE(TT.ORDE_TYPE_CD,'C',-1,1))), 0)     AS LODGE_STTL_AMT   -- 국내숙박
+            , NVL(SUM(DECODE(TT.SVC_DVSN_CD, '07', TT.STTL_AMT * DECODE(TT.ORDE_TYPE_CD,'C',-1,1))), 0)     AS HOTEL_STTL_AMT   -- 해외호텔
+            , NVL(SUM(DECODE(TT.SVC_DVSN_CD, '08', TT.STTL_AMT * DECODE(TT.ORDE_TYPE_CD,'C',-1,1))), 0)     AS DOM_AIR_STTL_AMT -- 국내항공
+            , NVL(SUM(DECODE(TT.SVC_DVSN_CD, '09', TT.STTL_AMT * DECODE(TT.ORDE_TYPE_CD,'C',-1,1))), 0)     AS AIR_STTL_AMT     -- 해외항공
+            , NVL(SUM(DECODE(TT.SVC_DVSN_CD, '05', TT.STTL_AMT * DECODE(TT.ORDE_TYPE_CD,'C',-1,1))), 0)     AS TOUR_STTL_AMT    -- 여행
+            --, NVL(SUM(DECODE(TT.SVC_DVSN_CD, 'XX', TT.STTL_AMT * DECODE(TT.ORDE_TYPE_CD,'C',-1,1))), 0)   AS VOUCHER_STTL_AMT -- 이용권
+        FROM CLSG_SALE_TTLZ_STTL TT
+            , COM_CD_ADMN  C1  --결제수단명
+            , COM_CD_ADMN  C2  --서비스명
+        WHERE C1.COM_TYPE_CD(+) = 'STTL_MTHD_CD'
+            AND C1.COM_CD(+)      = TT.STTL_MTHD_CD
+            AND C2.COM_TYPE_CD(+) = 'SVC_DVSN_CD'
+            AND C2.COM_CD(+)      = TT.SVC_DVSN_CD
+            AND TT.CLSG_DT     BETWEEN #{searchStartDate} AND #{searchEndDate}
+            <choose>
+                <when test="svcDvsnCd != null and svcDvsnCd != '' and svcDvsnCd !='00' ">
+                    AND TT.SVC_DVSN_CD = #{svcDvsnCd}
+                </when>
+                <otherwise>
+                    AND TT.SVC_DVSN_CD IN ('02','03','04','10','06','07')           -- 1차 오픈 서비스 부문
+                </otherwise>
+            </choose>
+        GROUP BY TT.STTL_MTHD_CD
+        ORDER BY TT.STTL_MTHD_CD
+    </select>
+
+    <select id="doSelectTtlzSttlDtl" parameterType="comm.datapf.web.boadmin.domain.dto.clsgSale.ClsgSaleParamDto" resultType="comm.datapf.web.boadmin.domain.dto.clsgSale.ClsgSaleTtlzSttlDtlDto">
+        /* clsgSaleMapper.doSelectTtlzSttlDtl */
+        SELECT
+            (RANK() OVER(ORDER BY TT.STTL_MTHD_CD, TT.STTL_FNNI_PG_CD,TT.STTL_FNNI_CD ))           AS NO
+            ,TT.STTL_MTHD_CD       AS STTL_MTHD_CD    --결제수단구분
+            --, TT.SVC_DVSN_CD        AS SVC_DVSN_CD     --서비스구분
+            , TT.STTL_FNNI_PG_CD    AS STTL_FNNI_PG_CD --결제금융기관PG코드
+            , MIN(C1.COM_CD_NM)     AS STTL_FNNI_PG_NM --결제금융기관PG코드명
+            , TT.STTL_FNNI_CD       AS STTL_FNNI_CD    --결제금융기관코드
+            , MIN(C2.COM_CD_NM)     AS STTL_FNNI_NM    --결제금융기관코드명
+            , NVL(SUM(DECODE(TT.ORDE_TYPE_CD, 'A', TT.STTL_CNT)),0)        AS ORDE_STTL_CNT     --건수(주문)  --[JJU]수량??? 기획서에 수량으로 표시
+            , NVL(SUM(DECODE(TT.ORDE_TYPE_CD, 'C', TT.STTL_CNT)),0)        AS CNCL_STTL_CNT     --건수(취소)  --[JJU]수량??? 기획서에 수량으로 표시
+            , NVL(SUM(TT.STTL_CNT * DECODE(TT.ORDE_TYPE_CD, 'C',-1,1)),0)  AS STTL_CNT      --건수(판매)  --[JJU]수량??? 기획서에 수량으로 표시
+            , NVL(SUM(DECODE(TT.ORDE_TYPE_CD, 'A', TT.STTL_AMT)),0)        AS ORDE_STTL_AMT     --금액(주문)
+            , NVL(SUM(DECODE(TT.ORDE_TYPE_CD, 'C', TT.STTL_AMT)),0)        AS CNCL_STTL_AMT     --금액(취소)
+            , NVL(SUM(TT.STTL_AMT * DECODE(TT.ORDE_TYPE_CD, 'C',-1,1)),0)  AS STTL_AMT      --금액(판매)
+            --, NULL AS ORDE_RSV_FEE_AMT  --예매수수료(주문)  --[JJU] 하나의 결제금액에서 주문기타로 발생한 금액을 분리할 수 있나? 결제-상품금액??? 굳이 필요??
+            --, NULL AS CNCL_RSV_FEE_AMT  --예매수수료(취소)  --[JJU] 하나의 결제금액에서 주문기타로 발생한 금액을 분리할 수 있나? 결제-상`품금액??? 굳이 필요??
+            --, NULL AS TOT_RSV_FEE_AMT   --예매수수료(판매)  --[JJU] 하나의 결제금액에서 주문기타로 발생한 금액을 분리할 수 있나? 결제-상품금액??? 굳이 필요??
+            --, NULL AS ORDE_SHPG_AMT     --배송료(주문)      --[JJU] 하나의 결제금액에서 주문기타로 발생한 금액을 분리할 수 있나? 결제-상품금액??? 굳이 필요??
+            --, NULL AS CNCL_SHPG_AMT     --배송료(취소)      --[JJU] 하나의 결제금액에서 주문기타로 발생한 금액을 분리할 수 있나? 결제-상품금액??? 굳이 필요??
+            --, NULL AS TOT_SHPG_AMT      --배송료(판매)      --[JJU] 하나의 결제금액에서 주문기타로 발생한 금액을 분리할 수 있나? 결제-상품금액??? 굳이 필요??
+            --, NULL AS CNCL_FEE_AMT      --취소수수료        --[JJU] 하나의 결제금액에서 주문기타로 발생한 금액을 분리할 수 있나? 결제-상품금액??? 굳이 필요??
+        FROM CLSG_SALE_TTLZ_STTL TT
+        , COM_CD_ADMN          C1  --결제금융기관PG코드명
+        , COM_CD_ADMN          C2  --결제금융기관코드명
+        WHERE C1.COM_TYPE_CD(+) = 'STTL_FNNI_PG_CD'
+        AND C1.COM_CD(+)      = TT.STTL_FNNI_PG_CD
+        AND C2.COM_TYPE_CD(+) = 'STTL_FNNI_CD'
+        AND C2.COM_CD(+)      = TT.STTL_FNNI_CD
+        AND TT.CLSG_DT BETWEEN #{searchStartDate}  AND #{searchEndDate}
+        <if test="svcDvsnCd != null and svcDvsnCd != '' and svcDvsnCd !='00' ">
+            --AND TT.SVC_DVSN_CD = #{svcDvsnCd}
+        </if>
+        AND TT.STTL_MTHD_CD = #{sttlMthdCd}
+        GROUP BY TT.STTL_MTHD_CD
+            --,TT.SVC_DVSN_CD
+            , TT.STTL_FNNI_PG_CD
+            , TT.STTL_FNNI_CD
+    </select>
+
+    <select id="doSelectTtlzClsgDtl" parameterType="comm.datapf.web.boadmin.domain.dto.clsgSale.ClsgSaleParamDto" resultType="comm.datapf.web.boadmin.domain.dto.clsgSale.ClsgSaleTtlzMstrDto">
+        /* clsgSaleMapper.doSelectTtlzClsgDtl */
+        SELECT
+            (RANK() OVER(ORDER BY TT.SVC_DVSN_CD, TT.TTLZ_TYPE_CD, TT.BZEP_DVSN_CD, TT.BZEP_EXCC_TYPE_CD, TT.MNAL_CTRL_YN, TT.TAX_TYPE_CD ))           AS NO
+            ,TT.SVC_DVSN_CD                             AS SVC_DVSN_CD       --서비스구분코드
+            , C1.COM_CD_NM                              AS SVC_DVSN_NM       --서비스구분명
+            , TT.TTLZ_TYPE_CD                           AS TTLZ_TYPE_CD      --구분코드:[쇼핑]대분류, [도서]대분류, [공연]장르, [영화]판매처, [여행]상품구분, [숙박]상품구분, [호텔]공급사, [국내항공]항공사, [해외항공]항공사
+            , DECODE(TT.SVC_DVSN_CD, '02', C8.COM_CD_NM                      --쇼핑(02):대분류명
+                , '03', C8.COM_CD_NM    ----도서(03):대분류명
+                , '04', C8.COM_CD_NM    ----공연(04):장르명
+                , '10', BZ.BZEP_NM    ----영화(10):판매처명
+                , '05', C6.COM_CD_NM  ----여행(05):상품구분명
+                , '06', C6.COM_CD_NM  ----숙박(06):상품구분명
+                , '07', BZ.BZEP_NM    ----호텔(07):공급사
+                , '08', C7.COM_CD_NM  ----국내항공(08):항공사
+                , '09', C7.COM_CD_NM  ----해외항공(09):항공사
+            , 'ZZZ'  )                                  AS TTLZ_TYPE_NM      --구분명
+            , TT.BZEP_DVSN_CD                           AS BZEP_DVSN_CD      --매출유형코드(업체구분)
+            , C2.COM_CD_NM                              AS BZEP_DVSN_NM      --매출유형명(업체구분)
+            , TT.BZEP_EXCC_TYPE_CD                      AS BZEP_EXCC_TYPE_CD --매출유형코드(업체정산유형)
+            , C3.COM_CD_NM                              AS BZEP_EXCC_TYPE_NM --매출유형명(업체정산유형)
+            , TT.MNAL_CTRL_YN                           AS MNAL_CTRL_YN      --수동통제여부
+            , C4.COM_CD_NM                              AS MNAL_CTRL_NM      --수동통제여부명
+            , ( (TT.ORDE_SALE_AMT    - TT.CNCL_SALE_AMT)
+                +(TT.ORDE_RSV_FEE_AMT - TT.CNCL_RSV_FEE_AMT)
+                +(TT.ORDE_SHPG_AMT    - TT.CNCL_SHPG_AMT)
+                +(TT.CNCL_FEE_AMT)
+            )                                           AS STTL_AMT          --결제금액합계
+            , TT.TAX_TYPE_CD                            AS TAX_TYPE_CD       --과면세코드
+            , C5.COM_CD_NM                              AS TAX_TYPE_NM       --과면세명
+            , TT.ORDE_SALE_CNT                          AS ORDE_SALE_CNT     --수량(주문)
+            , TT.CNCL_SALE_CNT                          AS CNCL_SALE_CNT     --수량(취소)
+            , TT.ORDE_SALE_CNT   - TT.CNCL_SALE_CNT     AS SALE_CNT          --수량(판매)
+            , TT.ORDE_SALE_AMT                          AS ORDE_SALE_AMT     --금액(주문)
+            , TT.CNCL_SALE_AMT                          AS CNCL_SALE_AMT     --금액(취소)
+            , TT.ORDE_SALE_AMT   - TT.CNCL_SALE_AMT     AS SALE_AMT          --금액(판매)
+            , TT.ORDE_RSV_FEE_AMT                       AS ORDE_RSV_FEE_AMT  --예매수수료(주문)
+            , TT.CNCL_RSV_FEE_AMT                       AS CNCL_RSV_FEE_AMT  --예매수수료(취소)
+            , TT.ORDE_RSV_FEE_AMT - TT.CNCL_RSV_FEE_AMT AS RSV_FEE_AMT       --예매수수료(판매)
+            , TT.ORDE_SHPG_AMT                          AS ORDE_SHPG_AMT     --배송료(주문)
+            , TT.CNCL_SHPG_AMT                          AS CNCL_SHPG_AMT     --배송료(취소)
+            , TT.ORDE_SHPG_AMT   - TT.CNCL_SHPG_AMT     AS SHPG_AMT          --배송료(판매)
+            , TT.CNCL_FEE_AMT                           AS CNCL_FEE_AMT      --취소수수료
+        FROM (
+                SELECT
+                    A.SVC_DVSN_CD       AS SVC_DVSN_CD          --서비스구분코드
+                    , A.TTLZ_TYPE_CD      AS TTLZ_TYPE_CD       --구분코드:[쇼핑]대분류, [도서]대분류, [공연]장르, [영화]판매처, [여행]상품구분, [숙박]상품구분, [호텔]공급사, [국내항공]항공사, [해외항공]항공사
+                    , A.BZEP_DVSN_CD      AS BZEP_DVSN_CD       --매출유형(업체구분)
+                    , A.BZEP_EXCC_TYPE_CD AS BZEP_EXCC_TYPE_CD  --매출유형(업체정산유형)
+                    , A.MNAL_CTRL_YN      AS MNAL_CTRL_YN       --수동통제여부
+                    --(NNNNNNNN)결제금액합계
+                    , A.TAX_TYPE_CD       AS TAX_TYPE_CD        --과/면세
+                    , NVL(SUM(DECODE(A.ORDE_TYPE_CD, 'A', A.SALE_CNT)),0)           AS ORDE_SALE_CNT     --수량(주문)
+                    , NVL(SUM(DECODE(A.ORDE_TYPE_CD, 'C', A.SALE_CNT)),0)           AS CNCL_SALE_CNT     --수량(취소)
+                    , NVL(SUM(DECODE(A.ORDE_TYPE_CD, 'A', A.SALE_AMT)),0)           AS ORDE_SALE_AMT     --금액(주문)
+                    , NVL(SUM(DECODE(A.ORDE_TYPE_CD, 'C', A.SALE_AMT)),0)           AS CNCL_SALE_AMT     --금액(취소)
+                    , NVL(SUM(DECODE(A.ORDE_TYPE_CD, 'A', A.RSV_FEE_AMT)),0)        AS ORDE_RSV_FEE_AMT  --예매수수료(주문)
+                    , NVL(SUM(DECODE(A.ORDE_TYPE_CD, 'C', A.RSV_FEE_AMT)),0)        AS CNCL_RSV_FEE_AMT  --예매수수료(취소)
+                    , NVL(SUM(DECODE(A.ORDE_TYPE_CD, 'A', A.SHPG_AMT)),0)           AS ORDE_SHPG_AMT     --배송료(주문)
+                    , NVL(SUM(DECODE(A.ORDE_TYPE_CD, 'C', A.SHPG_AMT)),0)           AS CNCL_SHPG_AMT     --배송료(취소)
+                    , NVL(SUM(A.CNCL_FEE_AMT),0)                                    AS CNCL_FEE_AMT      --취소수수료
+                FROM CLSG_SALE_TTLZ_DTL A
+                WHERE A.CLSG_DT BETWEEN #{searchStartDate}  AND #{searchEndDate}
+                    AND A.SVC_DVSN_CD = #{svcDvsnCd}
+                    <if test="bzepDvsnCd != null and bzepDvsnCd != ''">
+                        AND A.BZEP_DVSN_CD = #{bzepDvsnCd}        --매출유형(업체구분) (-이전 화면 클릭 조건....)
+                    </if>
+                    <if test="bzepExccTypeCd != null and bzepExccTypeCd != ''">
+                        AND A.BZEP_EXCC_TYPE_CD = #{bzepExccTypeCd}   --매출유형(업체정산유형) (-이전 화면 클릭 조건....)
+                    </if>
+                GROUP BY A.SVC_DVSN_CD
+                    , A.TTLZ_TYPE_CD
+                    , A.BZEP_DVSN_CD
+                    , A.BZEP_EXCC_TYPE_CD
+                    , A.MNAL_CTRL_YN
+                    , A.TAX_TYPE_CD
+            ) TT
+            , COM_CD_ADMN  C1  --서비스명
+            , COM_CD_ADMN  C2  --업체구분명
+            , COM_CD_ADMN  C3  --업체정산유형명
+            , COM_CD_ADMN  C4  --수동통제여부명
+            , COM_CD_ADMN  C5  --과면세유형
+            , (
+                SELECT
+                    A.SVC_DVSN_CD
+                    , A.BZEP_NO
+                    , A.CTRT_SNO
+                    , MIN(A.BZEP_NM)  AS BZEP_NM
+                FROM BZEP_MSTR A
+                WHERE A.SVC_DVSN_CD IN ('10', '07')   --영화, 해외호텔
+                    AND SYSDATE BETWEEN A.APLY_STRT_DTIME AND A.APLY_END_DTIME
+                GROUP BY A.SVC_DVSN_CD
+                    , A.BZEP_NO
+                    , A.CTRT_SNO
+            )            BZ     --거래처마스터
+            , COM_CD_ADMN  C6   --상품구분명
+            , COM_CD_ADMN  C7   --항공사명
+            , COM_CD_ADMN  C8   --쇼핑,도서,티켓 분류명
+            /*
+            , (
+                --- 분류명 사용서비스: 쇼핑, 도서, 티켓
+                SELECT '02' AS SVC_DVSN_CD, '001'   AS CTGR_CD, 'PC'             AS CTGR_NM  FROM DUAL UNION ALL
+                SELECT '02' AS SVC_DVSN_CD, '002'   AS CTGR_CD, 'Electronics'    AS CTGR_NM  FROM DUAL UNION ALL
+                --SELECT '02' AS SVC_DVSN_CD, '...'   AS CTGR_CD, '...'          AS CTGR_NM  FROM DUAL UNION ALL
+                SELECT '03' AS SVC_DVSN_CD, '011'   AS CTGR_CD, 'BOOK'           AS CTGR_NM  FROM DUAL UNION ALL
+                SELECT '03' AS SVC_DVSN_CD, '012'   AS CTGR_CD, 'CD'             AS CTGR_NM  FROM DUAL UNION ALL
+                --SELECT '03' AS SVC_DVSN_CD, '...'   AS CTGR_CD, '...'          AS CTGR_NM  FROM DUAL UNION ALL
+                SELECT '04' AS SVC_DVSN_CD, '01002' AS CTGR_CD, '영화'           AS CTGR_NM  FROM DUAL UNION ALL
+                SELECT '04' AS SVC_DVSN_CD, '01003' AS CTGR_CD, '콘서트'         AS CTGR_NM  FROM DUAL UNION ALL
+                SELECT '04' AS SVC_DVSN_CD, '01004' AS CTGR_CD, '클래식/오페라'  AS CTGR_NM  FROM DUAL UNION ALL
+                SELECT '04' AS SVC_DVSN_CD, '01005' AS CTGR_CD, '무용/전통예술'  AS CTGR_NM  FROM DUAL UNION ALL
+                SELECT '04' AS SVC_DVSN_CD, '01007' AS CTGR_CD, '스포츠'         AS CTGR_NM  FROM DUAL UNION ALL
+                SELECT '04' AS SVC_DVSN_CD, '01008' AS CTGR_CD, '전시/행사'      AS CTGR_NM  FROM DUAL UNION ALL
+                SELECT '04' AS SVC_DVSN_CD, '01009' AS CTGR_CD, '연극'           AS CTGR_NM  FROM DUAL UNION ALL
+                SELECT '04' AS SVC_DVSN_CD, '01011' AS CTGR_CD, '뮤지컬'         AS CTGR_NM  FROM DUAL UNION ALL
+                SELECT '04' AS SVC_DVSN_CD, '01014' AS CTGR_CD, '숙박'           AS CTGR_NM  FROM DUAL UNION ALL
+                SELECT '04' AS SVC_DVSN_CD, '01015' AS CTGR_CD, '레저'           AS CTGR_NM  FROM DUAL UNION ALL
+                SELECT '04' AS SVC_DVSN_CD, '010H3' AS CTGR_CD, '기타'           AS CTGR_NM  FROM DUAL UNION ALL
+                SELECT '04' AS SVC_DVSN_CD, '01100' AS CTGR_CD, '오디션'         AS CTGR_NM  FROM DUAL UNION ALL
+                SELECT '04' AS SVC_DVSN_CD, '01121' AS CTGR_CD, '영화경매'       AS CTGR_NM  FROM DUAL
+            )            CT   --분류명
+            */
+        WHERE C1.COM_TYPE_CD(+) = 'SVC_DVSN_CD'
+            AND C1.COM_CD(+)      = TT.SVC_DVSN_CD
+            AND C2.COM_TYPE_CD(+) = 'BZEP_DVSN_CD'
+            AND C2.COM_CD(+)      = TT.BZEP_DVSN_CD
+            AND C3.COM_TYPE_CD(+) = 'BZEP_EXCC_TYPE_CD'
+            AND C3.COM_CD(+)      = DECODE(TT.BZEP_EXCC_TYPE_CD,'NONE','3')       /*매출유형(업체정산유형) 숙박,호텔,여행 이슈로 수수료 디코딩*/
+            AND C4.COM_TYPE_CD(+) = 'MNAL_CTRL_YN'
+            AND C4.COM_CD(+)      = TT.MNAL_CTRL_YN
+            AND C5.COM_TYPE_CD(+) = 'TAX_TYPE_CD'
+            AND C5.COM_CD(+)      = TT.TAX_TYPE_CD
+            ----- 서비스별 집계 유형(TTLZ_TYPE_CD)명 연결: CASE1)분류명, CASE2)업체명, CASE3)상품구분명, CASE4)항공사명-----
+            AND BZ.SVC_DVSN_CD(+) = TT.SVC_DVSN_CD                       --CASE2)업체명
+            AND BZ.BZEP_NO(+)     = FN_GET_SPLIT(TT.TTLZ_TYPE_CD,':',1)  --CASE2)업체명
+            AND BZ.CTRT_SNO(+)    = FN_GET_SPLIT(TT.TTLZ_TYPE_CD,':',2)  --CASE2)업체명
+            AND C6.COM_TYPE_CD(+) = 'PRDT_DVSN_CD'                       --CASE3)상품구분명
+            AND C6.COM_CD(+)      = TT.TTLZ_TYPE_CD                      --CASE3)상품구분명
+            AND C7.COM_TYPE_CD(+) = 'AVTN_COMP'                          --CASE4)항공사명
+            AND C7.COM_CD(+)      = TT.TTLZ_TYPE_CD                      --CASE4)항공사명
+            AND C8.COM_TYPE_CD(+) = 'PRDT_CTGR_CD'                       --CASE5)쇼핑,도서,상품 분류명
+            AND C8.COM_CD(+)      = NVL(TT.SVC_DVSN_CD,'')||NVL(TT.TTLZ_TYPE_CD,'')                      --CASE5)쇼핑,도서,상품 분류명
+            /*
+            AND CT.SVC_DVSN_CD(+) = TT.SVC_DVSN_CD                       --CASE1)분류명
+            AND CT.CTGR_CD(+)     = TT.TTLZ_TYPE_CD                      --CASE1)분류명
+            */
+            ----- 서비스별 집계 유형(TTLZ_TYPE_CD)명 연결 END  ------------
+        ORDER BY TT.SVC_DVSN_CD
+            , TT.TTLZ_TYPE_CD
+            , TT.BZEP_DVSN_CD
+            , TT.BZEP_EXCC_TYPE_CD
+            , TT.MNAL_CTRL_YN
+            , TT.TAX_TYPE_CD
+    </select>
+
+    <select id="doSelectTtlzDelv" parameterType="comm.datapf.web.boadmin.domain.dto.clsgSale.ClsgSaleParamDto" resultType="comm.datapf.web.boadmin.domain.dto.clsgSale.ClsgSaleTtlzDelvDto">
+        WITH ROW_LIST AS(
+            SELECT
+                SVC_DVSN_CD
+                , DECODE(CLSG_STAT_CD,'02','01','12','11', CLSG_STAT_CD)                         AS CLSG_STAT_CD             -- 01,02_정상, 11,12_오류 코드통합
+                , ORDE_TYPE_CD
+                , NVL(SUM(DECODE(A.BZEP_DVSN_CD||A.BZEP_EXCC_TYPE_CD, '013', A.SHPG_AMT_10)),0)  AS OM_PRIV_SHPG_AMT_10      --배송료_추가비용1(OM 개인)
+                , NVL(SUM(DECODE(A.BZEP_DVSN_CD||A.BZEP_EXCC_TYPE_CD, '023', A.SHPG_AMT_10)),0)  AS OM_BZEP_SHPG_AMT_10      --배송료_추가비용1(OM 사업자)
+                , NVL(SUM(DECODE(A.BZEP_DVSN_CD||A.BZEP_EXCC_TYPE_CD, '031', A.SHPG_AMT_10)),0)  AS MD_BUY_SHPG_AMT_10       --배송료_추가비용1(MD 매입)
+                , NVL(SUM(DECODE(A.BZEP_DVSN_CD||A.BZEP_EXCC_TYPE_CD, '033', A.SHPG_AMT_10)),0)  AS MD_FEE_SHPG_AMT_10       --배송료_추가비용1(MD 수수료)
+                , NVL(SUM(DECODE(A.BZEP_DVSN_CD||A.BZEP_EXCC_TYPE_CD, '042', A.SHPG_AMT_10)),0)  AS INTER_BUY_SHPG_AMT_10    --배송료_추가비용1(직매입)
+                , NVL(SUM(DECODE(A.BZEP_DVSN_CD||A.BZEP_EXCC_TYPE_CD, '013', A.SHPG_AMT_20)),0)  AS OM_PRIV_SHPG_AMT_20      --배송료_추가비용2(OM 개인)
+                , NVL(SUM(DECODE(A.BZEP_DVSN_CD||A.BZEP_EXCC_TYPE_CD, '023', A.SHPG_AMT_20)),0)  AS OM_BZEP_SHPG_AMT_20      --배송료_추가비용2(OM 사업자)
+                , NVL(SUM(DECODE(A.BZEP_DVSN_CD||A.BZEP_EXCC_TYPE_CD, '031', A.SHPG_AMT_20)),0)  AS MD_BUY_SHPG_AMT_20       --배송료_추가비용2(MD 매입)
+                , NVL(SUM(DECODE(A.BZEP_DVSN_CD||A.BZEP_EXCC_TYPE_CD, '033', A.SHPG_AMT_20)),0)  AS MD_FEE_SHPG_AMT_20       --배송료_추가비용2(MD 수수료)
+                , NVL(SUM(DECODE(A.BZEP_DVSN_CD||A.BZEP_EXCC_TYPE_CD, '042', A.SHPG_AMT_20)),0)  AS INTER_BUY_SHPG_AMT_20    --배송료_추가비용2(직매입)
+                , NVL(SUM(DECODE(A.BZEP_DVSN_CD||A.BZEP_EXCC_TYPE_CD, '013', A.SHPG_AMT_30)),0)  AS OM_PRIV_SHPG_AMT_30      --배송료_고객부담비(OM 개인)
+                , NVL(SUM(DECODE(A.BZEP_DVSN_CD||A.BZEP_EXCC_TYPE_CD, '023', A.SHPG_AMT_30)),0)  AS OM_BZEP_SHPG_AMT_30      --배송료_고객부담비(OM 사업자)
+                , NVL(SUM(DECODE(A.BZEP_DVSN_CD||A.BZEP_EXCC_TYPE_CD, '031', A.SHPG_AMT_30)),0)  AS MD_BUY_SHPG_AMT_30       --배송료_고객부담비(MD 매입)
+                , NVL(SUM(DECODE(A.BZEP_DVSN_CD||A.BZEP_EXCC_TYPE_CD, '033', A.SHPG_AMT_30)),0)  AS MD_FEE_SHPG_AMT_30       --배송료_고객부담비(MD 수수료)
+                , NVL(SUM(DECODE(A.BZEP_DVSN_CD||A.BZEP_EXCC_TYPE_CD, '042', A.SHPG_AMT_30)),0)  AS INTER_BUY_SHPG_AMT_30    --배송료_고객부담비(직매입)
+                , NVL(SUM(DECODE(A.BZEP_DVSN_CD||A.BZEP_EXCC_TYPE_CD, '013', A.SHPG_AMT_40)),0)  AS OM_PRIV_SHPG_AMT_40      --배송료_고객부담비-잡손실(OM 개인)
+                , NVL(SUM(DECODE(A.BZEP_DVSN_CD||A.BZEP_EXCC_TYPE_CD, '023', A.SHPG_AMT_40)),0)  AS OM_BZEP_SHPG_AMT_40      --배송료_고객부담비-잡손실(OM 사업자)
+                , NVL(SUM(DECODE(A.BZEP_DVSN_CD||A.BZEP_EXCC_TYPE_CD, '031', A.SHPG_AMT_40)),0)  AS MD_BUY_SHPG_AMT_40       --배송료_고객부담비-잡손실(MD 매입)
+                , NVL(SUM(DECODE(A.BZEP_DVSN_CD||A.BZEP_EXCC_TYPE_CD, '033', A.SHPG_AMT_40)),0)  AS MD_FEE_SHPG_AMT_40       --배송료_고객부담비-잡손실(MD 수수료)
+                , NVL(SUM(DECODE(A.BZEP_DVSN_CD||A.BZEP_EXCC_TYPE_CD, '042', A.SHPG_AMT_40)),0)  AS INTER_BUY_SHPG_AMT_40    --배송료_고객부담비-잡손실(직매입)
+                , NVL(SUM(DECODE(A.BZEP_DVSN_CD||A.BZEP_EXCC_TYPE_CD, '013', A.SHPG_AMT_50)),0)  AS OM_PRIV_SHPG_AMT_50      --배송료_반품택배비(OM 개인)
+                , NVL(SUM(DECODE(A.BZEP_DVSN_CD||A.BZEP_EXCC_TYPE_CD, '023', A.SHPG_AMT_50)),0)  AS OM_BZEP_SHPG_AMT_50      --배송료_반품택배비(OM 사업자)
+                , NVL(SUM(DECODE(A.BZEP_DVSN_CD||A.BZEP_EXCC_TYPE_CD, '031', A.SHPG_AMT_50)),0)  AS MD_BUY_SHPG_AMT_50       --배송료_반품택배비(MD 매입)
+                , NVL(SUM(DECODE(A.BZEP_DVSN_CD||A.BZEP_EXCC_TYPE_CD, '033', A.SHPG_AMT_50)),0)  AS MD_FEE_SHPG_AMT_50       --배송료_반품택배비(MD 수수료)
+                , NVL(SUM(DECODE(A.BZEP_DVSN_CD||A.BZEP_EXCC_TYPE_CD, '042', A.SHPG_AMT_50)),0)  AS INTER_BUY_SHPG_AMT_50    --배송료_반품택배비(직매입)
+                , NVL(SUM(DECODE(A.BZEP_DVSN_CD||A.BZEP_EXCC_TYPE_CD, '013', A.SHPG_AMT_60)),0)  AS OM_PRIV_SHPG_AMT_60      --배송료_수입제반비용(OM 개인)
+                , NVL(SUM(DECODE(A.BZEP_DVSN_CD||A.BZEP_EXCC_TYPE_CD, '023', A.SHPG_AMT_60)),0)  AS OM_BZEP_SHPG_AMT_60      --배송료_수입제반비용(OM 사업자)
+                , NVL(SUM(DECODE(A.BZEP_DVSN_CD||A.BZEP_EXCC_TYPE_CD, '031', A.SHPG_AMT_60)),0)  AS MD_BUY_SHPG_AMT_60       --배송료_수입제반비용(MD 매입)
+                , NVL(SUM(DECODE(A.BZEP_DVSN_CD||A.BZEP_EXCC_TYPE_CD, '033', A.SHPG_AMT_60)),0)  AS MD_FEE_SHPG_AMT_60       --배송료_수입제반비용(MD 수수료)
+                , NVL(SUM(DECODE(A.BZEP_DVSN_CD||A.BZEP_EXCC_TYPE_CD, '042', A.SHPG_AMT_60)),0)  AS INTER_BUY_SHPG_AMT_60    --배송료_수입제반비용(직매입)
+                , NVL(SUM(A.SHPG_AMT_60),0)                                                      AS SHPG_AMT                 --배송료_수입제반비용(전체)
+            FROM CLSG_SALE_TTLZ_MSTR A
+            WHERE A.CLSG_DT  BETWEEN #{searchStartDate} AND #{searchEndDate}
+                AND A.SVC_DVSN_CD = #{svcDvsnCd}
+            GROUP BY A.SVC_DVSN_CD, DECODE(CLSG_STAT_CD,'02','01','12','11',CLSG_STAT_CD), ORDE_TYPE_CD
+        )
+        SELECT *
+        FROM (
+            SELECT
+                SVC_DVSN_CD
+                , CLSG_STAT_CD
+                , DECODE(CLSG_STAT_CD||ORDE_TYPE_CD, '01A','정상주문','01C','정상취소'
+                ,'03A','보정확정주문','03C', '보정확정취소'
+                ,'11A','오류주문','11C','오류취소') 					 AS CLSG_STAT_NM
+                , ORDE_TYPE_CD
+                -- 추가비용
+                , OM_PRIV_SHPG_AMT_10 + OM_BZEP_SHPG_AMT_10 +OM_PRIV_SHPG_AMT_20 + OM_BZEP_SHPG_AMT_20      AS OM_ADD_SHPG_AMT      --배숑료_추가비용 : 추가비용1+추가비용2(OM 상품)
+                , MD_BUY_SHPG_AMT_10 + MD_BUY_SHPG_AMT_20            AS MD_BUY_ADD_SHPG_AMT       --배송료_추가비용 : 추가비용1+추가비용2(MD 매입)
+                , MD_FEE_SHPG_AMT_10 + MD_FEE_SHPG_AMT_20            AS MD_FEE_ADD_SHPG_AMT       --배송료_추가비용 : 추가비용1+추가비용2(MD 수수료)
+                , INTER_BUY_SHPG_AMT_10 + INTER_BUY_SHPG_AMT_20      AS INTER_BUY_ADD_SHPG_AMT    --배송료_추가비용 : 추가비용1+추가비용2(직매입)
+                , MD_BUY_SHPG_AMT_10 + MD_FEE_SHPG_AMT_10 + INTER_BUY_SHPG_AMT_10
+                + MD_BUY_SHPG_AMT_20 + MD_FEE_SHPG_AMT_20 + INTER_BUY_SHPG_AMT_20                         AS MD_ADD_SHPG_AMT      --배송료_추가비용1 : 추가비용1+추가비용2(MD 상품)
+                -- 고객부담비
+                , OM_PRIV_SHPG_AMT_30 + OM_BZEP_SHPG_AMT_30          AS OM_CUST_SHPG_AMT          --배송료_고객부담비(OM)
+                , MD_BUY_SHPG_AMT_30                                 AS MD_BUY_CUST_SHPG_AMT      --배송료_고객부담비(MD 매입)
+                , MD_FEE_SHPG_AMT_30                                 AS MD_FEE_CUST_SHPG_AMT      --배송료_고객부담비(MD 수수료)
+                , INTER_BUY_SHPG_AMT_30                              AS INTER_BUY_CUST_SHPG_AMT   --배송료_고객부담비(직매입)
+                , MD_BUY_SHPG_AMT_30 + MD_FEE_SHPG_AMT_30 + INTER_BUY_SHPG_AMT_30                           AS MD_CUST_SHPG_AMT     --배송료_고객부담비(MD)
+                -- 잡손실금액
+                , OM_PRIV_SHPG_AMT_40 + OM_BZEP_SHPG_AMT_40 + MD_BUY_SHPG_AMT_40
+                + MD_FEE_SHPG_AMT_40 + INTER_BUY_SHPG_AMT_40         AS LOSS_SHPG_AMT             --배송료_잡손실
+                -- 반품택배비
+                , OM_PRIV_SHPG_AMT_50 + OM_BZEP_SHPG_AMT_50          AS OM_RETU_SHPG_AMT          --배송료_반품택배비(OM)
+                , MD_BUY_SHPG_AMT_50                                 AS MD_BUY_RETU_SHPG_AMT      --배송료_반품택배비(MD 매입)
+                , MD_FEE_SHPG_AMT_50                                 AS MD_FEE_RETU_SHPG_AMT      --배송료_반품택배비(MD 수수료)
+                , INTER_BUY_SHPG_AMT_50                              AS INTER_BUY_RETU_SHPG_AMT   --배송료_반품택배비(직매입)
+                , MD_BUY_SHPG_AMT_50 + MD_FEE_SHPG_AMT_50 +INTER_BUY_SHPG_AMT_50                            AS MD_RETU_SHPG_AMT     --배송료_반품택배비(MD)
+                -- 수입제반비용
+                , OM_PRIV_SHPG_AMT_60 + OM_BZEP_SHPG_AMT_60          AS OM_INTER_SHPG_AMT         --배송료_수입제반비용(OM)
+                , MD_BUY_SHPG_AMT_60                                 AS MD_BUY_INTER_SHPG_AMT     --배송료_수입제반비용(MD 매입)
+                , MD_FEE_SHPG_AMT_60                                 AS MD_FEE_INTER_SHPG_AMT     --배송료_수입제반비용(MD 수수료)
+                , INTER_BUY_SHPG_AMT_60                              AS INTER_BUY_INTER_SHPG_AMT  --배송료_수입제반비용(직매입)
+                , MD_BUY_SHPG_AMT_60 + MD_FEE_SHPG_AMT_60 + INTER_BUY_SHPG_AMT_60                           AS MD_INTER_SHPG_AMT    --배송료_수입제반비용(MD)
+                , SHPG_AMT                                           AS SHPG_AMT                  --배송료_수입제반비용(전체)
+            FROM ROW_LIST
+            UNION ALL
+            SELECT
+                SVC_DVSN_CD
+                , DECODE(CLSG_STAT_CD,'01','01-1','03','03-1','11','11-1','')                        AS CLSG_STAT_CD
+                , DECODE(CLSG_STAT_CD, '01','정상총합계','03','보정확정총합계','11','오류총합계','') AS CLSG_STAT_NM
+                , '' AS ORDE_TYPE_CD
+                -- 추가비용
+                , SUM(DECODE(ORDE_TYPE_CD,'C', (OM_PRIV_SHPG_AMT_10 + OM_BZEP_SHPG_AMT_10 +OM_PRIV_SHPG_AMT_20 + OM_BZEP_SHPG_AMT_20)*-1, OM_PRIV_SHPG_AMT_10 + OM_BZEP_SHPG_AMT_10 +OM_PRIV_SHPG_AMT_20 + OM_BZEP_SHPG_AMT_20))      AS OM_ADD_SHPG_AMT      --배숑료_추가비용 : 추가비용1+추가비용2(OM 상품)
+                , SUM(DECODE(ORDE_TYPE_CD,'C', (MD_BUY_SHPG_AMT_10 + MD_BUY_SHPG_AMT_20)*-1 ,MD_BUY_SHPG_AMT_10 + MD_BUY_SHPG_AMT_20))                  AS MD_BUY_ADD_SHPG_AMT       --배송료_추가비용 : 추가비용1+추가비용2(MD 매입)
+                , SUM(DECODE(ORDE_TYPE_CD,'C', (MD_FEE_SHPG_AMT_10 + MD_FEE_SHPG_AMT_20)*-1, MD_FEE_SHPG_AMT_10 + MD_FEE_SHPG_AMT_20))                  AS MD_FEE_ADD_SHPG_AMT       --배송료_추가비용 : 추가비용1+추가비용2(MD 수수료)
+                , SUM(DECODE(ORDE_TYPE_CD,'C', (INTER_BUY_SHPG_AMT_10 + INTER_BUY_SHPG_AMT_20)*-1, INTER_BUY_SHPG_AMT_10 + INTER_BUY_SHPG_AMT_20))      AS INTER_BUY_ADD_SHPG_AMT    --배송료_추가비용 : 추가비용1+추가비용2(직매입)
+                , SUM(DECODE(ORDE_TYPE_CD,'C', (MD_BUY_SHPG_AMT_10 + MD_FEE_SHPG_AMT_10 + INTER_BUY_SHPG_AMT_10 + MD_BUY_SHPG_AMT_20 + MD_FEE_SHPG_AMT_20 + INTER_BUY_SHPG_AMT_20)*-1,
+                MD_BUY_SHPG_AMT_10 + MD_FEE_SHPG_AMT_10 + INTER_BUY_SHPG_AMT_10 + MD_BUY_SHPG_AMT_20 + MD_FEE_SHPG_AMT_20 + INTER_BUY_SHPG_AMT_20))                                         AS MD_ADD_SHPG_AMT      --배송료_추가비용1 : 추가비용1+추가비용2(MD 상품)
+                -- 고객부담비
+                , SUM(DECODE(ORDE_TYPE_CD,'C', (OM_PRIV_SHPG_AMT_30 + OM_BZEP_SHPG_AMT_30)*-1, OM_PRIV_SHPG_AMT_30 + OM_BZEP_SHPG_AMT_30))              AS OM_CUST_SHPG_AMT          --배송료_고객부담비(OM)
+                , SUM(DECODE(ORDE_TYPE_CD,'C', (MD_BUY_SHPG_AMT_30)*-1, MD_BUY_SHPG_AMT_30))                                                            AS MD_BUY_CUST_SHPG_AMT      --배송료_고객부담비(MD 매입)
+                , SUM(DECODE(ORDE_TYPE_CD,'C', (MD_FEE_SHPG_AMT_30)*-1, MD_FEE_SHPG_AMT_30))                                                            AS MD_FEE_CUST_SHPG_AMT      --배송료_고객부담비(MD 수수료)
+                , SUM(DECODE(ORDE_TYPE_CD,'C', (INTER_BUY_SHPG_AMT_30)*-1, INTER_BUY_SHPG_AMT_30))                                                      AS INTER_BUY_CUST_SHPG_AMT   --배송료_고객부담비(직매입)
+                , SUM(DECODE(ORDE_TYPE_CD,'C', (MD_BUY_SHPG_AMT_30 + MD_FEE_SHPG_AMT_30 + INTER_BUY_SHPG_AMT_30)*-1, MD_BUY_SHPG_AMT_30 + MD_FEE_SHPG_AMT_30 + INTER_BUY_SHPG_AMT_30))      AS MD_CUST_SHPG_AMT     --배송료_고객부담비(MD)
+                -- 잡손실금액
+                , SUM(DECODE(ORDE_TYPE_CD,'C', (OM_PRIV_SHPG_AMT_40 + OM_BZEP_SHPG_AMT_40 + MD_BUY_SHPG_AMT_40
+                + MD_FEE_SHPG_AMT_40 + INTER_BUY_SHPG_AMT_40)*-1, OM_PRIV_SHPG_AMT_40 + OM_BZEP_SHPG_AMT_40 + MD_BUY_SHPG_AMT_40
+                + MD_FEE_SHPG_AMT_40 + INTER_BUY_SHPG_AMT_40))                                                                                          AS LOSS_SHPG_AMT             --배송료_잡손실
+                -- 반품택배비
+                , SUM(DECODE(ORDE_TYPE_CD,'C', (OM_PRIV_SHPG_AMT_50 + OM_BZEP_SHPG_AMT_50)*-1, OM_PRIV_SHPG_AMT_50 + OM_BZEP_SHPG_AMT_50))              AS OM_RETU_SHPG_AMT          --배송료_반품택배비(OM)
+                , SUM(DECODE(ORDE_TYPE_CD,'C', (MD_BUY_SHPG_AMT_50)*-1, MD_BUY_SHPG_AMT_50))                                                            AS MD_BUY_RETU_SHPG_AMT      --배송료_반품택배비(MD 매입)
+                , SUM(DECODE(ORDE_TYPE_CD,'C', (MD_FEE_SHPG_AMT_50)*-1, MD_FEE_SHPG_AMT_50))                                                            AS MD_FEE_RETU_SHPG_AMT      --배송료_반품택배비(MD 수수료)
+                , SUM(DECODE(ORDE_TYPE_CD,'C', (INTER_BUY_SHPG_AMT_50)*-1, INTER_BUY_SHPG_AMT_50))                                                      AS INTER_BUY_RETU_SHPG_AMT   --배송료_반품택배비(직매입)
+                , SUM(DECODE(ORDE_TYPE_CD,'C', (MD_BUY_SHPG_AMT_50 + MD_FEE_SHPG_AMT_50 +INTER_BUY_SHPG_AMT_50)*-1, MD_BUY_SHPG_AMT_50 + MD_FEE_SHPG_AMT_50 +INTER_BUY_SHPG_AMT_50))        AS MD_RETU_SHPG_AMT     --배송료_반품택배비(MD)
+                -- 수입제반비용
+                , SUM(DECODE(ORDE_TYPE_CD,'C', (OM_PRIV_SHPG_AMT_60 + OM_BZEP_SHPG_AMT_60)*-1, OM_PRIV_SHPG_AMT_60 + OM_BZEP_SHPG_AMT_60))              AS OM_INTER_SHPG_AMT         --배송료_수입제반비용(OM)
+                , SUM(DECODE(ORDE_TYPE_CD,'C', (MD_BUY_SHPG_AMT_60)*-1, MD_BUY_SHPG_AMT_60))                                                            AS MD_BUY_INTER_SHPG_AMT     --배송료_수입제반비용(MD 매입)
+                , SUM(DECODE(ORDE_TYPE_CD,'C', (MD_FEE_SHPG_AMT_60)*-1, MD_FEE_SHPG_AMT_60))                                                            AS MD_FEE_INTER_SHPG_AMT     --배송료_수입제반비용(MD 수수료)
+                , SUM(DECODE(ORDE_TYPE_CD,'C', (INTER_BUY_SHPG_AMT_60)*-1, INTER_BUY_SHPG_AMT_60))                                                      AS INTER_BUY_INTER_SHPG_AMT  --배송료_수입제반비용(직매입)
+                , SUM(DECODE(ORDE_TYPE_CD,'C', (MD_BUY_SHPG_AMT_60 + MD_FEE_SHPG_AMT_60 + INTER_BUY_SHPG_AMT_60)*-1, MD_BUY_SHPG_AMT_60 + MD_FEE_SHPG_AMT_60 + INTER_BUY_SHPG_AMT_60))      AS MD_INTER_SHPG_AMT    --배송료_수입제반비용(MD)
+                , SUM(DECODE(ORDE_TYPE_CD,'C', (SHPG_AMT)*-1, SHPG_AMT))                                                                                AS SHPG_AMT                  --배송료_수입제반비용(전체)
+            FROM ROW_LIST
+            GROUP BY SVC_DVSN_CD, CLSG_STAT_CD
+            UNION ALL
+            SELECT
+                SVC_DVSN_CD
+                , '05' AS CLSG_STAT_CD
+                , '총합계' AS CLSG_STAT_NM
+                , '' AS ORDE_TYPE_CD
+                -- 추가비용
+                , SUM(DECODE(ORDE_TYPE_CD,'C', (OM_PRIV_SHPG_AMT_10 + OM_BZEP_SHPG_AMT_10 +OM_PRIV_SHPG_AMT_20 + OM_BZEP_SHPG_AMT_20)*-1, OM_PRIV_SHPG_AMT_10 + OM_BZEP_SHPG_AMT_10 +OM_PRIV_SHPG_AMT_20 + OM_BZEP_SHPG_AMT_20))    AS OM_ADD_SHPG_AMT      --배숑료_추가비용 : 추가비용1+추가비용2(OM 상품)
+                , SUM(DECODE(ORDE_TYPE_CD,'C', (MD_BUY_SHPG_AMT_10 + MD_BUY_SHPG_AMT_20)*-1 ,MD_BUY_SHPG_AMT_10 + MD_BUY_SHPG_AMT_20))                  AS MD_BUY_ADD_SHPG_AMT       --배송료_추가비용 : 추가비용1+추가비용2(MD 매입)
+                , SUM(DECODE(ORDE_TYPE_CD,'C', (MD_FEE_SHPG_AMT_10 + MD_FEE_SHPG_AMT_20)*-1, MD_FEE_SHPG_AMT_10 + MD_FEE_SHPG_AMT_20))                  AS MD_FEE_ADD_SHPG_AMT       --배송료_추가비용 : 추가비용1+추가비용2(MD 수수료)
+                , SUM(DECODE(ORDE_TYPE_CD,'C', (INTER_BUY_SHPG_AMT_10 + INTER_BUY_SHPG_AMT_20)*-1, INTER_BUY_SHPG_AMT_10 + INTER_BUY_SHPG_AMT_20))      AS INTER_BUY_ADD_SHPG_AMT    --배송료_추가비용 : 추가비용1+추가비용2(직매입)
+                , SUM(DECODE(ORDE_TYPE_CD,'C', (MD_BUY_SHPG_AMT_10 + MD_FEE_SHPG_AMT_10 + INTER_BUY_SHPG_AMT_10 + MD_BUY_SHPG_AMT_20 + MD_FEE_SHPG_AMT_20 + INTER_BUY_SHPG_AMT_20)*-1,
+                MD_BUY_SHPG_AMT_10 + MD_FEE_SHPG_AMT_10 + INTER_BUY_SHPG_AMT_10 + MD_BUY_SHPG_AMT_20 + MD_FEE_SHPG_AMT_20 + INTER_BUY_SHPG_AMT_20))     AS MD_ADD_SHPG_AMT      --배송료_추가비용1 : 추가비용1+추가비용2(MD 상품)
+                -- 고객부담비
+                , SUM(DECODE(ORDE_TYPE_CD,'C', (OM_PRIV_SHPG_AMT_30 + OM_BZEP_SHPG_AMT_30)*-1, OM_PRIV_SHPG_AMT_30 + OM_BZEP_SHPG_AMT_30))              AS OM_CUST_SHPG_AMT          --배송료_고객부담비(OM)
+                , SUM(DECODE(ORDE_TYPE_CD,'C', (MD_BUY_SHPG_AMT_30)*-1, MD_BUY_SHPG_AMT_30))                                                            AS MD_BUY_CUST_SHPG_AMT      --배송료_고객부담비(MD 매입)
+                , SUM(DECODE(ORDE_TYPE_CD,'C', (MD_FEE_SHPG_AMT_30)*-1, MD_FEE_SHPG_AMT_30))                                                            AS MD_FEE_CUST_SHPG_AMT      --배송료_고객부담비(MD 수수료)
+                , SUM(DECODE(ORDE_TYPE_CD,'C', (INTER_BUY_SHPG_AMT_30)*-1, INTER_BUY_SHPG_AMT_30))                                                      AS INTER_BUY_CUST_SHPG_AMT   --배송료_고객부담비(직매입)
+                , SUM(DECODE(ORDE_TYPE_CD,'C', (MD_BUY_SHPG_AMT_30 + MD_FEE_SHPG_AMT_30 + INTER_BUY_SHPG_AMT_30)*-1, MD_BUY_SHPG_AMT_30 + MD_FEE_SHPG_AMT_30 + INTER_BUY_SHPG_AMT_30))                                              AS MD_CUST_SHPG_AMT     --배송료_고객부담비(MD)
+                -- 잡손실금액
+                , SUM(DECODE(ORDE_TYPE_CD,'C', (OM_PRIV_SHPG_AMT_40 + OM_BZEP_SHPG_AMT_40 + MD_BUY_SHPG_AMT_40
+                + MD_FEE_SHPG_AMT_40 + INTER_BUY_SHPG_AMT_40)*-1, OM_PRIV_SHPG_AMT_40 + OM_BZEP_SHPG_AMT_40 + MD_BUY_SHPG_AMT_40
+                + MD_FEE_SHPG_AMT_40 + INTER_BUY_SHPG_AMT_40))                                                                                          AS LOSS_SHPG_AMT             --배송료_잡손실
+                -- 반품택배비
+                , SUM(DECODE(ORDE_TYPE_CD,'C', (OM_PRIV_SHPG_AMT_50 + OM_BZEP_SHPG_AMT_50)*-1, OM_PRIV_SHPG_AMT_50 + OM_BZEP_SHPG_AMT_50))              AS OM_RETU_SHPG_AMT          --배송료_반품택배비(OM)
+                , SUM(DECODE(ORDE_TYPE_CD,'C', (MD_BUY_SHPG_AMT_50)*-1, MD_BUY_SHPG_AMT_50))                                                            AS MD_BUY_RETU_SHPG_AMT      --배송료_반품택배비(MD 매입)
+                , SUM(DECODE(ORDE_TYPE_CD,'C', (MD_FEE_SHPG_AMT_50)*-1, MD_FEE_SHPG_AMT_50))                                                            AS MD_FEE_RETU_SHPG_AMT      --배송료_반품택배비(MD 수수료)
+                , SUM(DECODE(ORDE_TYPE_CD,'C', (INTER_BUY_SHPG_AMT_50)*-1, INTER_BUY_SHPG_AMT_50))                                                      AS INTER_BUY_RETU_SHPG_AMT   --배송료_반품택배비(직매입)
+                , SUM(DECODE(ORDE_TYPE_CD,'C', (MD_BUY_SHPG_AMT_50 + MD_FEE_SHPG_AMT_50 +INTER_BUY_SHPG_AMT_50)*-1, MD_BUY_SHPG_AMT_50 + MD_FEE_SHPG_AMT_50 +INTER_BUY_SHPG_AMT_50))                                                AS MD_RETU_SHPG_AMT     --배송료_반품택배비(MD)
+                -- 수입제반비용
+                , SUM(DECODE(ORDE_TYPE_CD,'C', (OM_PRIV_SHPG_AMT_60 + OM_BZEP_SHPG_AMT_60)*-1, OM_PRIV_SHPG_AMT_60 + OM_BZEP_SHPG_AMT_60))              AS OM_INTER_SHPG_AMT         --배송료_수입제반비용(OM)
+                , SUM(DECODE(ORDE_TYPE_CD,'C', (MD_BUY_SHPG_AMT_60)*-1, MD_BUY_SHPG_AMT_60))                                                            AS MD_BUY_INTER_SHPG_AMT     --배송료_수입제반비용(MD 매입)
+                , SUM(DECODE(ORDE_TYPE_CD,'C', (MD_FEE_SHPG_AMT_60)*-1, MD_FEE_SHPG_AMT_60))                                                            AS MD_FEE_INTER_SHPG_AMT     --배송료_수입제반비용(MD 수수료)
+                , SUM(DECODE(ORDE_TYPE_CD,'C', (INTER_BUY_SHPG_AMT_60)*-1, INTER_BUY_SHPG_AMT_60))                                                      AS INTER_BUY_INTER_SHPG_AMT  --배송료_수입제반비용(직매입)
+                , SUM(DECODE(ORDE_TYPE_CD,'C', (MD_BUY_SHPG_AMT_60 + MD_FEE_SHPG_AMT_60 + INTER_BUY_SHPG_AMT_60)*-1, MD_BUY_SHPG_AMT_60 + MD_FEE_SHPG_AMT_60 + INTER_BUY_SHPG_AMT_60))                                              AS MD_INTER_SHPG_AMT    --배송료_수입제반비용(MD)
+                , SUM(DECODE(ORDE_TYPE_CD,'C', (SHPG_AMT)*-1, SHPG_AMT))                                                                                AS SHPG_AMT                  --배송료_수입제반비용(전체)
+            FROM ROW_LIST
+            WHERE CLSG_STAT_CD IN ('01','03')
+            GROUP BY SVC_DVSN_CD
+        )
+        ORDER BY CLSG_STAT_CD,CLSG_STAT_NM
+    </select>
+
+
+</mapper>

@@ -1,0 +1,38 @@
+spring:
+  datasource:
+    driver-class-name: "net.sf.log4jdbc.sql.jdbcapi.DriverSpy"
+    hikari:
+      connection-timeout: 30000 #default=30000
+      validation-timeout: 5000 #defalut=5000
+      idle-timeout: 600000 #defalut=600000
+      maximum-pool-size: 10 #defalut=10
+      minimum-idle: 10
+
+---
+spring:
+  profiles: local
+  datasource:
+    url: "jdbc:log4jdbc:oracle:thin:@172.25.9.32:1570:CDITEST"
+    username: "CDI"
+    password: "CDI12#$"
+
+---
+spring:
+  profiles: dev
+  datasource:
+    url: "jdbc:log4jdbc:oracle:thin:@172.25.9.32:1570:CDITEST"
+    username: "CDI"
+    password: "CDI12#$"
+
+---
+spring:
+  profiles: stag
+  datasource:
+    url: "jdbc:log4jdbc:oracle:thin:@172.25.9.32:1570:CDITEST"
+    username: "CDI"
+    password: "CDI12#$"
+
+---
+# 운영 DB 정보는 다른 GitLab 에서 관리
+spring:
+  profiles: prod

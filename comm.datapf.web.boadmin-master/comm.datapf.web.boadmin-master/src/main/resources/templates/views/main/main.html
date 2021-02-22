@@ -1,0 +1,35 @@
+<!--
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    &lt;!&ndash;th:block layout:fragment="th-head">
+        <title>BO Admin</title>
+    </th:block&ndash;&gt;
+</head>
+<body class="">
+&lt;!&ndash; MAIN PANEL &ndash;&gt;
+&lt;!&ndash; MAIN PANEL &ndash;&gt;
+<div role="main">
+    <div id="content">
+    </div>
+</div>
+</body>
+
+</html>-->
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/th-layout-admin}">
+<head layout:fragment="th-fragment-head">
+    <th:block layout:fragment="th-head">
+        <title>Housing Admin</title>
+    </th:block>
+</head>
+<body class="">
+<!-- MAIN PANEL -->
+<div role="main" layout:fragment="th-fragment-content-main">
+    <div id="content">
+    </div>
+</div>
+</body>
+
+</html>

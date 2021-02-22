@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="10 seconds">
+  <include resource="org/springframework/boot/logging/logback/defaults.xml" />
+  <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
+
+  <springProperty scope="context" name="SERVICE_NAME" source="spring.application.name"/>
+  <springProperty scope="context" name="PROJECT_NAME" source="application.project-name"/>
+  <springProperty scope="context" name="LOG_PATH_ROOT" source="logging.path.root"/>
+  <springProperty scope="context" name="LOGSTASH_HOST" source="logging.logstash.host"/>
+  <springProperty scope="context" name="LOGSTASH_PORT" source="logging.logstash.port"/>
+  <springProperty scope="context" name="ACTIVE_PROFILES" source="spring.profiles.active"/>
+
+  <property value="${SERVICE_NAME}" name="LOG_FILE_PREFIX"/>
+  <property value="${LOG_PATH_ROOT}/${PROJECT_NAME}" name="LOG_PATH"/>
+
+  <!-- FILE Appender -->
+  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${LOG_PATH}/${LOG_FILE_PREFIX}.log</file>
+    <!-- 일자별로 로그파일 적용하기 -->
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>${LOG_PATH}/${LOG_FILE_PREFIX}_%d{yyyyMMdd}.log</fileNamePattern>
+      <maxHistory>30</maxHistory>
+      <!-- 일자별 백업파일의 보관기간 -->
+    </rollingPolicy>
+    <encoder>
+      <charset>UTF-8</charset>
+      <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} ${LOG_LEVEL_PATTERN:-%5p}\(${PID:- }\)[%t] [%logger{30}:%line] [${ACTIVE_PROFILES}] %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <!-- CONSOLE Appender -->
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <charset>UTF-8</charset>
+      <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} ${LOG_LEVEL_PATTERN:-%5p}\(${PID:- }\)[%t] [%logger{30}:%line] [${ACTIVE_PROFILES}] %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="jsonFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <File>${LOG_PATH}/${LOG_FILE_PREFIX}.json</File>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>${LOG_PATH}/${LOG_FILE_PREFIX}_%d{yyyy-MM-dd}.%i.json</fileNamePattern>
+      <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+        <maxFileSize>200MB</maxFileSize>
+      </timeBasedFileNamingAndTriggeringPolicy>
+      <maxHistory>30</maxHistory>
+    </rollingPolicy>
+    <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+      <jsonFactoryDecorator class="comm.datapf.sys.cloudconfig.log.NoEscapingJsonFactoryDecorator"/>
+      <timestampPattern>yyyy-MM-dd HH:mm:ss.SSS</timestampPattern>
+      <includeContext>false</includeContext>
+      <includeCallerData>true</includeCallerData>
+      <includeMdcKeyName>X-B3-TraceId</includeMdcKeyName>    <!-- Spring Sleuth Trace ID -->
+      <includeMdcKeyName>X-B3-SpanId</includeMdcKeyName>     <!-- Spring Sleuth Span ID -->
+      <includeMdcKeyName>X-Scouter-Gxid</includeMdcKeyName>  <!-- Scouter에서 생성한 해더 -->
+      <fieldNames>
+        <timestamp>timestamp</timestamp>
+        <version>[ignore]</version>
+        <levelValue>[ignore]</levelValue>
+      </fieldNames>
+      <customFields>{"appname":"${SERVICE_NAME}", "machineHostname":"${HOSTSERVER_NAME}", "hostname":"${HOSTNAME}", "customappname":"${CUSTOMAPPNAME:NONE}", "profiles":"${ACTIVE_PROFILES}"}</customFields>
+    </encoder>
+  </appender>
+
+  <appender name="jsonSocketAppender" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+    <remoteHost>${LOGSTASH_HOST}</remoteHost>
+    <port>${LOGSTASH_PORT}</port>
+    <keepAliveDuration>1 minute</keepAliveDuration>
+    <reconnectionDelay>3 second</reconnectionDelay>
+    <writeBufferSize>16384</writeBufferSize>    <!-- default : 8192 -->
+    <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+      <jsonFactoryDecorator class="comm.datapf.sys.cloudconfig.log.NoEscapingJsonFactoryDecorator"/>
+      <includeContext>false</includeContext>
+      <includeCallerData>true</includeCallerData>
+      <includeMdcKeyName>X-B3-TraceId</includeMdcKeyName>    <!-- Spring Sleuth Trace ID -->
+      <includeMdcKeyName>X-B3-SpanId</includeMdcKeyName>     <!-- Spring Sleuth Span ID -->
+      <includeMdcKeyName>X-Scouter-Gxid</includeMdcKeyName>  <!-- Scouter에서 생성한 해더 -->
+      <fieldNames>
+        <timestamp>timestamp</timestamp>
+        <version>[ignore]</version>
+        <levelValue>[ignore]</levelValue>
+      </fieldNames>
+      <customFields>{"appname":"${SERVICE_NAME}", "machineHostname":"${HOSTSERVER_NAME}", "hostname":"${HOSTNAME}", "customappname":"${CUSTOMAPPNAME:NONE}", "profiles":"${ACTIVE_PROFILES}"}</customFields>
+    </encoder>
+  </appender>
+
+  <springProfile name="native,local,dev">
+    <root level="DEBUG">
+      <appender-ref ref="CONSOLE"/>
+      <appender-ref ref="FILE"/>
+      <appender-ref ref="jsonFileAppender"/>
+    </root>
+  </springProfile>
+
+  <springProfile name="stag">
+    <root level="INFO">
+      <appender-ref ref="CONSOLE"/>
+      <appender-ref ref="FILE"/>
+      <appender-ref ref="jsonFileAppender"/>
+    </root>
+  </springProfile>
+
+  <springProfile name="prod">
+    <root level="WARN">
+      <appender-ref ref="CONSOLE"/>
+      <appender-ref ref="FILE"/>
+      <appender-ref ref="jsonFileAppender"/>
+      <appender-ref ref="jsonSocketAppender"/>
+    </root>
+  </springProfile>
+</configuration>

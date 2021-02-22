@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ INTERPARK INC., SEOUL, KOREA
+  ~ Copyright(c) 2020 by Interpark Inc.
+  ~
+  ~ All rights reserved. No part of this work may be reproduced, stored in a
+  ~ retrieval system, or transmitted by any means without prior written
+  ~ permission of Interpark Inc.
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="comm.datapf.web.boadmin.domain.dao.TrsfDao">
+
+    <select id="getTrsfGranter" resultType="comm.datapf.web.boadmin.domain.dto.trsf.TrsfGranterVo">
+        WITH CVYC_PRDT_RANK AS (-- 양도 상품 조회
+            SELECT  TP.TRSF_SEQ         -- 양수도SEQ
+                  , TP.TRSF_PRDT_SEQ    -- 양수도상품SEQ
+                  , TP.CVYC_PRDT_CD     -- 양도상품코드
+                  , TP.CVYC_PLAC_CD     -- 양도공연장코드
+                  , CDI.FN_GET_PRDT_NM(TM.SVC_DVSN_CD, TP.CVYC_PRDT_CD, TM.CVYC_BZEP_NO)   AS CVYC_PRDT_NM     -- 상품명
+                  , ROW_NUMBER() OVER(PARTITION BY TP.TRSF_SEQ ORDER BY TP.CVYC_RANK_CD)   AS CVYC_PRDT_RANK   -- 양도우선순위에 따른 상품순위
+                  , COUNT(*) OVER (PARTITION BY TP.TRSF_SEQ)  AS CVYC_PRDT_CNT                                 -- 상품수
+              FROM  CDI.BZEP_TRSF_MSTR TM
+              INNER JOIN CDI.BZEP_TRSF_PRDT TP ON TM.TRSF_SEQ = TP.TRSF_SEQ
+             WHERE  TP.USE_YN = 'Y'
+               AND  TM.SVC_DVSN_CD = #{svcDvsnCd}
+               AND  #{svcDvsnCd} IN ('04', '06') -- 공연/숙박
+        )
+        SELECT
+                TM.SVC_DVSN_CD          AS SVC_DVSN_CD      -- 서비스구분
+              , TM.TRSF_SEQ             AS TRSF_SEQ         -- 양수도번호
+              , TM.CVYC_RCIT_DT         AS CVYC_RCIT_DT     -- 양도서류접수일자
+              , TM.TRSF_STRT_DT         AS TRSF_STRT_DT     -- 양수도시작일자(적용시작일)
+              , TM.TRSF_END_DT          AS TRSF_END_DT      -- 양수도종료일자(적용해제일)
+              , TM.CVYC_BZEP_NO         AS CVYC_BZEP_NO     -- 양도업체번호(거래처번호)
+              , TM.CVYC_CTRT_SNO        AS CVYC_CTRT_SNO    -- 양도계약일련번호(거래처SEQ)
+              , BM.BZNO                 AS CVYC_BZNO        -- 양도사업자번호
+              , BM.BZEP_NM              AS CVYC_BZEP_NM     -- 양도거래처명
+              , PR.CVYC_PRDT_NM         AS CVYC_PRDT_NM     -- 양도대상상품명
+              , PR.CVYC_PRDT_CNT        AS CVYC_PRDT_CNT    -- 양도대상상품수
+              , TM.CVYC_LMT_AMT         AS CVYC_LMT_AMT     -- 양도한도액(채권한도액)
+              , TM.ERLM_NO              AS ERLM_NO          -- 등록자
+                ----------------------------------------
+              , PR.CVYC_PRDT_CD         AS CVYC_PRDT_CD     -- 양도상품코드
+              , PR.CVYC_PLAC_CD         AS CVYC_PLAC_CD     -- 양도공연장코드
+              , TM.TRSF_DVSN_CD         AS TRSF_DVSN_CD     -- 양수도구분
+              , TM.TRSF_STAT_CD         AS TRSF_STAT_CD     -- 양수도상태코드
+          -- 양수도마스터
+          FROM  CDI.BZEP_TRSF_MSTR TM
+          -- 거래처마스터
+          INNER JOIN CDI.BZEP_MSTR BM
+            ON  TM.SVC_DVSN_CD   = BM.SVC_DVSN_CD
+           AND  TM.CVYC_BZEP_NO  = BM.BZEP_NO
+           AND  TM.CVYC_CTRT_SNO = BM.CTRT_SNO
+           AND  BM.APLY_END_DTIME = TO_DATE('99991231235959', 'YYYYMMDDHH24MISS')
+          -- 양도대상 상품(1순위상품)
+          LEFT OUTER JOIN CVYC_PRDT_RANK PR
+            ON  TM.TRSF_SEQ = PR.TRSF_SEQ
+           AND  PR.CVYC_PRDT_RANK = 1
+          -- 조회조건
+         WHERE  TM.SVC_DVSN_CD  = #{svcDvsnCd}       -- 서비스구분(필수)
+        <if test="trsfDvsnCd != null and trsfDvsnCd != ''">
+           AND  TM.TRSF_DVSN_CD = #{trsfDvsnCd}      -- 양수도구분(필수)
+        </if>
+        <if test="(dateFr != null and dateFr != '') and (dateTo != null and dateTo != '')">
+            <choose>
+                <when test="dateType == 'cvycRcitDt'">
+           AND  TM.CVYC_RCIT_DT BETWEEN #{dateFr} AND #{dateTo} -- 서류접수일
+                </when>
+                <when test="dateType == 'trsfStrtDt'">
+           AND  TM.TRSF_STRT_DT BETWEEN #{dateFr} AND #{dateTo} -- 서류접수일
+                </when>
+                <when test="dateType == 'trsfEndDt'">
+           AND  TM.TRSF_END_DT BETWEEN #{dateFr} AND #{dateTo} -- 서류접수일
+                </when>
+            </choose>
+        </if>
+        <if test="cvycBzno != null and cvycBzno != ''">
+           AND  BM.BZNO      LIKE '%' || REPLACE(#{cvycBzno}, '-', '') || '%'    -- 양도사업자번호
+        </if>
+        <if test="cvycBzepNm != null and cvycBzepNm != ''">
+           AND  BM.BZEP_NM   LIKE '%' || #{cvycBzepNm} || '%'    -- 양도거래처명
+        </if>
+        <if test="cvycPrdtNm != null and cvycPrdtNm != ''">
+           AND  (   (#{svcDvsnCd} IN ('04', '06'))   -- 상품명은 공연/숙박에만 적용
+                AND EXISTS  (SELECT  1
+                              FROM  CVYC_PRDT_RANK PR2
+                             WHERE  TM.TRSF_SEQ = PR2.TRSF_SEQ
+                               AND  PR2.CVYC_PRDT_NM  LIKE '%' || #{cvycPrdtNm} || '%'
+                           )
+                )   -- 상품명
+        </if>
+        <if test="acqnNm != null and acqnNm != ''">
+           AND  EXISTS  (SELECT  1
+                          FROM  CDI.BZEP_TRSF_ACQN TA
+                          LEFT OUTER JOIN CDI.BZEP_MSTR BMA
+                            ON  BMA.SVC_DVSN_CD  = #{svcDvsnCd}
+                           AND  TA.ACQN_BZEP_NO  = BMA.BZEP_NO
+                           AND  TA.ACQN_CTRT_SNO = BMA.CTRT_SNO
+                           AND  BMA.APLY_END_DTIME = TO_DATE('99991231235959', 'YYYYMMDDHH24MISS')
+                         WHERE  TM.TRSF_SEQ = TA.TRSF_SEQ
+                           AND  (   TA.ACQN_NM  LIKE '%' || #{acqnNm} || '%'
+                                OR  BMA.BZEP_NM LIKE '%' || #{acqnNm} || '%')
+                       )   -- 양수자명
+        </if>
+        <if test="trsfSeq != null and trsfSeq != ''">
+           AND  TM.TRSF_SEQ  LIKE '%' || #{trsfSeq}     || '%'    -- 양수도번호
+        </if>
+    </select>
+
+    <select id="getTrsfReceiver" resultType="comm.datapf.web.boadmin.domain.dto.trsf.TrsfReceiverVo">
+        SELECT
+                TM.SVC_DVSN_CD              AS SVC_DVSN_CD      -- 서비스구분
+              , (CASE
+                    WHEN TM.TRSF_STAT_CD = '2'  THEN '해제'     -- 해제
+                    WHEN TA.DFRM_CPLT_YN = 'Y'  THEN '지급완료' -- 지급완료
+                    WHEN TA.ACML_DFRM_AMT = 0   THEN '지급이전' -- 누적지급액 = 0
+                    ELSE '지급중'
+                 END)                       AS DFRM_STAT_NM     -- 구분
+              , TM.TRSF_SEQ                 AS TRSF_SEQ         -- 양수도번호
+              , TA.ACQN_RANK_CD             AS ACQN_RANK_CD     -- 양수우선순위
+              , NVL(BM.BZNO, TA.ACQN_BZNO)  AS ACQN_BZNO        -- 양수사업자번호
+              , NVL(BM.BZEP_NM, TA.ACQN_NM) AS ACQN_NM          -- 양수자명(양수거래처명)
+              , C1.COM_CD_NM                AS DFRM_BASS_NM     -- 지급기준
+              , C2.COM_CD_NM                AS DFRM_MTHD_NM     -- 지급방법
+              , TA.DFRM_REQ_AMT             AS DFRM_REQ_AMT     -- 지급요청액(양수설정액)
+              , TA.ACML_DFRM_AMT            AS ACML_DFRM_AMT    -- 누적지급액(총지급액)
+              , DECODE(TA.DFRM_MTHD_CD, 'A', TA.DFRM_REQ_AMT - TA.ACML_DFRM_AMT, 0) AS RMND_DFRM_AMT  -- 잔여지급액(지급잔액)
+                --------------------------------------------------------------------------------
+              , TA.TRSF_ACQN_SEQ            AS TRSF_ACQN_SEQ    -- 양수도상세SEQ
+              , TA.ACQN_BZEP_NO             AS ACQN_BZEP_NO     -- 양수업체번호
+              , TA.ACQN_CTRT_SNO            AS ACQN_CTRT_SNO    -- 양수계약일련번호
+              , TA.DFRM_BASS_CD             AS DFRM_BASS_CD     -- 지급기준코드
+              , TA.DFRM_MTHD_CD             AS DFRM_MTHD_CD     -- 지급방법코드
+              , TM.TRSF_DVSN_CD             AS TRSF_DVSN_CD     -- 양수도구분
+              , TM.TRSF_STAT_CD             AS TRSF_STAT_CD     -- 양수도상태코드
+          -- 양수도마스터
+          FROM  CDI.BZEP_TRSF_MSTR TM
+          -- 양수자정보
+          INNER JOIN CDI.BZEP_TRSF_ACQN TA
+            ON  TM.TRSF_SEQ = TA.TRSF_SEQ
+          -- 거래처마스터
+          LEFT OUTER JOIN CDI.BZEP_MSTR BM
+            ON  TM.SVC_DVSN_CD   = BM.SVC_DVSN_CD
+           AND  TA.ACQN_BZEP_NO  = BM.BZEP_NO
+           AND  TA.ACQN_CTRT_SNO = BM.CTRT_SNO
+           AND  BM.APLY_END_DTIME = TO_DATE('99991231235959', 'YYYYMMDDHH24MISS')
+          -- 지급기준
+          LEFT OUTER JOIN CDI.COM_CD_ADMN C1
+            ON  C1.COM_TYPE_CD = 'DFRM_BASS_CD'
+           AND  C1.COM_CD = TA.DFRM_BASS_CD
+          LEFT OUTER JOIN CDI.COM_CD_ADMN C2
+            ON  C2.COM_TYPE_CD = 'DFRM_MTHD_CD'
+           AND  C2.COM_CD = TA.DFRM_MTHD_CD
+          -- 조회조건
+         WHERE  TM.TRSF_SEQ     = #{trsfSeq}
+    </select>
+
+    <select id="getTrsfPymnt" resultType="comm.datapf.web.boadmin.domain.dto.trsf.TrsfPymntVo">
+        SELECT
+                TM.SVC_DVSN_CD              AS SVC_DVSN_CD      -- 서비스구분
+              , (CASE
+                    WHEN TM.TRSF_STAT_CD = '2'  THEN '해제'     -- 해제
+                    WHEN TA.DFRM_CPLT_YN = 'Y'  THEN '지급완료' -- 지급완료
+                    WHEN TA.ACML_DFRM_AMT = 0   THEN '지급이전' -- 누적지급액 = 0
+                    ELSE '지급중'
+                 END)                       AS DFRM_STAT_NM     -- 구분
+              , TM.TRSF_SEQ                 AS TRSF_SEQ         -- 양수도번호
+              , TA.ACQN_RANK_CD             AS ACQN_RANK_CD     -- 양수우선순위
+              , NVL(BM.BZNO, TA.ACQN_BZNO)  AS ACQN_BZNO        -- 양수사업자번호
+              , NVL(BM.BZEP_NM, TA.ACQN_NM) AS ACQN_NM          -- 양수자명(양수거래처명)
+              , TA.DFRM_REQ_AMT             AS DFRM_REQ_AMT     -- 지급요청액(양수설정액)
+              , TP.DFRM_AMT                 AS DFRM_AMT         -- 지급액
+              , TP.CVYC_PRDT_CD             AS CVYC_PRDT_CD     -- 양도상품코드
+              , CDI.FN_GET_PRDT_NM(TM.SVC_DVSN_CD, TP.CVYC_PRDT_CD, TM.CVYC_BZEP_NO)   AS CVYC_PRDT_NM     -- 상품명
+              , TP.EXCC_NO                  AS EXCC_NO          -- 정산번호(리포트번호)
+                --------------------------------------------------------------------------------
+              , TA.TRSF_ACQN_SEQ            AS TRSF_ACQN_SEQ    -- 양수도상세SEQ
+              , TP.TRSF_PRCS_SEQ            AS TRSF_PRCS_SEQ    -- 양수도처리SEQ
+              , TA.ACQN_BZEP_NO             AS ACQN_BZEP_NO     -- 양수업체번호
+              , TA.ACQN_CTRT_SNO            AS ACQN_CTRT_SNO    -- 양수계약일련번호
+              , TA.DFRM_BASS_CD             AS DFRM_BASS_CD     -- 지급기준코드
+              , TA.DFRM_MTHD_CD             AS DFRM_MTHD_CD     -- 지급방법코드
+              , TM.TRSF_DVSN_CD             AS TRSF_DVSN_CD     -- 양수도구분
+              , TM.TRSF_STAT_CD             AS TRSF_STAT_CD     -- 양수도상태코드
+          -- 양수도마스터
+          FROM  CDI.BZEP_TRSF_MSTR TM
+          -- 양수자정보
+          INNER JOIN CDI.BZEP_TRSF_ACQN TA
+            ON  TM.TRSF_SEQ = TA.TRSF_SEQ
+          -- 거래처마스터
+          LEFT OUTER JOIN CDI.BZEP_MSTR BM
+            ON  TM.SVC_DVSN_CD   = BM.SVC_DVSN_CD
+           AND  TA.ACQN_BZEP_NO  = BM.BZEP_NO
+           AND  TA.ACQN_CTRT_SNO = BM.CTRT_SNO
+           AND  BM.APLY_END_DTIME = TO_DATE('99991231235959', 'YYYYMMDDHH24MISS')
+          -- 양수도 처리내역
+          INNER JOIN CDI.BZEP_TRSF_PRCS_PTCL TP
+            ON  TA.TRSF_SEQ = TP.TRSF_SEQ
+           AND  TA.TRSF_ACQN_SEQ = TP.TRSF_ACQN_SEQ
+          -- 조회조건
+         WHERE  TA.TRSF_SEQ         = #{trsfSeq}      -- 양수도SEQ
+           AND  TA.TRSF_ACQN_SEQ    = #{trsfAcqnSeq} -- 양수도상세SEQ
+    </select>
+</mapper>

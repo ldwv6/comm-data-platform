@@ -1,0 +1,1084 @@
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/th-layout-admin}">
+<head layout:fragment="th-fragment-head">
+    <th:block layout:fragment="th-head">
+        <title>Housing Admin</title>
+    </th:block>
+</head>
+<body id="backOffice">
+<!-- MAIN PANEL -->
+<div id="main" role="main" layout:fragment="th-fragment-content-main">
+
+    <!-- MAIN CONTENT Start-->
+    <div id="content">
+        <!-- content title Start-->
+        <div class="row col-sm-12 col-md-12 col-lg-12">
+            <h1 class="page-title txt-color-blueDark">
+                <!-- Page title start -->
+                <i class="fa fa-fw fa-desktop"></i> 결제집계표
+                <!-- Page title end//-->
+            </h1>
+        </div>
+        <!-- content title End //-->
+        <!-- content-body Start-->
+        <div class="widget-body">
+            <section id="widget-grid" class="">
+                <div class="row">
+                    <article class="col-sm-12 col-md-12 col-lg-12">
+                        <!-- Widget ID (each widget will need unique ID) -->
+                        <div class="jarviswidget" id="wid-id-1" data-widget-colorbutton="false"
+                             data-widget-editbutton="false" data-widget-deletebutton="false"
+                             data-widget-sortable="false">
+                            <header>
+                                <h2></h2>
+                            </header>
+                            <!-- widget content -->
+                            <div class="widget-body">
+                                <!-- Content Area -->
+                                <div class="table-responsive">
+                                    <table class="table table-borderless custom_table-04 margin-bottom-0">
+                                        <colgroup>
+                                            <col>
+                                            <col>
+                                        </colgroup>
+                                        <tbody>
+                                        <tr>
+                                            <td>
+                                                <div class="col">
+                                                    <div class="col-xs-8" style="padding: 0">
+                                                        <table class="table table-bordered">
+                                                            <colgroup>
+                                                                <col style="width:25%;">
+                                                                <col style="width:15%;">
+                                                                <col>
+                                                            </colgroup>
+                                                            <tbody>
+                                                            <tr>
+                                                                <td>
+                                                                    <select name="svcDvsnCd" id="svcDvsnCd" class="form-control">
+                                                                        <option value="">서비스선택</option>
+                                                                    </select>
+                                                                </td>
+                                                                <th class="active v-cetner text-nowrap">마감확정일</th>
+                                                                <td>
+                                                                    <div class="row">
+                                                                        <div class="col-md-5">
+                                                                            <div class="input-group">
+                                                                                <input class="form-control" id="searchStartDate"
+                                                                                       name="searchStartDate" type="text"
+                                                                                       placeholder="From">
+                                                                                <span class="input-group-addon"><i
+                                                                                        class="fa fa-calendar"></i></span>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-md-1 col-lg-1 text-center form-control-static">
+                                                                            <span class="inline-block"> ~ </span>
+                                                                        </div>
+                                                                        <div class="col-md-5">
+                                                                            <div class="input-group">
+                                                                                <input class="form-control" id="searchEndDate"
+                                                                                       name="searchEndDate" type="text" placeholder="To">
+                                                                                <span class="input-group-addon"><i
+                                                                                        class="fa fa-calendar"></i></span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                    <div class="col-xs-3 form-control-static">
+                                                        <button type="button" class="btn btn-primary btn-sm" href="javascript:searchClsgSaleTtlz();" id="btnSearch">조회</button>
+                                                        <button type="button" id="btnSlip" class="btn btn-danger btn-sm">전표발행</button>
+                                                        <button type="button" id="btnExcel" class="btn btn-success">엑셀 다운로드</button>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <!-- Title Text -->
+                                                <div class="pull-left">
+                                                    <h3 class="no-margin"><strong>|</strong> 결제집계</h3>
+                                                </div>
+                                                <div class="clearfix"></div>
+                                                <!-- Title Text //-->
+                                                <!-- grid -->
+                                                <div class="realgrid_box mt-10">
+                                                    <div style="margin:auto">
+                                                        <div id ="dataGrid1" style="height:400px;width:100%;background-color:#ccc;"></div>
+                                                    </div>
+                                                </div>
+                                                <!-- grid //-->
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <!-- Title Text -->
+                                                <div class="pull-left">
+                                                    <h3 class="no-margin"><strong>|</strong> 결제집계_매출유형별</h3>
+                                                </div>
+                                                <div class="clearfix"></div>
+                                                <!-- Title Text //-->
+                                                <!-- grid -->
+                                                <div class="realgrid_box mt-10">
+                                                    <div style="margin:auto">
+                                                        <div id ="dataGrid2" style="height:400px;width:100%;background-color:#ccc;"></div>
+                                                    </div>
+                                                </div>
+                                                <!-- grid //-->
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <!-- Title Text -->
+                                                <div class="pull-left">
+                                                    <h3 class="no-margin"><strong>|</strong> 결제집계_매출유형별 상세</h3>
+                                                </div>
+                                                <div class="clearfix"></div>
+                                                <!-- Title Text //-->
+                                                <!-- grid -->
+                                                <div class="realgrid_box mt-10">
+                                                    <div style="margin:auto">
+                                                        <div id ="dataGrid3" style="height:400px;width:100%;background-color:#ccc;"></div>
+                                                    </div>
+                                                </div>
+                                                <!-- grid //-->
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <!-- Title Text -->
+                                                <div class="pull-left">
+                                                    <h3 class="no-margin"><strong>|</strong> 결제집계_결제수단별</h3>
+                                                </div>
+                                                <div class="clearfix"></div>
+                                                <!-- Title Text //-->
+                                                <!-- grid -->
+                                                <div class="realgrid_box mt-10">
+                                                    <div style="margin:auto">
+                                                        <div id ="dataGrid4" style="height:400px;width:100%;background-color:#ccc;"></div>
+                                                    </div>
+                                                </div>
+                                                <!-- grid //-->
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <!-- Title Text -->
+                                                <div class="pull-left">
+                                                    <h3 class="no-margin"><strong>|</strong> 결제집계_결제수단별 상세</h3>
+                                                </div>
+                                                <div class="clearfix"></div>
+                                                <!-- Title Text //-->
+                                                <!-- grid -->
+                                                <div class="realgrid_box mt-10">
+                                                    <div style="margin:auto">
+                                                        <div id ="dataGrid5" style="height:400px;width:100%;background-color:#ccc;"></div>
+                                                    </div>
+                                                </div>
+                                                <!-- grid //-->
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!-- Content Area //-->
+
+                            </div>
+                            <!-- widget content //-->
+                        </div>
+                        <!-- Widget ID (each widget will need unique ID) //-->
+                    </article>
+                </div>
+            </section>
+
+            <!-- MODAL START -->
+            <div class="modal fade" id="delvSearcgModal" tabindex="-1" role="dialog" aria-labelledby="delvSearcgModal">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title">배송료 상세</h4>
+                        </div>
+                        <div class="modal-body">
+                            <form>
+                                <div>
+                                    <label><span id="delvSvcDvsnCd" style="color:#214e75"></span>배송료 상세</label>
+                                </div>
+                                <div class="pull-right">
+                                    <button type="button" id="btnDelvExcel" class="btn btn-success">엑셀 다운로드</button>
+                                </div>
+                                <div class="clearfix"></div>
+                            </form>
+                            <!-- gird 영역 -->
+                            <div class="realgrid_box mt-10" id="shopDelvDiv">
+                                <div style="margin:auto">
+                                    <div id="dataGrid6" style="height:300px;width:100%;background-color:#ccc;"></div>
+                                </div>
+                            </div>
+                            <div class="realgrid_box mt-10" id="bookDelvDiv">
+                                <div style="margin:auto">
+                                    <div id="dataGrid7" style="height:300px;width:100%;background-color:#ccc;"></div>
+                                </div>
+                            </div>
+                            <!-- gird 영역// -->
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- MODAL END -->
+
+        </div>
+        <!-- content-body End//-->
+    </div>
+    <!-- MAIN CONTENT End//-->
+
+</div>drawCommonCodeFilter
+<!-- MAIN PANEL //-->
+<<th:block layout:fragment="th-fragment-javascript">
+    <script type="text/javascript">
+        // 결제집계 그리드
+        var gridView1, dataProvider1;
+        // 결제집계_매출유형별 그리드
+        var gridView2, dataProvider2;
+        // 결제집계_매출유형별 상세 그리드
+        var gridView3, dataProvider3;
+        // 결제집계_결제수단별 그리드
+        var gridView4, dataProvider4;
+        // 결제집계_결제수단별 상세 그리드
+        var gridView5, dataProvider5;
+        //결제집계_배송비 쇼핑
+        var gridView6, dataProvider6;
+        //결제집계_배송비 도서
+        var gridView7, dataProvider7;
+
+        $(document).ready(function() {
+
+            $("#searchStartDate").datepicker("setDate", new Date().addDays(-1).format("yyyy-MM-dd"));
+            $("#searchEndDate").datepicker("setDate", new Date().addDays(-1).format("yyyy-MM-dd"));
+
+            // SELECT 코드 조회
+            drawCommonCodeFilter( 'SVC_DVSN_CD', 'svcDvsnCd', 'ALL', null, ['01','05','08','09'],'D', 'ASC', null);
+            //drawCommonCodeFilter( 'SVC_DVSN_CD', 'svcDvsnCd', '', null, ['0'],'F', 'ASC', null);
+
+            // 그리드 START
+            /************************************************************************************************************************
+             *													결제집계 GRID START												    *
+             *************************************************************************************************************************/
+            //결제집계 목록 그리드1
+            gridView1 = new RealGridJS.GridView("dataGrid1");
+            dataProvider1 = new RealGridJS.LocalDataProvider();
+            gridView1.setDataSource(dataProvider1);
+
+            var dataField1 = [
+                {fieldName: "no", dataType: "number"}, {fieldName: "svcDvsnNm"}, {fieldName: "mnalCtrlNm"}, {fieldName: "sttlAmt", dataType: "number"}, {fieldName: "ordeSaleCnt", dataType: "number"}, {fieldName: "cnclSaleCnt", dataType: "number"}, {fieldName: "saleCnt", dataType: "number"}
+                , {fieldName: "ordeSaleAmt", dataType: "number"}, {fieldName: "cnclSaleAmt", dataType: "number"}, {fieldName: "saleAmt", dataType: "number"}
+                , {fieldName: "ordeRsvFeeAmt", dataType: "number"}, {fieldName: "cnclRsvFeeAmt", dataType: "number"}, {fieldName: "rsvFeeAmt", dataType: "number"}
+                , {fieldName: "ordeShpgAmt", dataType: "number"}, {fieldName: "cnclShpgAmt", dataType: "number"}, {fieldName: "shpgAmt", dataType: "number"}
+                , {fieldName: "cnclFeeAmt", dataType: "number"}, {fieldName: "lnkgDt"}, {fieldName: "lnkgNo"}
+                , {fieldName: "svcDvsnCd"}, {fieldName: "searchStartDate"}, {fieldName: "searchEndDate"}
+            ];
+
+            dataProvider1.setFields(dataField1);
+
+            var gridColumns1 = [
+                {name:"no", fieldName:"no", header:{text:"No"}, width: "30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+                ,{name:"svcDvsnNm", fieldName:"svcDvsnNm", header:{text:"서비스구분"}, width:"70", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+                , {name:"mnalCtrlNm", fieldName:"mnalCtrlNm", header:{text:"통제여부"}, width:"70", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+                /*, {name:"gubun", type:"group", header:{text:"구분"}, width: "140", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}
+                    ,columns: [
+                        {name:"svcDvsnNm", fieldName:"svcDvsnNm", header:{text:"서비스구분"}, width:"70", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+                        , {name:"mnalCtrlNm", fieldName:"mnalCtrlNm", header:{text:"통제여부"}, width:"70", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+                    ]
+                }*/
+                , {name:"sttlAmt", fieldName:"sttlAmt", header:{text:"결제금액 합계"}, footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"60", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                , {name:"cnt", type:"group", header:{text:"수량"}, width: "120", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}
+                    ,columns: [
+                        {name:"ordeSaleCnt", fieldName:"ordeSaleCnt", header:{text:"주문"}, footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                        , {name:"cnclSaleCnt", fieldName:"cnclSaleCnt", header:{text:"취소"}, footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                        , {name:"saleCnt", fieldName:"saleCnt", header:{text:"판매"}, footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                    ]
+                }
+                , {name:"amt", type:"group", header:{text:"금액"}, width: "120", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}
+                    ,columns: [
+                        {name:"ordeSaleAmt", fieldName:"ordeSaleAmt", header:{text:"주문"}, footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                        , {name:"cnclSaleAmt", fieldName:"cnclSaleAmt", header:{text:"취소"}, footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                        , {name:"saleAmt", fieldName:"saleAmt", header:{text:"판매"}, footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                    ]
+                }
+                , {name:"fee", type:"group", header:{text:"예매수수료"}, width: "120", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}
+                    ,columns: [
+                        {name:"ordeRsvFeeAmt", fieldName:"ordeRsvFeeAmt", header:{text:"주문"}, footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                        , {name:"cnclRsvFeeAmt", fieldName:"cnclRsvFeeAmt", header:{text:"취소"}, footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                        , {name:"rsvFeeAmt", fieldName:"rsvFeeAmt", header:{text:"판매"}, footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                    ]
+                }
+                , {name:"shpg", type:"group", header:{text:"배송료"}, width: "120", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}
+                    ,columns: [
+                        {name:"ordeShpgAmt", fieldName:"ordeShpgAmt", header:{text:"주문"}, footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                        , {name:"cnclShpgAmt", fieldName:"cnclShpgAmt", header:{text:"취소"}, footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                        , {name:"shpgAmt", fieldName:"shpgAmt", header:{text:"판매"}, footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                    ]
+                }
+                , {name:"cnclFeeAmt", fieldName:"cnclFeeAmt", header:{text:"취소수수료"}, footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                , {name:"lnkgDt", fieldName: "lnkgDt", header:{text:"전표발행일시"}, width: "30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+                , {name:"lnkgNo", fieldName: "lnkgNo", header:{text:"전표번호"}, width: "30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+                , {name:"svcDvsnCd", fieldName: "svcDvsnCd", header:{text:"서비스구분"}, width: "30", visible:false, readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+                , {name:"searchStartDate", fieldName: "searchStartDate", header:{text:"결제마감 시작일자"}, width: "30", visible:false, readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+                , {name:"searchEndDate", fieldName: "searchEndDate", header:{text:"결제마감 종료일자"}, width: "30", visible:false, readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+            ];
+
+            gridView1.setColumns(gridColumns1);
+            gridView1.setOptions({checkBar:{visible:false} ,panel: {visible: false}, stateBar: {visible: false}, footer: {visible: true}, rowGroup: {
+                    mergeMode: true,
+                    expandedAdornments: "footer",
+                    collapsedAdornments: "footer"
+                }});
+            gridView1.setDisplayOptions({fitStyle: "even"});
+            gridView1.groupBy(["svcDvsnNm"]);
+            //gridView1.groupBy(["svcDvsnNm","mnalCtrlNm"]);
+
+            gridView1.onDataCellDblClicked = function (grid, index) {
+                var focusFieldName = grid.getCurrent().fieldName;
+                // 쇼핑 도서만 조회 가능
+                if(dataProvider1.getValue(grid.getCurrent().dataRow, "svcDvsnCd") == "02" && dataProvider1.getValue(grid.getCurrent().dataRow, "svcDvsnCd") != "03"){
+                    return false;
+                }
+                // 배송비 관련 컬럼인 경우만 조회 가능
+                if(focusFieldName != "ordeShpgAmt" && focusFieldName != "cnclShpgAmt" && focusFieldName != "shpgAmt"){
+                    return false;
+                }
+
+                var url = "/clsgSale/doSelectTtlzDelv";
+                var params = {
+                    svcDvsnCd : ''
+                    , searchStartDate : ''
+                    , searchEndDate : ''
+                };
+
+                params.sttlMthdCd = dataProvider1.getValue(grid.getCurrent().dataRow, "svcDvsnCd");
+                params.searchStartDate = dataProvider1.getValue(grid.getCurrent().dataRow, "searchStartDate");
+                params.searchEndDate = dataProvider1.getValue(grid.getCurrent().dataRow, "searchEndDate");
+
+                var divDisplayYn = svcDvsnCd;
+                if(divDisplayYn != null && divDisplayYn == "02"){
+                    $("#bookDelvDiv").hide()
+                    $("#shopDelvDiv").show();
+                }else{
+                    $("#shopDelvDiv").hide()
+                    $("#bookDelvDiv").show();
+                }
+
+                // 결제집계 배송료 상세 조회
+                $.callRestApi(url, "get", params, getClsgSaleTtlzDelvCallBack, null);
+            };
+
+            /************************************************************************************************************************
+             *													결제집계 GRID END												    *
+             *************************************************************************************************************************/
+
+            /************************************************************************************************************************
+             *													결제집계_매출유형별 GRID START										*
+             *************************************************************************************************************************/
+
+            //결제집계_매출유형별 그리드2
+            gridView2 = new RealGridJS.GridView("dataGrid2");
+            dataProvider2 = new RealGridJS.LocalDataProvider();
+            gridView2.setDataSource(dataProvider2);
+
+            var dataField2 = [
+                {fieldName: "no", dataType: "number"}, {fieldName: "svcDvsnNm"}, {fieldName: "mnalCtrlNm"}, {fieldName: "bzepExccTypeNm"}, {fieldName: "sttlAmt", dataType: "number"}
+                , {fieldName: "ordeSaleCnt", dataType: "number"}, {fieldName: "cnclSaleCnt", dataType: "number"}, {fieldName: "saleCnt", dataType: "number"}
+                , {fieldName: "ordeSaleAmt", dataType: "number"}, {fieldName: "cnclSaleAmt", dataType: "number"}, {fieldName: "saleAmt", dataType: "number"}
+                , {fieldName: "ordeRsvFeeAmt", dataType: "number"}, {fieldName: "cnclRsvFeeAmt", dataType: "number"}, {fieldName: "rsvFeeAmt", dataType: "number"}
+                , {fieldName: "ordeShpgAmt", dataType: "number"}, {fieldName: "cnclShpgAmt", dataType: "number"}, {fieldName: "shpgAmt", dataType: "number"}
+                , {fieldName: "cnclFeeAmt", dataType: "number"}
+                , {fieldName: "svcDvsnCd"}, {fieldName: "bzepDvsnCd"}, {fieldName: "bzepExccTypeCd"}, {fieldName: "mnalCtrlYn"}, {fieldName: "searchStartDate"}, {fieldName: "searchEndDate"}
+            ];
+
+            dataProvider2.setFields(dataField2);
+
+            var gridColumns2 = [
+                {name:"no", fieldName:"no", header:{text:"No"}, width: "30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+                , {name:"svcDvsnNm", fieldName:"svcDvsnNm", header:{text:"서비스구분"}, width:"70", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+                //, {name:"bzepExccTypeNm", fieldName:"bzepExccTypeNm", header:{text:"매출유형"}, width: "30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+                //, {name:"mnalCtrlNm", fieldName:"mnalCtrlNm", header:{text:"통제여부"}, width:"70", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+                , {name:"gubun", type:"group", header:{text:"매출유형"}, width: "140", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}
+                    ,columns: [
+                         {name:"bzepExccTypeNm", fieldName:"bzepExccTypeNm", header:{text:"매출유형"}, width: "30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+                        , {name:"mnalCtrlNm", fieldName:"mnalCtrlNm", header:{text:"통제여부"}, width:"70", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+                    ]
+                }
+                , {name:"sttlAmt", fieldName:"sttlAmt", header:{text:"결제금액 합계"}, footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"60", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                , {name:"cnt", type:"group", header:{text:"수량"}, width: "120", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}
+                    ,columns: [
+                        {name:"ordeSaleCnt", fieldName:"ordeSaleCnt", header:{text:"주문"},footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                        , {name:"cnclSaleCnt", fieldName:"cnclSaleCnt", header:{text:"취소"},footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                        , {name:"saleCnt", fieldName:"saleCnt", header:{text:"판매"},footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                    ]
+                }
+                , {name:"amt", type:"group", header:{text:"금액"}, width: "120", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}
+                    ,columns: [
+                        {name:"ordeSaleAmt", fieldName:"ordeSaleAmt", header:{text:"주문"},footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                        , {name:"cnclSaleAmt", fieldName:"cnclSaleAmt", header:{text:"취소"},footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                        , {name:"saleAmt", fieldName:"saleAmt", header:{text:"판매"},footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                    ]
+                }
+                , {name:"fee", type:"group", header:{text:"예매수수료"}, width: "120", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}
+                    ,columns: [
+                        {name:"ordeRsvFeeAmt", fieldName:"ordeRsvFeeAmt", header:{text:"주문"},footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                        , {name:"cnclRsvFeeAmt", fieldName:"cnclRsvFeeAmt", header:{text:"취소"},footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                        , {name:"rsvFeeAmt", fieldName:"rsvFeeAmt", header:{text:"판매"},footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                    ]
+                }
+                , {name:"shpg", type:"group", header:{text:"배송료"}, width: "120", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}
+                    ,columns: [
+                        {name:"ordeShpgAmt", fieldName:"ordeShpgAmt", header:{text:"주문"},footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                        , {name:"cnclShpgAmt", fieldName:"cnclShpgAmt", header:{text:"취소"},footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                        , {name:"shpgAmt", fieldName:"shpgAmt", header:{text:"판매"},footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                    ]
+                }
+                , {name:"cnclFeeAmt", fieldName:"cnclFeeAmt", header:{text:"취소수수료"}, footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                , {name:"svcDvsnCd", fieldName: "svcDvsnCd", header:{text:"서비스구분"}, width: "30", visible:false, readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+                , {name:"bzepDvsnCd", fieldName: "bzepDvsnCd", header:{text:"업체구분 코드"}, width: "30", visible:false, readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+                , {name:"bzepExccTypeCd", fieldName: "bzepExccTypeCd", header:{text:"업체정산유형 코드"}, width: "30", visible:false, readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+                , {name:"mnalCtrlYn", fieldName: "mnalCtrlYn", header:{text:"수동통제여부"}, width: "30", visible:false, readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+                , {name:"searchStartDate", fieldName: "searchStartDate", header:{text:"결제마감 시작일자"}, width: "30", visible:false, readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+                , {name:"searchEndDate", fieldName: "searchEndDate", header:{text:"결제마감 종료일자"}, width: "30", visible:false, readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+            ];
+
+            gridView2.setColumns(gridColumns2);
+            gridView2.setOptions({checkBar:{visible:false} ,panel: {visible: false}, stateBar: {visible: false}, footer: {visible: true}, rowGroup: {
+                    mergeMode: true,
+                    expandedAdornments: "footer",
+                    collapsedAdornments: "footer"
+                }});
+            gridView2.setDisplayOptions({fitStyle: "even"});
+            gridView2.groupBy(["svcDvsnNm"]);
+            //gridView2.groupBy(["svcDvsnNm","bzepExccTypeNm","mnalCtrlNm"]);
+
+
+            gridView2.onDataCellClicked = function (grid, index) {
+                var focusFieldName = grid.getCurrent().fieldName;
+                if(focusFieldName != "svcDvsnNm" && focusFieldName != "bzepExccTypeNm"){
+                    return false;
+                }
+
+                var url = "/clsgSale/doSelectTtlzClsgDtl";
+                var params = {
+                    svcDvsnCd : ''
+                    , searchStartDate : ''
+                    , searchEndDate : ''
+                    , bzepExccTypeCd : ''
+                    , bzepDvsnCd : ''
+                };
+
+                params.svcDvsnCd = dataProvider2.getValue(grid.getCurrent().dataRow, "svcDvsnCd");
+                params.searchStartDate = dataProvider2.getValue(grid.getCurrent().dataRow, "searchStartDate");
+                params.searchEndDate = dataProvider2.getValue(grid.getCurrent().dataRow, "searchEndDate");
+                if(focusFieldName == "bzepExccTypeNm"){
+                    params.bzepExccTypeCd = dataProvider2.getValue(grid.getCurrent().dataRow, "bzepExccTypeCd");
+                    params.bzepDvsnCd = dataProvider2.getValue(grid.getCurrent().dataRow, "bzepDvsnCd");
+                }else{
+                    params.bzepExccTypeCd = "";
+                    params.bzepDvsnCd = "";
+                }
+
+                $.callRestApi(url, "get", params, getClsgSaleTtlzClsgDtlCallBack, null);
+            };
+
+            /************************************************************************************************************************
+             *													결제집계_매출유형별 GRID END										*
+             *************************************************************************************************************************/
+
+            /************************************************************************************************************************
+             *													결제집계_매출유형별 상세 GRID START										*
+             *************************************************************************************************************************/
+
+            //결제집계 매출유형별 상세 그리드3
+            gridView3 = new RealGridJS.GridView("dataGrid3");
+            dataProvider3 = new RealGridJS.LocalDataProvider();
+            gridView3.setDataSource(dataProvider3);
+
+            var dataField3 = [
+                {fieldName: "no", dataType: "number"}, {fieldName: "ttlzTypeNm"}, {fieldName: "bzepExccTypeNm"}, {fieldName: "mnalCtrlNm"}
+                , {fieldName: "sttlAmt", dataType: "number"}, {fieldName: "taxTypeNm"}
+                , {fieldName: "ordeSaleCnt", dataType: "number"}, {fieldName: "cnclSaleCnt", dataType: "number"}, {fieldName: "saleCnt", dataType: "number"}
+                , {fieldName: "ordeSaleAmt", dataType: "number"}, {fieldName: "cnclSaleAmt", dataType: "number"}, {fieldName: "saleAmt", dataType: "number"}
+                , {fieldName: "ordeRsvFeeAmt", dataType: "number"}, {fieldName: "cnclRsvFeeAmt", dataType: "number"}, {fieldName: "rsvFeeAmt", dataType: "number"}
+                , {fieldName: "ordeShpgAmt", dataType: "number"}, {fieldName: "cnclShpgAmt", dataType: "number"}, {fieldName: "shpgAmt", dataType: "number"}
+                , {fieldName: "cnclFeeAmt", dataType: "number"}
+                , {fieldName: "svcDvsnCd"}, {fieldName: "ttlzTypeCd"}, {fieldName: "bzepExccTypeCd"}, {fieldName: "mnalCtrlCd"}, {fieldName: "searchStartDate"}, {fieldName: "searchEndDate"}
+            ];
+
+            dataProvider3.setFields(dataField3);
+
+            var gridColumns3 = [
+                {name:"no", fieldName:"no", header:{text:"No"}, width: "30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+                , {name:"ttlzTypeNm", fieldName:"ttlzTypeNm", header:{text:"구분"}, width:"70", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+                , {name:"gubun", type:"group", header:{text:"매출유형"}, width: "140", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}
+                    ,columns: [
+                         {name:"bzepExccTypeNm", fieldName:"bzepExccTypeNm", header:{text:"매출유형"}, width: "30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+                        , {name:"mnalCtrlNm", fieldName:"mnalCtrlNm", header:{text:"통제여부"}, width:"70", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+                    ]
+                }
+                , {name:"sttlAmt", fieldName:"sttlAmt", header:{text:"결제금액 합계"}, footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"60", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                , {name:"cnt", type:"group", header:{text:"수량"}, width: "120", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}
+                    ,columns: [
+                        {name:"ordeSaleCnt", fieldName:"ordeSaleCnt", header:{text:"주문"},footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                        , {name:"cnclSaleCnt", fieldName:"cnclSaleCnt", header:{text:"취소"},footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                        , {name:"saleCnt", fieldName:"saleCnt", header:{text:"판매"},footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                    ]
+                }
+                , {name:"amt", type:"group", header:{text:"금액"}, width: "120", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}
+                    ,columns: [
+                        {name:"ordeSaleAmt", fieldName:"ordeSaleAmt", header:{text:"주문"},footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                        , {name:"cnclSaleAmt", fieldName:"cnclSaleAmt", header:{text:"취소"},footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                        , {name:"saleAmt", fieldName:"saleAmt", header:{text:"판매"},footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                    ]
+                }
+                , {name:"fee", type:"group", header:{text:"예매수수료"}, width: "120", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}
+                    ,columns: [
+                        {name:"ordeRsvFeeAmt", fieldName:"ordeRsvFeeAmt", header:{text:"주문"},footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                        , {name:"cnclRsvFeeAmt", fieldName:"cnclRsvFeeAmt", header:{text:"취소"},footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                        , {name:"rsvFeeAmt", fieldName:"rsvFeeAmt", header:{text:"판매"},footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                    ]
+                }
+                , {name:"shpg", type:"group", header:{text:"배송료"}, width: "120", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}
+                    ,columns: [
+                        {name:"ordeShpgAmt", fieldName:"ordeShpgAmt", header:{text:"주문"},footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                        , {name:"cnclShpgAmt", fieldName:"cnclShpgAmt", header:{text:"취소"},footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                        , {name:"shpgAmt", fieldName:"shpgAmt", header:{text:"판매"},footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                    ]
+                }
+                , {name:"cnclFeeAmt", fieldName:"cnclFeeAmt", header:{text:"취소수수료"}, footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                , {name:"svcDvsnCd", fieldName: "svcDvsnCd", header:{text:"서비스구분"}, width: "30", visible:false, readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+                , {name:"ttlzTypeCd", fieldName: "ttlzTypeCd", header:{text:"분류코드"}, width: "30", visible:false, readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+                , {name:"bzepExccTypeCd", fieldName: "bzepExccTypeCd", header:{text:"업체정산유형 코드"}, width: "30", visible:false, readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+                , {name:"mnalCtrlYn", fieldName: "mnalCtrlYn", header:{text:"수동통제여부"}, width: "30", visible:false, readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+            ];
+
+            gridView3.setColumns(gridColumns3);
+            gridView3.setOptions({checkBar:{visible:false} ,panel: {visible: false}, stateBar: {visible: false}, footer: {visible: true}});
+            gridView3.setDisplayOptions({fitStyle: "even"});
+
+            /************************************************************************************************************************
+             *													결제집계_매출유형별 상세 GRID END										*
+             *************************************************************************************************************************/
+
+            /************************************************************************************************************************
+             *													결제집계_결제수단별 GRID START										*
+             *************************************************************************************************************************/
+            //결제집계_결제수단별 그리드4
+            gridView4 = new RealGridJS.GridView("dataGrid4");
+            dataProvider4 = new RealGridJS.LocalDataProvider();
+            gridView4.setDataSource(dataProvider4);
+
+            var dataField4 = [
+                {fieldName: "no", dataType: "number"}, {fieldName: "sttlMthdNm"}, {fieldName: "sttlAmt", dataType: "number"}
+                , {fieldName: "shopSttlAmt", dataType: "number"}, {fieldName: "bookSttlAmt", dataType: "number"}, {fieldName: "ticketSttlAmt", dataType: "number"}
+                , {fieldName: "movieSttlAmt", dataType: "number"}, {fieldName: "posSttlAmt", dataType: "number"}, {fieldName: "lodgeSttlAmt", dataType: "number"}
+                , {fieldName: "hotelSttlAmt", dataType: "number"}, {fieldName: "domAirSttlAmt", dataType: "number"}, {fieldName: "airSttlAmt", dataType: "number"}
+                , {fieldName: "tourSttlAmt", dataType: "number"}
+                , {fieldName: "sttlMthdCd"}, {fieldName: "searchStartDate"}, {fieldName: "searchEndDate"}
+            ];
+
+            dataProvider4.setFields(dataField4);
+
+            var gridColumns4 = [
+                {name:"no", fieldName:"no", header:{text:"No"}, width: "30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+                , {name:"sttlMthdNm", fieldName:"sttlMthdNm", header:{text:"구분"}, width: "30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+                , {name:"sttlAmt", fieldName:"sttlAmt", header:{text:"결제금액 합계"}, footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                , {name:"shopSttlAmt", fieldName:"shopSttlAmt", header:{text:"쇼핑"}, footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                , {name:"bookSttlAmt", fieldName:"bookSttlAmt", header:{text:"도서"}, footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                , {name:"ticketSttlAmt", fieldName:"ticketSttlAmt", header:{text:"공연"}, footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                , {name:"movieSttlAmt", fieldName:"movieSttlAmt", header:{text:"영화"}, footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                , {name:"posSttlAmt", fieldName:"posSttlAmt", header:{text:"POS"}, footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                , {name:"lodgeSttlAmt", fieldName:"lodgeSttlAmt", header:{text:"국내숙박"}, footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                , {name:"hotelSttlAmt", fieldName:"hotelSttlAmt", header:{text:"해외호텔"}, footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                , {name:"domAirSttlAmt", fieldName:"domAirSttlAmt", header:{text:"국내항공"}, footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                , {name:"airSttlAmt", fieldName:"airSttlAmt", header:{text:"해외항공"}, footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                , {name:"tourSttlAmt", fieldName:"tourSttlAmt", header:{text:"여행"}, footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                , {name:"sttlMthdCd", fieldName: "sttlMthdCd", header:{text:"결제수단코드"}, width: "30", visible:false, readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+                , {name:"searchStartDate", fieldName: "searchStartDate", header:{text:"결제마감 시작일자"}, width: "30", visible:false, readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+                , {name:"searchEndDate", fieldName: "searchEndDate", header:{text:"결제마감 종료일자"}, width: "30", visible:false, readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+            ];
+
+            gridView4.setColumns(gridColumns4);
+            gridView4.setOptions({checkBar:{visible:false} ,panel: {visible: false}, stateBar: {visible: false}, footer: {visible: true}});
+            gridView4.setDisplayOptions({fitStyle: "even"});
+
+
+            gridView4.onDataCellDblClicked = function (grid, index) {
+                if(dataProvider4.getValue(grid.getCurrent().dataRow, "sttlMthdCd") == null || dataProvider4.getValue(grid.getCurrent().dataRow, "sttlMthdCd") != "01"){
+                    alert("신용카드 외 결제수단은 상세 조회가 불가능합니다");
+                    return false;
+                }
+
+                var url = "/clsgSale/doSelectTtlzSttlDtl";
+                var params = {
+                    sttlMthdCd : ''
+                    , searchStartDate : ''
+                    , searchEndDate : ''
+                };
+
+                params.sttlMthdCd = dataProvider4.getValue(grid.getCurrent().dataRow, "sttlMthdCd");
+                params.searchStartDate = dataProvider4.getValue(grid.getCurrent().dataRow, "searchStartDate");
+                params.searchEndDate = dataProvider4.getValue(grid.getCurrent().dataRow, "searchEndDate");
+
+                // 결제집계, 결제집계 매출유형별, 결제집계 결제수단별 조회
+                $.callRestApi(url, "get", params, getClsgSaleTtlzSttlDtlCallBack, null);
+            };
+
+            /************************************************************************************************************************
+             *													결제집계_결제수단별 GRID END										*
+             *************************************************************************************************************************/
+
+            /************************************************************************************************************************
+             *													결제집계_결제수단별 상세 GRID START										*
+             *************************************************************************************************************************/
+            //결제집계_결제수단별 상세 목록 그리드5
+            gridView5 = new RealGridJS.GridView("dataGrid5");
+            dataProvider5 = new RealGridJS.LocalDataProvider();
+            gridView5.setDataSource(dataProvider5);
+
+            var dataField5 = [
+                {fieldName: "no", dataType: "number"}, {fieldName: "sttlFnniPgNm"}, {fieldName: "sttlFnniNm"}
+                , {fieldName: "ordeSttlCnt", dataType: "number"}, {fieldName: "cnclSttlCnt", dataType: "number"}, {fieldName: "sttlCnt", dataType: "number"}
+                , {fieldName: "ordeSttlAmt", dataType: "number"}, {fieldName: "cnclSttlAmt", dataType: "number"}, {fieldName: "sttlAmt", dataType: "number"}
+                , {fieldName: "svcDvsnCd"}, {fieldName: "sttlFnniPgCd"}, {fieldName: "sttlFnniCd"}, {fieldName: "sttlMthdCd"}
+            ];
+
+            dataProvider5.setFields(dataField5);
+
+            var gridColumns5 = [
+                {name:"no", fieldName:"no", header:{text:"No"}, width: "30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+                , {name:"gubun", type:"group", header:{text:"구분"}, width: "140", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}
+                    ,columns: [
+                        {name:"sttlFnniPgNm", fieldName:"sttlFnniPgNm", header:{text:"결제PG명"}, width:"70", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+                        , {name:"sttlFnniNm", fieldName:"sttlFnniNm", header:{text:"결제기관명"}, width:"70", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+                    ]
+                }
+                , {name:"sttlAmt", fieldName:"sttlAmt", header:{text:"결제금액 합계"}, footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                , {name:"cnt", type:"group", header:{text:"수량"}, width: "120", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}
+                    ,columns: [
+                        {name:"ordeSttlCnt", fieldName:"ordeSttlCnt", header:{text:"주문"}, footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                        , {name:"cnclSttlCnt", fieldName:"cnclSttlCnt", header:{text:"취소"}, footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                        , {name:"sttlCnt", fieldName:"sttlCnt", header:{text:"판매"}, footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                    ]
+                }
+                , {name:"amt", type:"group", header:{text:"금액"}, width: "120", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}
+                    ,columns: [
+                        {name:"ordeSttlAmt", fieldName:"ordeSttlAmt", header:{text:"주문"}, footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                        , {name:"cnclSttlAmt", fieldName:"cnclSttlAmt", header:{text:"취소"}, footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                        , {name:"sttlAmt", fieldName:"sttlAmt", header:{text:"판매"}, footer:{expression:"sum", groupExpression:"sum", styles:{"numberFormat": "#,##0"}}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                    ]
+                }
+                , {name:"svcDvsnCd", fieldName: "svcDvsnCd", header:{text:"서비스부문코드"}, width: "30", visible:false, readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+                , {name:"sttlFnniPgCd", fieldName: "sttlFnniPgCd", header:{text:"결제금융기관PG코드"}, width: "30", visible:false, readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+                , {name:"sttlFnniCd", fieldName: "sttlFnniCd", header:{text:"결제금융기관코드"}, width: "30", visible:false, readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+                , {name:"sttlMthdCd", fieldName: "sttlMthdCd", header:{text:"결제수단코드"}, width: "30", visible:false, readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+            ];
+
+            gridView5.setColumns(gridColumns5);
+            gridView5.setOptions({checkBar:{visible:false} ,panel: {visible: false}, stateBar: {visible: false}, footer: {visible: true}});
+            gridView5.setDisplayOptions({fitStyle: "even"});
+
+            /************************************************************************************************************************
+             *													결제집계_결제수단별 상세 GRID END										*
+             *************************************************************************************************************************/
+
+            /************************************************************************************************************************
+             *													결제집계_배송비 쇼핑 GRID START										 *
+             *************************************************************************************************************************/
+            //결제집계_배송비 쇼핑 목록 그리드6
+            gridView6 = new RealGridJS.GridView("dataGrid6");
+            dataProvider6 = new RealGridJS.LocalDataProvider();
+            gridView6.setDataSource(dataProvider6);
+
+            var dataField6 = [
+                {fieldName: "no", dataType: "number"}, {fieldName: "clsgStatNm"}, {fieldName: "totSttl", dataType: "number"}, {fieldName: "totSale", dataType: "number"}
+                , {fieldName: "mdAddShpgAmt", dataType: "number"}, {fieldName: "mdBuyAddShpgAmt", dataType: "number"}, {fieldName: "mdFeeAddShpgAmt", dataType: "number"}, {fieldName: "interBuyAddShpgAmt", dataType: "number"}, {fieldName: "omAddShpgAmt", dataType: "number"}
+                , {fieldName: "mdCustShpgAmt", dataType: "number"}, {fieldName: "mdBuyCustShpgAmt", dataType: "number"}, {fieldName: "mdFeeCustShpgAmt", dataType: "number"}, {fieldName: "interBuyCustShpgAmt", dataType: "number"}, {fieldName: "omCustShpgAmt", dataType: "number"}
+                , {fieldName: "lossShpgAmt", dataType: "number"}, {fieldName: "mdRetuShpgAmt", dataType: "number"}, {fieldName: "mdBuyRetuShpgAmt", dataType: "number"}, {fieldName: "mdFeeRetuShpgAmt", dataType: "number"}, {fieldName: "interBuyRetuShpgAmt", dataType: "number"}, {fieldName: "omRetuShpgAmt", dataType: "number"}
+                , {fieldName: "svcDvsnCd"}, {fieldName: "clsgStatCd"}
+            ];
+
+            dataProvider6.setFields(dataField6);
+
+            var gridColumns6 = [
+                {name:"no", fieldName:"no", header:{text:"No"}, width: "30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+                , {name:"clsgStatNm", fieldName:"clsgStatNm", header:{text:"구분"}, width:"70", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"near"}}
+                , {name:"totSttl", fieldName:"totSttl", header:{text:"결제 총합계"}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                , {name:"totSale", fieldName:"totSale", header:{text:"총합계"}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                , {name:"addCost", type:"group", header:{text:"추가비용"}, width: "120", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}
+                    ,columns: [
+                        {name:"mdAddShpgAmt", fieldName:"mdAddShpgAmt", header:{text:"MD상품(A+B+C)"}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                        , {name:"mdBuyAddShpgAmt", fieldName:"mdBuyAddShpgAmt", header:{text:"MD매입(A)"}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                        , {name:"mdFeeAddShpgAmt", fieldName:"mdFeeAddShpgAmt", header:{text:"MD수수료(B)"}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                        , {name:"interBuyAddShpgAmt", fieldName:"interBuyAddShpgAmt", header:{text:"직매입(C)"}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                        , {name:"omAddShpgAmt", fieldName:"omAddShpgAmt", header:{text:"OM상품"}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                    ]
+                }
+                , {name:"custCost", type:"group", header:{text:"고객부담비(무료배송상품)"}, width: "120", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}
+                    ,columns: [
+                        {name:"mdCustShpgAmt", fieldName:"mdCustShpgAmt", header:{text:"MD상품(A+B+C)"}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                        , {name:"mdBuyCustShpgAmt", fieldName:"mdBuyCustShpgAmt", header:{text:"MD매입(A)"}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                        , {name:"mdFeeCustShpgAmt", fieldName:"mdFeeCustShpgAmt", header:{text:"MD수수료(B)"}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                        , {name:"interBuyCustShpgAmt", fieldName:"interBuyCustShpgAmt", header:{text:"직매입(C)"}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                        , {name:"omCustShpgAmt", fieldName:"omCustShpgAmt", header:{text:"OM상품"}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                    ]
+                }
+                , {name:"retuCost", type:"group", header:{text:"반품택배비(유료배송상품)"}, width: "120", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}
+                    ,columns: [
+                        {name:"lossShpgAmt", fieldName:"lossShpgAmt", header:{text:"잡손실금액"}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                        , {name:"mdRetuShpgAmt", fieldName:"mdRetuShpgAmt", header:{text:"MD상품(A+B+C)"}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                        , {name:"mdBuyRetuShpgAmt", fieldName:"mdBuyRetuShpgAmt", header:{text:"MD매입(A)"}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                        , {name:"mdFeeRetuShpgAmt", fieldName:"mdFeeRetuShpgAmt", header:{text:"MD수수료(B)"}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                        , {name:"interBuyRetuShpgAmt", fieldName:"interBuyRetuShpgAmt", header:{text:"직매입(C)"}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                        , {name:"omRetuShpgAmt", fieldName:"omRetuShpgAmt", header:{text:"OM상품"}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                    ]
+                }
+                , {name:"svcDvsnCd", fieldName: "svcDvsnCd", header:{text:"서비스부문코드"}, width: "30", visible:false, readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+            ];
+
+            gridView6.setColumns(gridColumns6);
+            gridView6.setOptions({checkBar:{visible:false} ,panel: {visible: false}, stateBar: {visible: false}});
+            gridView6.setDisplayOptions({fitStyle: "even"});
+
+
+            /************************************************************************************************************************
+             *													결제집계_배송비 쇼핑 GRID END										 *
+             *************************************************************************************************************************/
+
+            /************************************************************************************************************************
+             *													결제집계_배송비 도서 GRID START										 *
+             *************************************************************************************************************************/
+            //결제집계_배송비 도서 목록 그리드7
+            gridView7 = new RealGridJS.GridView("dataGrid7");
+            dataProvider7 = new RealGridJS.LocalDataProvider();
+            gridView7.setDataSource(dataProvider7);
+
+            var dataField7 = [
+                {fieldName: "no", dataType: "number"}, {fieldName: "clsgStatNm"}, {fieldName: "totSttl", dataType: "number"}, {fieldName: "totSale", dataType: "number"}
+                , {fieldName: "mdAddShpgAmt", dataType: "number"}, {fieldName: "omAddShpgAmt", dataType: "number"}
+                , {fieldName: "mdCustShpgAmt", dataType: "number"}, {fieldName: "omCustShpgAmt", dataType: "number"}, {fieldName: "lossShpgAmt", dataType: "number"}
+                , {fieldName: "mdRetuShpgAmt", dataType: "number"}, {fieldName: "omRetuShpgAmt", dataType: "number"}
+                , {fieldName: "shpgAmt", dataType: "number"}
+                , {fieldName: "svcDvsnCd"}, {fieldName: "clsgStatCd"}
+            ];
+
+            dataProvider7.setFields(dataField7);
+
+            var gridColumns7 = [
+                {name:"no", fieldName:"no", header:{text:"No"}, width: "30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+                , {name:"clsgStatNm", fieldName:"clsgStatNm", header:{text:"구분"}, width:"70", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"near"}}
+                , {name:"totSttl", fieldName:"totSttl", header:{text:"결제 총합계"}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                , {name:"totSale", fieldName:"totSale", header:{text:"총합계"}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                , {name:"addCost", type:"group", header:{text:"추가비용"}, width: "120", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}
+                    ,columns: [
+                        {name:"mdAddShpgAmt", fieldName:"mdAddShpgAmt", header:{text:"MD상품"}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                        , {name:"omAddShpgAmt", fieldName:"omAddShpgAmt", header:{text:"OM상품"}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                    ]
+                }
+                , {name:"custCost", type:"group", header:{text:"고객부담비(무료배송상품)"}, width: "120", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}
+                    ,columns: [
+                        {name:"mdCustShpgAmt", fieldName:"mdCustShpgAmt", header:{text:"MD상품"}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                        , {name:"omCustShpgAmt", fieldName:"omCustShpgAmt", header:{text:"OM상품"}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                        , {name:"lossShpgAmt", fieldName:"lossShpgAmt", header:{text:"잡손실금액"}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                    ]
+                }
+                , {name:"retuCost", type:"group", header:{text:"반품택배비(유료배송상품)"}, width: "120", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}
+                    ,columns: [
+                        {name:"mdRetuShpgAmt", fieldName:"mdRetuShpgAmt", header:{text:"MD상품(A+B+C)"}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                        , {name:"omRetuShpgAmt", fieldName:"omRetuShpgAmt", header:{text:"OM상품"}, width:"30", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                    ]
+                }
+                , {name:"etcCost", type:"group", header:{text:"기타매출"}, width: "40", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}
+                    ,columns: [
+                        {name:"shpgAmt", fieldName:"shpgAmt", header:{text:"수입제반비용"}, width:"40", readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"far", numberFormat:"#,##0"}}
+                    ]
+                }
+                , {name:"svcDvsnCd", fieldName: "svcDvsnCd", header:{text:"서비스부문코드"}, width: "30", visible:false, readOnly:true, editable:false, styles:{background:"#FFF", textAlignment:"center"}}
+            ];
+
+            gridView7.setColumns(gridColumns7);
+            gridView7.setOptions({checkBar:{visible:false} ,panel: {visible: false}, stateBar: {visible: false}});
+            gridView7.setDisplayOptions({fitStyle: "even"});
+
+            /************************************************************************************************************************
+             *													결제집계_배송비 도서 GRID END										 *
+             *************************************************************************************************************************/
+            // 그리드 END
+
+            // 검색
+            $("#btnSearch").click(function(){
+                if($("#svcDvsnCd").val() == null || $("#svcDvsnCd").val() ==''){
+                    alert("서비스 부문을 선택해주세요");
+                    return false;
+                }
+
+                var url= "/clsgSale/doSelectTtlz";                // 결제집계, 결제집계 매출유형별, 결제집계 결제수단별 조회
+                var params = {
+                    svcDvsnCd : ''
+                    , searchStartDate : ''
+                    , searchEndDate : ''
+                    , dtlYn : ''
+                };
+
+                params.svcDvsnCd = $("#svcDvsnCd").val();
+                params.searchStartDate = $("#searchStartDate").val().replaceAll("-","");
+                params.searchEndDate = $("#searchEndDate").val().replaceAll("-","");
+
+                // 결제집계, 결제집계 매출유형별, 결제집계 결제수단별 조회
+                $.callRestApi(url, "get", params, getClsgSaleTtlzCallBack, null);
+
+            });
+
+            $("#btnSlip").click(function(){
+                var url= "/clsgSale/doInsertSlip";                // 결제 전표발행
+                var params = {
+                    svcDvsnCd : ''
+                    , searchStartDate : ''
+                    , searchEndDate : ''
+                };
+
+                params.svcDvsnCd = $("#svcDvsnCd").val();
+                params.searchStartDate = $("#searchStartDate").val().replaceAll("-","");
+                params.searchEndDate = $("#searchEndDate").val().replaceAll("-","");
+
+                //$.callRestApi(url, "post", params, postClsgSaleSlipCallBack, null);
+            });
+
+            $("#btnExcel").click(function(){
+                exportGrid();
+            });
+
+            $("#btnDelvExcel").click(function(){
+                if(dataProvider6.getRowCount() > 0){
+                    exportDelvGrid06();
+                }else if(dataProvider7.getRowCount() > 0){
+                    exportDelvGrid07();
+                }
+            });
+
+            //modal이 노출 될때 event
+            $('#delvSearcgModal').on('shown.bs.modal', function(e) {
+                gridView6.resetSize();
+                gridView7.resetSize();
+            });
+
+        });
+
+        function exportGrid() {
+            var mergeGrid = "";
+            /*if(dataProvider2.getRowCount() > 0){
+                mergeGrid += ", {grid: gridView2,  sheetName: '결제집계 매출유형별'}";
+            }
+            if(dataProvider3.getRowCount() > 0){
+
+            }
+            if(dataProvider4.getRowCount() > 0){
+
+            }
+            if(dataProvider5.getRowCount() > 0){
+
+            }*/
+
+            RealGridJS.exportGrid({
+                type: "excel",
+                target: "local",
+                fileName: "결제집계.xlsx",
+                compatibility: "2010",
+                done: function () {
+                    alert("엑셀 Export가 완료되었습니다.");
+                },
+                exportGrids: [
+                    {
+                        grid: gridView1, //그리드 변수명
+                        sheetName: "결제집계" // excel 시트명
+                    }
+                    , {
+                        grid: gridView2, //그리드 변수명
+                        sheetName: "결제집계_매출유형별" // excel 시트명
+                    }, {
+                        grid: gridView3,
+                        sheetName: "결제집계_매출유형별 상세"
+                    }, {
+                        grid: gridView4,
+                        sheetName: "결제집계_결제수단별"
+                    }, {
+                        grid: gridView5,
+                        sheetName: "결제집계_결제수단별 상세"
+                    }
+                ]
+            });
+        }
+
+        function exportDelvGrid06() {
+            gridView6.exportGrid({
+                type: "excel"
+                ,target: "local"
+                ,fileName: "결제집계_쇼핑_배송비.xlsx"
+                ,applyDynamicStyles: true
+                ,indicator: "default"
+                ,compatibility: false
+                ,done: function() {
+                    alert("엑셀 Export가 완료되었습니다.");
+                }
+            });
+        }
+
+        function exportDelvGrid07() {
+            gridView7.exportGrid({
+                type: "excel"
+                ,target: "local"
+                ,fileName: "결제집계_도서_배송비.xlsx"
+                ,applyDynamicStyles: true
+                ,indicator: "default"
+                ,compatibility: false
+                ,done: function() {
+                    alert("엑셀 Export가 완료되었습니다.");
+                }
+            });
+        }
+
+
+        function getClsgSaleTtlzCallBack(data, textStatus, XMLHttpRequest) {
+
+            if(data.data.clsgSaleTtlzMstrList == null || data.data.clsgSaleTtlzMstrList.length == 0){
+                alert("결제집계 조회 결과가 없습니다.");
+                dataProvider1.setRows(null);
+                //return false;
+            }else {
+                // 그리드 정보 입력
+                dataProvider1.setRows(null);
+                dataProvider1.setRows(data.data.clsgSaleTtlzMstrList);
+                setTimeout(function () {
+                    gridView1.refresh();
+                }, 10);
+            }
+
+            if(data.data.clsgSaleTtlzClsgList == null || data.data.clsgSaleTtlzClsgList.length == 0){
+                alert("결제집계 매출유형별 조회 결과가 없습니다.");
+                dataProvider2.setRows(null);
+                //return false;
+            }else {
+                // 그리드 정보 입력
+                dataProvider2.setRows(null);
+                dataProvider2.setRows(data.data.clsgSaleTtlzClsgList);
+                setTimeout(function () {
+                    gridView2.refresh();
+                }, 10);
+            }
+
+            if(data.data.clsgSaleTtlzSttlList == null || data.data.clsgSaleTtlzSttlList.length == 0){
+                alert("결제집계 결제수단별 조회 결과가 없습니다.");
+                dataProvider4.setRows(null);
+                //return false;
+            }else {
+                // 그리드 정보 입력
+                dataProvider4.setRows(null);
+                dataProvider4.setRows(data.data.clsgSaleTtlzSttlList);
+                setTimeout(function () {
+                    gridView4.refresh();
+                }, 10);
+            }
+        }
+
+        function getClsgSaleTtlzSttlDtlCallBack(data, textStatus, XMLHttpRequest) {
+            if(data.data == null || data.data.length == 0){
+                alert("결제집계 결제수단별 상세 조회 결과가 없습니다.");
+                dataProvider5.setRows(null);
+                return false;
+            }
+
+            // 그리드 정보 입력
+            dataProvider5.setRows(null);
+            dataProvider5.setRows(data.data);
+            setTimeout(function () {
+                gridView5.refresh();
+            }, 10);
+
+        }
+
+        function getClsgSaleTtlzClsgDtlCallBack(data, textStatus, XMLHttpRequest) {
+            if(data.data == null || data.data.length == 0){
+                alert("결제집계 매출유형별 상세 조회 결과가 없습니다.");
+                dataProvider3.setRows(null);
+                return false;
+            }
+
+            // 그리드 정보 입력
+            dataProvider3.setRows(null);
+            dataProvider3.setRows(data.data);
+            setTimeout(function () {
+                gridView3.refresh();
+            }, 10);
+        }
+        
+        function getClsgSaleTtlzDelvCallBack(data, textStatus, XMLHttpRequest) {
+            $("#delvSearcgModal").modal("show");
+
+            if(data.data == null || data.data.length == 0){
+                alert("결제집계 배송비 조회 결과가 없습니다.");
+                dataProvider6.setRows(null);
+                dataProvider7.setRows(null);
+                return false;
+            }
+
+            if(data.data[0].svcDvsnCd != null && data.data[0].svcDvsnCd=="02"){
+                $('#delvSvcDvsnCd').text("쇼핑");
+                // 그리드 정보 입력
+                dataProvider6.setRows(null);
+                dataProvider6.setRows(data.data);
+                setTimeout(function () {
+                    gridView6.refresh();
+                }, 10);
+            }
+
+            if(data.data[0].svcDvsnCd != null && data.data[0].svcDvsnCd=="03"){
+                $('#delvSvcDvsnCd').text("도서");
+                // 그리드 정보 입력
+                dataProvider7.setRows(null);
+                dataProvider7.setRows(data.data);
+                setTimeout(function () {
+                    gridView7.refresh();
+                }, 10);
+            }
+        }
+
+        function postClsgSaleSlipCallBack(){
+
+        }
+
+
+    </script>
+    <script>
+        // Date Range Picker
+        $("#searchStartDate").datepicker({
+            defaultDate: "+1w",
+            changeMonth: true,
+            changeYear: true,
+            numberOfMonths: 1,
+            prevText: '<i class="fa fa-chevron-left"></i>',
+            nextText: '<i class="fa fa-chevron-right"></i>'
+        }).datepicker("setDate", new Date());
+
+        $("#searchEndDate").datepicker({
+            defaultDate: "+1w",
+            changeMonth: true,
+            changeYear: true,
+            numberOfMonths: 1,
+            prevText: '<i class="fa fa-chevron-left"></i>',
+            nextText: '<i class="fa fa-chevron-right"></i>'
+        }).datepicker("setDate", new Date());
+    </script>
+</th:block>
+</body>
+</html>

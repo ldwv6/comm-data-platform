@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ INTERPARK INC., SEOUL, KOREA
+  ~ Copyright(c) 2020 by Interpark Inc.
+  ~
+  ~ All rights reserved. No part of this work may be reproduced, stored in a
+  ~ retrieval system, or transmitted by any means without prior written
+  ~ permission of Interpark Inc.
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="comm.datapf.web.boadmin.domain.dao.LoginDao">
+
+    <select id="selectAdminMap" resultType="LoginDto" parameterType="java.util.HashMap">
+        /*loginMapper.getAdminMap*/
+        SELECT A.*, B.ROLE_ID, C.ROLE_NM
+        FROM ADMR_BASE_INFO A
+            LEFT JOIN ADMR_ATHR_MPPG B ON A.ADMR_ID = B.ADMR_ID AND B.USE_YN = 'Y'
+            LEFT JOIN ADMR_ATHR_BASE C ON B.ROLE_ID = C.ROLE_ID
+        WHERE 1 = 1
+        <if test="admrId != null and admrId != ''">
+            AND A.ADMR_ID = #{admrId}
+        </if>
+        <if test="admrEmal != null and admrEmal != ''">
+            AND A.EMPY_NO = #{admrEmal}
+        </if>
+    </select>
+
+    <update id="updatePwdCnt" parameterType="java.util.HashMap">
+        /*loginMapper.updatePwdCnt*/
+        UPDATE ADMR_BASE_INFO
+            SET PWD_ERR_RCNT = #{pwdErrRcnt}
+            , PWD_RE_STUP_YN = DECODE(#{pwdErrRcnt}, 5, 'N', PWD_RE_STUP_YN)
+        WHERE ADMR_ID = #{admrId}
+    </update>
+
+    <select id="getIpAdminMap" parameterType="comm.datapf.web.boadmin.domain.dto.login.LoginDto" resultType="string" >
+        /*loginMapper.getIpAdminMap*/
+        SELECT NVL(MAX(CONN_PSBL_IP),'-1.-1.-1.-1') AS CONN_PSBL_IP
+        FROM ADMR_CONN_IP
+        WHERE ADMR_ID = #{admrId}
+            AND TO_CHAR(SYSTIMESTAMP,'YYYYMMDDHH24MISS')  BETWEEN APLY_STRT_DTIME AND APLY_END_DTIME
+            AND USE_YN ='Y'
+            AND CONN_PSBL_IP = #{ip}
+    </select>
+
+    <select id="getTimeAdminMap" parameterType="string" resultType="comm.datapf.web.boadmin.domain.dto.login.LoginConnDto" >
+        /*loginMapper.getTimeAdminMap*/
+        SELECT NVL(MIN(CONN_PSBL_STRT_TIME),'000000') AS CONN_PSBL_STRT_TIME
+            , MAX(CONN_PSBL_END_TIME )  AS CONN_PSBL_END_TIME
+        FROM ADMR_CONN_TMST
+        WHERE (CONN_DVSN_CD = decode(CDI.FN_COM_GET_ADMR_NM(TO_CHAR(SYSTIMESTAMP,'YYYYMMDDHH')), 'Y', 'HD', 'WD') OR CONN_DVSN_CD = 'TD')
+            AND USE_YN ='Y'
+            AND TO_CHAR(SYSTIMESTAMP,'YYYYMMDDHH24MISS')  BETWEEN APLY_STRT_DTIME AND APLY_END_DTIME
+            AND ADMR_ID = #{admrId}
+    </select>
+
+    <select id="getPsnlTrtmInfo" parameterType="java.util.HashMap" resultType="String">
+        /*loginMapper.getPsnlTrtmInfo */
+        SELECT PSNL_TRTM_YN
+        FROM ADMR_BASE_INFO
+        WHERE ADMR_ID = #{adminId}
+    </select>
+
+    <select id="getBlockIpList" parameterType="java.util.HashMap" resultType="String">
+        /*loginMapper.getBlockIpList */
+        <![CDATA[
+			SELECT DISTINCT REGEXP_SUBSTR( A.VAL, '[^;]+', 1, LEVEL ) AS IP_INFO
+			FROM (
+					SELECT VAL
+					FROM COM_SYS_BASE A
+					WHERE SYS_ID = #{sysId}
+                        AND WORK_CD = #{workCd}
+                        AND USE_YN = 'Y'
+                        AND TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS') BETWEEN SUBSTR(APLY_STRT_DTIME, 1, 8) AND SUBSTR(APLY_END_DTIME, 1, 8)
+				) A CONNECT BY LEVEL <= LENGTH(REGEXP_REPLACE( A.VAL, '[^;]+', '' )) + 1
+		]]>
+    </select>
+
+    <select id="getMenuList" resultType="comm.datapf.web.boadmin.domain.dto.role.MenuPgmDto" parameterType="java.util.HashMap">
+        /*loginMapper.getMenuList*/
+        <!--SELECT  LEVEL MENU_DEPTH, A.PGM_ID, A.PGM_NM, A.SRC_PATH, A.SORT, A.PRINT_YN-->
+        SELECT  LEVEL MENU_DEPTH, A.PGM_ID, A.PGM_NM, NVL(A.SRC_PATH,'#') AS SRC_PATH, A.SORT, A.PRINT_YN
+        FROM
+        (
+            SELECT DISTINCT * FROM
+            (
+                SELECT B.PGM_ID, A.PGM_NM, A.PREN_ID, A.SRC_PATH, B.SELECT_YN, B.INSERT_YN, B.UPDATE_YN, B.PRINT_YN, A.SORT
+                FROM ADMR_PGM_BASE  A
+                    ,(
+                        SELECT SA.*
+                        FROM ADMR_ATHR_PGM_MPPG SA
+                        ,(
+                            SELECT PGM_ID FROM ADMR_ATHR_PGM_MPPG WHERE ROLE_ID = #{roleId} AND USE_YN = 'Y'
+                            MINUS
+                            SELECT PGM_ID FROM ADMR_ONTP_PGM_MPPG WHERE ADMR_ID = #{admrId} AND USE_YN = 'Y'
+                        ) SB
+                        WHERE SA.PGM_ID  = SB.PGM_ID
+                            AND SA.ROLE_ID = #{roleId}
+                            AND SA.USE_YN='Y'
+                    ) B
+                WHERE A.PGM_ID = B.PGM_ID
+                    AND A.USE_YN = 'Y'
+                UNION ALL
+                SELECT B.PGM_ID, A.PGM_NM, A.PREN_ID, A.SRC_PATH, B.SELECT_YN, B.INSERT_YN, B.UPDATE_YN, B.PRINT_YN, A.SORT
+                FROM ADMR_PGM_BASE A
+                    , ADMR_ONTP_PGM_MPPG B
+                WHERE A.PGM_ID  = B.PGM_ID
+                    AND B.ADMR_ID = #{admrId}
+                    AND B.USE_YN  = 'Y'
+                    AND A.USE_YN  = 'Y'
+                UNION ALL
+                SELECT A.PGM_ID, A.PGM_NM, A.PREN_ID, A.SRC_PATH, A.SELECT_YN, A.INSERT_YN, A.UPDATE_YN, A.PRINT_YN, A.SORT
+                FROM ADMR_PGM_BASE A
+                WHERE PGM_DVSN_CD ='MENU'
+                    AND A.USE_YN = 'Y'
+                START WITH PGM_ID IN
+                 (
+                    SELECT PGM_ID
+                    FROM ADMR_ATHR_PGM_MPPG A
+                    WHERE A.ROLE_ID = #{roleId}
+                    AND USE_YN = 'Y'
+                )
+                CONNECT BY PRIOR  PREN_ID  =  PGM_ID
+                UNION ALL
+                SELECT A.PGM_ID, A.PGM_NM, A.PREN_ID, A.SRC_PATH, A.SELECT_YN, A.INSERT_YN, A.UPDATE_YN, A.PRINT_YN, A.SORT
+                FROM ADMR_PGM_BASE A
+                WHERE PGM_DVSN_CD ='MENU'
+                    AND A.USE_YN = 'Y'
+                START WITH PGM_ID IN
+                (
+                    SELECT PGM_ID
+                    FROM ADMR_ONTP_PGM_MPPG A
+                    WHERE A.ADMR_ID = #{admrId}
+                        AND USE_YN = 'Y'
+                )
+                CONNECT BY PRIOR  PREN_ID  =  PGM_ID
+            )
+        ) A
+        START WITH A.PREN_ID IS NULL
+        CONNECT BY PRIOR A.PGM_ID =  A.PREN_ID
+        ORDER  SIBLINGS BY A.SORT
+    </select>
+
+    <update id="updateLastLinTime" parameterType="comm.datapf.web.boadmin.domain.dto.login.LoginDto">
+        /* loginMapper.updateLastLinTime */
+        UPDATE ADMR_BASE_INFO
+        SET LAST_LIN_DTIME = #{loginTime}
+        WHERE ADMR_ID = #{admrId}
+    </update>
+
+    <select id="selectMbpnoAdmr" parameterType="java.util.HashMap" resultType="comm.datapf.web.boadmin.domain.dto.login.LoginDto" >
+        /* loginMapper.getMbpnoAdmr */
+        SELECT * FROM ADMR_BASE_INFO WHERE ADMR_EMAL = #{admrEmal} AND EMPY_NO = #{empyNo} AND USE_YN = 'Y'
+    </select>
+
+    <update id="updateAdminUserInfo" parameterType="comm.datapf.web.boadmin.domain.dto.login.LoginDto">
+        /*adminSqlMap.updateAdmin*/
+        UPDATE ADMR_BASE_INFO
+        SET ADMR_NM = #{admrNm}
+        <if test="pwd != null and pwd != ''">
+            , PWD = #{PWD}
+            , PWD_CHNG_DTIME = #{chngDtime}
+            , PWD_ERR_RCNT = 0
+        </if>
+        <if test="useYn != null and useYn != ''">
+            , USE_YN = #{useYn}
+        </if>
+        , CHNG_DTIME = #{chngDtime}
+        , ADMR_EMAL = #{admrEmal}
+        , CHNG_ADMR_ID = #{admrId}
+        , CHNG_ADMR_IP = #{ip}
+        <if test="pwdReStupYn != null and pwdReStupYn != ''">
+            , PWD_RE_STUP_YN = #{pwdReStupYn}
+        </if>
+        <if test="empyNo != null and empyNo != ''">
+            , EMPY_NO = #{empyNo}
+        </if>
+        <if test="@comm.datapf.web.boadmin.utils.StringUtils@isNotEmpty(prtlNm)">
+            , PRTL_NM = #{prtlNm}
+        </if>
+        <if test="@comm.datapf.web.boadmin.utils.StringUtils@isNotEmpty(DPdpmtNmMT_NM)">
+            , DPMT_NM = #{dpmtNm}
+        </if>
+        <if test="@comm.datapf.web.boadmin.utils.StringUtils@isNotEmpty(teamNm)">
+            , TEAM_NM = #{teamNm}
+        </if>
+        <if test="psnlTrtmYn != null and psnlTrtmYn != ''">
+            , PSNL_TRTM_YN = #{psnlTrtmYn}
+        </if>
+        <if test="admrStatCd != null and admrStatCd != ''">
+            , ADMR_STAT_CD = #{admrStatCd}
+        </if>
+        WHERE ADMR_ID = #{admrId}
+    </update>
+
+    <update id="doPasswordUpdate" parameterType="java.util.HashMap">
+        /*LoginMapper.doPasswordUpdate*/
+        UPDATE
+        CDI.ADMR_BASE_INFO
+        SET PWD = #{pwd}
+        , PWD_ERR_RCNT = 0
+        , PWD_CHNG_DTIME = #{pwdChngDtime}
+        , CHNG_ADMR_ID = #{admrId}
+        , CHNG_ADMR_IP = #{ip}
+        , CHNG_DTIME = #{chngDtime}
+        , ADMR_STAT_CD = #{admrStatCd}
+        <if test="pwdReStupYn != null and pwdReStupYn != ''">
+            <if test="@comm.datapf.web.boadmin.utils.StringUtils@equals('Y', pwdReStupYn)">
+                , PWD_RE_STUP_YN = #{pwdReStupYn}
+            </if>
+        </if>
+        WHERE ADMR_ID = #{admrId}
+    </update>
+
+    <select id="getPsnlTrtmProgramInfo" parameterType="string" resultType="String">
+        /*loginMapper.getPsnlTrtmProgramInfo */
+        SELECT B.PSNL_TRTM_YN
+        FROM ADMR_PGM_DTL A, ADMR_PGM_BASE B
+        WHERE A.SRC_PATH = #{srcPath}
+            AND A.USE_YN = 'Y'
+            AND A.PGM_ID = B.PGM_ID(+)
+        UNION
+        SELECT B.PSNL_TRTM_YN
+        FROM ADMR_PGM_BASE B
+        WHERE B.SRC_PATH = #{srcPath}
+            AND B.USE_YN = 'Y'
+    </select>
+
+    <select id="getRoleYn" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+        /*loginMapper.getRoleYn*/
+        SELECT DISTINCT
+            A.PGM_ID
+            , A.PGM_NM
+            , A.SRC_PATH
+            , A.SELECT_YN
+            , A.DETAIL_YN
+            , A.INSERT_YN
+            , A.UPDATE_YN
+            , A.PRINT_YN
+            , LTRIM(SYS_CONNECT_BY_PATH((SELECT PGM_NM FROM ADMR_PGM_BASE SA  WHERE SA.PGM_ID = A.PREN_ID), ' / '), ' / ') PATH
+            , A.PSNL_TRTM_YN
+        FROM
+            (
+                SELECT B.PGM_ID, A.PGM_NM, A.PREN_ID, A.SRC_PATH, B.SELECT_YN, B.DETAIL_YN, B.INSERT_YN, B.UPDATE_YN, B.PRINT_YN, A.SORT, A.PSNL_TRTM_YN
+                FROM ADMR_PGM_BASE  A
+                , (
+                    SELECT SA.*
+                    FROM ADMR_ATHR_PGM_MPPG SA
+                    , (
+                        SELECT PGM_ID FROM ADMR_ATHR_PGM_MPPG WHERE ROLE_ID = #{roleId}  AND USE_YN = 'Y'
+                        MINUS
+                        SELECT PGM_ID FROM ADMR_ONTP_PGM_MPPG WHERE ADMR_ID  = #{admrId}  AND USE_YN = 'Y'
+                    ) SB
+                    WHERE SA.PGM_ID  = SB.PGM_ID
+                        AND SA.ROLE_ID = #{roleId}
+                ) B
+                WHERE A.PGM_ID = B.PGM_ID
+                    AND A.PGM_DVSN_CD IN ('MENU', 'PGRM')
+                    AND A.USE_YN = 'Y'
+                UNION ALL
+                SELECT B.PGM_ID, A.PGM_NM, A.PREN_ID, A.SRC_PATH, B.SELECT_YN, B.DETAIL_YN, B.INSERT_YN, B.UPDATE_YN, B.PRINT_YN, A.SORT, A.PSNL_TRTM_YN
+                FROM ADMR_PGM_BASE A
+                    , ADMR_ONTP_PGM_MPPG B
+                WHERE A.PGM_ID  = B.PGM_ID
+                    AND B.ADMR_ID = #{admrId}
+                    AND A.PGM_DVSN_CD IN ('MENU', 'PGRM')
+                    AND A.USE_YN  = 'Y'
+                    AND B.USE_YN = 'Y'
+                UNION ALL
+                SELECT  PGM_ID, PGM_NM,PREN_ID, SRC_PATH,SELECT_YN, DETAIL_YN,INSERT_YN, UPDATE_YN, PRINT_YN, SORT, PSNL_TRTM_YN
+                FROM ADMR_PGM_BASE
+                WHERE PGM_DVSN_CD ='MENU'
+                START WITH PGM_ID IN
+                (
+                    SELECT PGM_ID
+                    FROM ADMR_ATHR_PGM_MPPG A
+                    WHERE A.ROLE_ID = #{roleId}
+                )
+                CONNECT BY PRIOR  PREN_ID  =  PGM_ID
+                    AND USE_YN = 'Y'
+                UNION ALL
+                SELECT  PGM_ID, PGM_NM,PREN_ID, SRC_PATH,SELECT_YN, DETAIL_YN,INSERT_YN, UPDATE_YN, PRINT_YN, SORT, PSNL_TRTM_YN
+                FROM ADMR_PGM_BASE
+                WHERE PGM_DVSN_CD ='MENU'
+                START WITH PGM_ID IN
+                (
+                    SELECT PGM_ID
+                    FROM ADMR_ONTP_PGM_MPPG A
+                    WHERE A.ADMR_ID = #{admrId}
+                )
+                CONNECT BY PRIOR  PREN_ID  =  PGM_ID
+            ) A
+            , ADMR_PGM_DTL B
+        WHERE A.PGM_ID = B.PGM_ID(+)
+            AND (A.SRC_PATH = #{srcPath} OR B.SRC_PATH = #{srcPath})
+        START WITH A.PREN_ID IS NULL
+        CONNECT BY PRIOR A.PGM_ID =  A.PREN_ID
+    </select>
+
+    <select id="selectMenuPgm" resultType="comm.datapf.web.boadmin.domain.dto.role.MenuPgmDto" parameterType="java.util.HashMap">
+        /*LoginMapper.selectMenuPgm*/
+        SELECT A.PGM_ID
+        , PGM_NM
+        , PREN_ID AS SUB_ID
+        , SORT
+        , SRC_PATH
+        , SELECT_YN
+        , DETAIL_YN
+        , INSERT_YN
+        , UPDATE_YN
+        , PRINT_YN
+        , USE_YN
+        , PGM_DVSN_CD
+        , PSNL_TRTM_YN
+        , (SELECT PREN_ID FROM CDI.ADMR_PGM_BASE WHERE PGM_ID = A.PREN_ID) AS MENU_ID
+        FROM CDI.ADMR_PGM_BASE A
+        WHERE PGM_ID = #{pgmId}
+    </select>
+
+    <select id="getPgmTypeCd" resultType="String" parameterType="java.util.HashMap">
+        /*loginMapper.getPgmTypeCd*/
+        SELECT PGM_TYPE_CD
+        FROM ADMR_PGM_DTL A, ADMR_PGM_BASE B
+        WHERE A.PGM_ID = B.PGM_ID
+            AND A.SRC_PATH = #{srcPath}
+            AND A.USE_YN = 'Y'
+            AND B.USE_YN = 'Y'
+    </select>
+
+    <select id="getMchtAdminInfo" parameterType="java.util.Map" resultType="java.util.Map">
+        /*loginMapper.getMchtAdminInfo*/
+        SELECT MCHT_NO
+        FROM ADMR_ONTP_MCHT
+        WHERE ADMR_ID = #{admrId}
+            AND USE_YN = 'Y'
+    </select>
+
+    <select id="getLoginToken" parameterType="String" resultType="String">
+        /* loginMapper.getLoginToken */
+        SELECT A.*
+        FROM
+            (
+                SELECT SEARCH_TEXT
+                FROM ADMR_USE_HIST a
+                WHERE PGM_TYPE_CD = 'LOGIN'
+                    AND ADMR_ID = #{adminId}
+                    AND SCRN_INQR_SNO >= TO_CHAR(SYSDATE - 1/24, 'YYYYMMDDHH24MISS')
+                ORDER BY SCRN_INQR_SNO DESC
+            )A
+        WHERE ROWNUM = 1
+    </select>
+
+</mapper>
